@@ -1,0 +1,34 @@
+body {
+	padding-left:8%;
+	padding-right:8%;
+    color:#004014;
+    background-color: #AFAFAF;
+    font-family: Arial,sans-serif;
+    /*background-image: linear-gradient(to right, black, #373737);*/
+}
+a {
+    color: #af5d00;
+    text-decoration:none;
+}
+hr {
+    color: #af5d00;
+    text-decoration:none;
+    clear:both;
+}
+h3 {
+    color: #af2200;
+}
+
+.main_title {
+	text-align:center;
+}
+.main_subtitle {
+	text-align:center;
+}
+.button {
+	background-color:#101010;
+	border:solid 1px;
+	text-align:center;
+	margin-top:2%;
+	margin-bottom:2%;
+}
