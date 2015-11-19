@@ -15,7 +15,8 @@
  * 
  * -One Clewn API server to host and serve the "free download" audio with
  * -- 'the audio' uloaded in its ./audio subdir
- * -- the api.php file at the root of the install
+ * -- the api/api.php file at the root of the install
+ *			(not ./api.php ! ./api/api.php !)
  * 
  * (you'll have to edit the api.php file to 
  * modify './whatever/path/to/php-getid3'
@@ -27,6 +28,10 @@
  * and $clewnaudiurl options in ./config.php 
  * correctly set
  *
+ * as well you'll have to edit ./api.php to reflect where php-getid3 is
+ * installed
+ * 
+ * 
  * The "./z" subdir will be used to store the audio that is not available
  * for free download
  * Please note that it is incredibly easy to access it and STEAL your
