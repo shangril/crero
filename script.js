@@ -6,7 +6,7 @@ function play(target, id, isclewn){
 			target='http://audio.clewn.org/audio/'+target;
 	}
 	else  {
-			target='http://cremroadstudio.com/z/'+target;
+			target='http://cremroad.com/z/'+target;
 	}
 	currenttarget=target;
 	currentclewn=isclewn;

@@ -154,6 +154,24 @@ $querystring = '';
 		$albums=array_reverse($albums);
 		
 		$content=$albums;
+//let's query the local storage
+$querystring = '';
+		foreach ($artists as $artist) 
+		{
+			$querystring.='&listallalbums[]='.urlencode($artist);
+			
+			
+		}
+
+
+
+		$albums_file=file_get_contents($serverapi.'?'.$querystring);
+		$albums=unserialize($albums_file);
+		ksort($albums);
+		$albums=array_reverse($albums);
+		
+		$contentlocal=$albums;
+
 
 
 if ($_SESSION['random']){
@@ -198,6 +216,94 @@ else if (!isset($_GET['artist']))
 {
 	echo '<a style="float:right" href="./?random=true">random play</a>';
 }
+
+//local *****
+
+foreach ($contentlocal as $item){
+	$ran=false;
+	
+	if ($counter>$offset && $secondcounter==0) {
+	$running=true;
+	
+	if (isset($_GET['album'])&&$_GET['album']!==$item['album']) {
+		$running=false;
+		
+	}
+	
+	
+	
+	
+	if (isset ($item['album'])&&$running){
+		$ran=true;
+
+
+		echo '<h1>Album : <a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
+		
+		
+		
+		
+		//here we go, query local API for track list
+		$tracks_file=file_get_contents($serverapi.'?gettracks='.urlencode($item['album']));
+
+		$tracks=explode("\n", $tracks_file);
+		$trackcounter=0;
+		$hasntautoplayed=true;
+		foreach ($tracks as $track) {
+			if ($track!==''){
+			
+				//we want its name and the artist name as well
+				$track_name=trim(file_get_contents($serverapi.'?gettitle='.urlencode($track)));
+		
+				$track_artist=trim(file_get_contents($serverapi.'?getartist='.urlencode($track)));
+				
+				if (!isset($_GET['track'])||$_GET['track']==$track_name)
+				{
+					if (in_array($track_artist, $artists)){
+					?>
+					<a href="#" onClick="play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
+					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
+					 <?php echo  $track_artist; ?></a> - 
+					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
+					 <div style="background-color:#F0F0F0;text-align:right;">Early access download not available for now</div>
+					
+					<?php
+					if (isset($_GET['autoplay'])&&$hasntautoplayed){
+						?>
+						<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, false);</script>
+						<?php
+						$hasntautoplayed=false;
+					}
+				}
+			}
+			$trackcounter++;
+			}
+		
+		}
+
+
+
+
+
+
+
+
+
+		
+	}
+	
+}
+if ($ran) {
+	$secondcounter++;
+
+}	
+$counter++;
+
+}
+
+
+//remote ****
+
+
 
 foreach ($content as $item){
 	$ran=false;
