@@ -11,6 +11,13 @@
  * First, on the Year tag
  * Then, on the modification time of each file on your server
  * 
+ * 
+ * Note that configuration (.txt) files expect expect UNIX-style
+ * ("\n") end-of-lines. 
+ * Windows/Mac OS user please set this in your text editor
+ * 
+ * 
+ * 
  * Typical deployment is made of 
  * 
  * -One Clewn API server to host and serve the "free download" audio with
@@ -38,6 +45,10 @@
  * music :)
  * 
  * 
+ * the "./songbook" subdir is to contain music sheets (for lyrics, 
+ * chord, tablature)... If the basename of an audio file is foo, 
+ * CreRo will look for a foo.txt file to be included on the site
+ * 
  ***Advanced configuration
  * 
  * What is the ./network subdir :
@@ -48,7 +59,18 @@
  * your page to "./network" for people to find it. 
  * and to edit the "./network/site_variables.php" for site name 
  * description and so on for your chat subsite 
- * 
+ *
+ * Video support
+ * use video/api.php ; put it at the root of your video server
+ * then there, put your videos in a <ROOT OF THE INSTALL>/audio subdir
+ * same basename for each video file, in the folowing formats 
+ * (none of them being mandatory) : avi, mpg, ogv, mp4, webm
+ * basename.description.txt
+ * basename.album.txt
+ * basename.title.txt
+ * basename.artist.txt
+ * in the same dir, will be used to categorize your vids
+ *  
  *  
  * TODO : the script.js has several server url that are harcoded in it 
  * that you will have to manually replace to reflect your actual 
@@ -70,6 +92,11 @@ $server='cremroad.com';
 $serverapi='http://'.$server.'/api.php';
 $clewnapiurl='http://audio.clewn.org/api.php';
 $clewnaudiourl='http://audio.clewn.org/audio/';
+
+$videoapiurl='http://video.clewn.org/api.php';
+$videourl='http://video.clewn.org/audio/';
+
+
 $footerhtmlcode='
 <em>This is Crem Road. Formerly C0C. Formerly ZC Virtual. Formerly Slcnc Music.</em>
 <em><br/>Copyright 1997-2015 N. Chartoire. No demo submissions for now. </em>

@@ -94,7 +94,76 @@ function loginpanel(){
 	}
 	
 }
-
+function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl) {
+	//let's see if there is a video available
+					$videotarget=trim(file_get_contents($videoapiurl.'?artist='.urlencode($track_artist).'&album='.urlencode($album).'&title='.urlencode($track_name).'&gettarget=y'));
+					
+					
+					$hasvideo=false;
+					$haslyrics=false;
+					if ($videotarget!==''){
+						$hasvideo=true;
+						
+					}
+					
+					
+					//if has video and GET vid not set, dislplay video display link
+					//if has lyrics display lyrics link
+					if (($hasvideo || $haslyrics)){
+						echo '<div style="background-color:#FAFAFA;text-align:center;">';
+						if ($hasvideo&&!isset($_GET['vid'])){
+							
+							echo '<a href="./?vid=play&track='.urlencode($track_name).'&album='.urlencode($album).'&artist='.urlencode($track_artist).'">Video available</a>';
+						}
+						
+						echo '</div>';
+						
+					}
+					if ($hasvideo&&isset($_GET['vid'])&&isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['track'])){
+						echo '<div style="background-color:#FAFAFA">';
+						$videoformatsfile=trim(file_get_contents($videoapiurl.'?listformats='.urlencode($videotarget)));
+						$videoformats=explode("\n",$videoformatsfile);
+						$videotargetfiles=Array();
+						foreach ($videoformats as $videoformat){
+							$downgradefile=trim(file_get_contents($videoapiurl.'?hasdowngrade='.$videotarget.'&format='.$videoformat));
+							$downgradelist=explode("\n", $downgradefile);
+							sort($downgradelist);
+							if (count($downgradelist)>0) {
+								$videotargetfiles[$videoformat]=$downgradelist[0].'.'.$videotarget.'.'.$videoformat;
+							}
+							else {
+								$videotargetfiles[$videoformat]=$videotarget.'.'.$videoformat;
+							}
+						
+						}
+						echo '<video controls="controls" autoplay="autoplay" style="width:100%;">';
+						foreach($videoformats as $videoformat) {
+							echo '<source src="'.htmlspecialchars($videourl.$videotargetfiles[$videoformat]).'"></source>';
+							
+							
+						}
+						echo 'Your browser is very old and does not support HTML5 video, sorry</video>';
+						echo '<br/>';
+						echo 'Download : ';
+						foreach ($videoformats as $videoformat) {
+							echo '<a href="'.$videourl.urlencode($videotarget).'.'.urlencode($videoformat).'">'.htmlspecialchars($videoformat).'</a> ';
+							
+						}
+						echo '<br/>';
+						echo htmlspecialchars(trim(file_get_contents($videourl.$videotarget.'.description.txt')));
+						echo '</div>';
+						
+					}
+					
+}
+function showsongsheet($track) {
+	if (file_exists('./songbook/'.$track.'.txt')){
+		echo '<div style="background-color:#A8A8A8;"><a href="#'.htmlspecialchars($track.'.txt').'" onclick="document.getElementById(\''.htmlspecialchars($track.'.txt').'\').style=\'display:block;\'">Lyrics/chords</a></div>';
+		echo '<a name="'.htmlspecialchars($track.'.txt').'"><div style="font-family:monospace;display:none;background-color:#DFDFDF;" id="'.htmlspecialchars($track.'.txt').'">'.str_replace("\n", '<br/>', htmlspecialchars(file_get_contents('./songbook/'.$track.'.txt'))).'</div></a>';	
+			
+	}
+	
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -265,6 +334,10 @@ foreach ($contentlocal as $item){
 					 <?php echo  $track_artist; ?></a> - 
 					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
 					 <div style="background-color:#F0F0F0;text-align:right;">Early access download not available for now</div>
+					<?php
+					generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
+					showsongsheet($track);
+					?>
 					
 					<?php
 					if (isset($_GET['autoplay'])&&$hasntautoplayed){
@@ -349,9 +422,12 @@ foreach ($content as $item){
 					<a href="#" onClick="play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
 					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 					 <?php echo  $track_artist; ?></a> - 
-					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
+					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';?>
 					 <div style="background-color:#F0F0F0;text-align:right;">Download <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.flac">flac</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.ogg">ogg</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.mp3">mp3</a></div>
-					
+					<?php
+					generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
+					showsongsheet($track);
+					?>
 					<?php
 					if (isset($_GET['autoplay'])&&$hasntautoplayed){
 						?>
