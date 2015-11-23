@@ -1,5 +1,6 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
+require_once('./config.php');
 require_once('../php-getid3/getid3.php');
 if (isset($_GET['listalbums'])) {
 header('Content-Type: text/plain; charset=utf-8');
@@ -180,8 +181,16 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 						$year=array_reverse(explode('-', $year))[0];
 						
 						$content[$year.'.'.filemtime('audio/'.$file)]['album']=$info['comments_html']['album'][0];
+						$content[$year.'.'.filemtime('audio/'.$file)]['artist']=$info['comments_html']['artist'][0];
 						
 						
+						//bogus; do not use !
+						if (!isset($content[$year.'.'.filemtime('audio/'.$file)]['artists'])){
+							$content[$year.'.'.filemtime('audio/'.$file)]['artists']=Array();
+						}
+						//end of bogus
+						
+						array_push($content[$year.'.'.filemtime('audio/'.$file)]['artists'],$info['comments_html']['artist'][0]);
 						
 				
 				
@@ -231,6 +240,81 @@ header('Content-Type: text/plain; charset=utf-8');
 		
 		echo $target;
 	}
+
+
+
+
+
+}
+else if (isset($_GET['getalbumartist'])) {
+header('Content-Type: text/plain; charset=utf-8');
+
+
+	//get the artist of a specified album
+	$album=$_GET['getalbumartist'];
+	$files=scandir('./audio');
+	$mtime=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, '.flac')===(strlen($file)-5)){
+			
+				$getID3 = new getID3;
+				$info = $getID3->analyze('audio/'.$file);
+				getid3_lib::CopyTagsToComments($info); 
+				if($info['comments_html']['album'][0]===$album){
+						array_push($mtime,$info['comments_html']['artist'][0]);
+						
+						
+				}
+			
+		}
+		
+		
+	}
+	sort($mtime);
+	array_reverse($mtime);
+	echo $mtime[0]."\n";
+		
+
+
+
+
+
+
+
+
+}
+else if (isset($_GET['getalbumartists'])) {
+header('Content-Type: text/plain; charset=utf-8');
+
+
+	//get the artists of a specified album featuring several artists
+	$album=$_GET['getalbumartists'];
+	$files=scandir('./audio');
+	$mtime=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, '.flac')===(strlen($file)-5)){
+			
+				$getID3 = new getID3;
+				$info = $getID3->analyze('audio/'.$file);
+				getid3_lib::CopyTagsToComments($info); 
+				if($info['comments_html']['album'][0]===$album){
+						array_push($mtime,$info['comments_html']['artist'][0]);
+						
+						
+				}
+			
+		}
+		
+		
+	}
+	sort($mtime);
+	foreach ($mtime as $artist){
+		echo $artist."\n";
+		
+	}	
+
+
+
 
 
 
