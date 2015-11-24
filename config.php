@@ -52,6 +52,15 @@
  * Please note that it is incredibly easy to access it and STEAL your
  * music :)
  * 
+ * The ./covers dir will contain cover artworks. 
+ * They must be defined in a d/covers.txt file with the folling forma
+ * Line 1 : album title
+ * Line 2 : filename of the cover
+ * Line 3 : album title
+ * Line 4 : filename of the album defined at line 3
+ * ...
+ * 
+ * Please note that covers requires to have GD installed. 
  * 
  * the "./songbook" subdir is to contain music sheets (for lyrics, 
  * chord, tablature)... If the basename of an audio file is foo, 

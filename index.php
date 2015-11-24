@@ -216,6 +216,51 @@ function showsongsheet($track) {
 	}
 	
 }
+function displaycover($album, $ratio){
+	if (file_exists('./d/covers.txt')){
+		$coversfile=trim(file_get_contents('./d/covers.txt'));
+		$coverslines=explode("\n", $coversfile); 
+		
+		$i=0;
+		$url=null;
+		while ($i<count($coverslines)){
+			if (htmlentities($coverslines[$i])===$album){
+				$url=$coverslines[$i+1];
+				
+			}
+			$i++;
+			$i++;
+		}
+		if (isset($url)){
+			$output='';
+			$output.='<img id="cover_'.htmlspecialchars($album).'"/>';
+		
+			$output.='<script>;
+			var size;
+			if (document.documentElement.clientWidth>=document.documentElement.clientHeight){
+				size=document.documentElement.clientHeight;
+			}
+			else
+			{
+				size=document.documentElement.clientWidth;
+			}				 ';
+			$output.='document.getElementById('."'".'cover_'.str_replace("'","\\'",$album)."'".').src='."'".'./thumbnailer.php?target='."'".'+encodeURI('."'".str_replace("'","\\'",'./covers/'.$url)."'".')+'."'".'&viewportwidth='."'".'+encodeURI(size)+'."'".'&ratio='."'".'+encodeURI('."'".str_replace("'","\\'",$ratio)."'".');';
+							 
+			$output.='</script>';
+			
+			return $output;
+		}
+		else {
+			return '';
+		}
+	
+	
+	
+	}
+	else{
+		return '';
+	}	
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -291,6 +336,7 @@ if((isset($_GET['listall'])&&$_GET['listall']==='material')) {
 	$material=true;
 	echo '<h1>Material releases</h1><h2>What we offer : </h2>';
 	echo 'All prices are indicated in '.htmlspecialchars($material_currency);
+	echo '<div><em>This is the minimum price. You name you price, actually, and you can pay more than this if you wish to.</em></div>';
 	$material_items=array_keys($material_support);
 	echo '<table><tr>';
 	echo '<td style="border: solid 1px;"><strong><em>Product</em></strong></td>';
@@ -433,6 +479,9 @@ foreach ($contentlocal as $item){
 		
 		echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
 		
+		echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+
+		
 		if (!isset($_GET['listall'])){
 		
 		
@@ -518,7 +567,7 @@ if($material) {
 			echo 'selected="selected"';
 		}
 		
-		echo '>'.htmlspecialchars($shipping_option).'</option>';
+		echo '>'.htmlspecialchars($shipping_option).' ('.htmlspecialchars($material_currency.' '.$material_shipping[$shipping_option].'/item)').'</option>';
 		$i++;
 	}
 	
@@ -555,11 +604,13 @@ foreach ($content as $item){
 		else{
 			echo '<h1>';
 		}
-
+		
 		
 		
 		
 		echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
+		echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+
 		//material order form
 		if ($material) {
 			
