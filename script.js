@@ -42,7 +42,14 @@ function playNext() {
 		
 	}
 	else {
-		document.location.href='./?offset='+(offset+1)+'&autoplay=true';
+		if (document.getElementById('digolder')!=null){
+		
+			document.location.href=document.getElementById('digolder').href+'&autoplay=true';//'./?offset='+(offset+1)+'&autoplay=true';
+		}
+		else {
+			document.location.href='./?offset='+(offset+1)+'&autoplay=true';
+		}
+
 	}
 	
 }

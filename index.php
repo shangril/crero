@@ -695,13 +695,13 @@ foreach ($content as $item){
 
 
 			
-		if (in_array($item['artist'], $material_artists)&&!in_array($item['album'], $material_blacklist)&&(isset($_GET['listall'])&&$_GET['listall']!=='material')){
+		if (in_array($item['artist'], $material_artists)&&!in_array($item['album'], $material_blacklist)&&!$material){
 			echo 'available on material support at our <a href="http://'.$server.'/?listall=material">physical releases shop</a><br/>';
 			
 		}
 		
 		if (!isset($_GET['listall'])){
-		
+			
 			//here we go, query Clewn API for track list
 			$tracks_file=file_get_contents($clewnapiurl.'?gettracks='.urlencode($item['album']));
 
@@ -764,7 +764,7 @@ $counter++;
 
 
 if (!isset ($_GET['album'])&&!isset($_GET['track'])&&!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
-	echo '<a style="float:right;" href="./?offset='.intval($offset+1).$arturl.'">Dig older...</a><br/>';
+	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.'">Dig older...</a><br/>';
 
 }
 if (!$weactuallydisplayedsomething){
