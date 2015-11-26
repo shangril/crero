@@ -32,6 +32,9 @@
  * -- 'the audio' uloaded in its ./audio subdir
  * -- the api/api.php file at the root of the install
  *			(not ./api.php ! ./api/api.php !)
+ * ----please note that in case of DELETION of a free album or track you'll need to 
+ * purge the cache by deleting the apicache.php file at the root of your Clewn
+ * API server
  * 
  * (you'll have to edit the api.php file to 
  * modify './whatever/path/to/php-getid3'
@@ -39,7 +42,7 @@
  * 
  ** -One main backend CreRo with
  * --the d/artists.txt containing a list of the label' artists, one per line
- * -- the $title, $description, $clewnapiurl 
+ * -- the $labelhosting, $title, $description, $clewnapiurl 
  * and $clewnaudiurl options in ./config.php 
  * correctly set
  *
@@ -111,10 +114,6 @@
  */
 
 
-
-
-
-
 $description = 'Independent music for the third millenium. Stream and download for free. Early access to works in progress for a small fee. Also CDs, SD Cards, Cassettes, posters and tees';
 $title='<a href="./">Crem Road</a> - The record label';
 $server='cremroad.com';
@@ -137,5 +136,5 @@ $activateaccountcreation='false';
 //don't change this for now
 
 $materialreleasessalesagreement='Sales Agreement/CGV : No refund in any case. Items are sens at national/international letter rate, and are produced on demand, there is then no garantee for the delay. Please note that any tentative to bypass the payment system, for example by sending malformed requests to get a lower total, will lead in to the cancellation of your order with no possibility of refund. <br/>Sold by Crem Road Distribution, microcompany based in France. SIREN : Ongoing. CNIL: Ongoing';
-
+$hostingfooter='&copy; 2015 Crem Road. Sales Agreement (CGV) The service is provided without any warranty. Please note that there is not need to be especially technically aware to gain download access to streaming music. No refund in case of suspension of the service. Edited by Crem Road distribution, microcompany based in France. SIREN: Ongoing. CNIL: Ongoing. According to the law you got a right to access your personnal datas and request their deletion at any time. We won\'t share any of your datas, not even your browing usage, with third parties, and this is true for your customers as well.'
 ?>
