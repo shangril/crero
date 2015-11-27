@@ -276,6 +276,15 @@ function displaycover($album, $ratio){
 </script>
 </head>
 <body>
+<?php
+if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
+	
+	echo '<div style="color:red;background-color:black;width:100%;text-align:center;"><span><strong>'.$message[$_GET['message']].'</strong><a href="./" style="color:black;background-color:red;text-decoration:underline;float:right;text-align:right;">X</a></span></div>';
+	
+}
+
+
+?>
 <audio id="player" onEnded="playNext();">
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio>

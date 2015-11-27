@@ -124,6 +124,12 @@ $clewnaudiourl='http://audio.clewn.org/audio/';
 $videoapiurl='http://video.clewn.org/api.php';
 $videourl='http://video.clewn.org/audio/';
 
+//whatever message you want to display if the HTTP GET message is set to this value, e.g. for advertising campaign or whatever
+
+$message['ad20151127']='Welcome visitor ! We have\'nt got much money to spend on advertising. If you like what you hear, please be kind enough to share broadly';
+//will be displayed for http://yourserver.com/?message=ad
+
+
 
 $footerhtmlcode='
 <em>This is Crem Road. Formerly C0C. Formerly ZC Virtual. Formerly Slcnc Music.</em>
