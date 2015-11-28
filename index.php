@@ -97,11 +97,12 @@ if (isset($_GET['listall'])&&$_GET['listall']==='material') {
 
 
 
-function loginpanel(){
+function loginpanel($activateaccountcreation){
 	if (!$activateaccountcreation) {
+
 		return;
 	}
-	
+/*	
 	
 	if (isset($_SESSION['logged'])&&$_SESSION['logged']) {
 		
@@ -110,36 +111,40 @@ function loginpanel(){
 	
 	
 	else if (!isset($_GET['login'])&&!isset($_GET['createaccount'])&&!isset($_POST['validateemail'])){
-		echo '<a href="./?login=login">Login</a> or <a href="./?createaccount=createaccount">Create account</a>';
-		
+//		echo '<a href="./?login=login">Login</a> or <a href="./?createaccount=createaccount">Create account</a>';
+*/ else if (!isset ($_POST['validateemail'])){
+
+
+		echo '<form id="orderform" style="display:inline;" method="POST" action="./">Subscribe to label updates : <input type="text" name="validateemail" value="your email address" onfocus="if (this.value==\'your email address\'){this.value=\'\';}"/><input type="submit"/></form>';
+		 	
 	}
 	else if (isset($_GET['createaccount'])) {
 		echo 'Please enter a <em>valid</em> email adress. You will receive a link to set your password and activate your account. <br/>';
 		echo '<form id="orderform" style="display:inline;" method="POST" action="./">Your email address : <input type="text" name="validateemail"/><input type="submit"/></form>';
 		
 	}
-	else if (isset ($_POST['validateemail'])) {
+	else if (isset ($_POST['validateemail'])&&file_exists('./d/mailing-list-owner.txt')) {
 		
 		$_POST['validateemail']=explode("\n",$_POST['validateemail'])[0];
 		$_POST['validateemail']=trim($_POST['validateemail']);
-		$message ='<html><body>Hello';
+		$message ='<html><body>Hello<br/>';
 		
-		$message.="\r\n".'Someone, probably you, requested the creation of a cremroad';
-		$message.="\r\n".'account using the email address '.htmlentities($_POST['validateemail']);
+		$message.="\r\n".'Someone requested mailing list ';
+		$message.="\r\n".'subscription using the email address <br/>'.htmlentities($_POST['validateemail']);
 		$message.="\r\n".'</body></html>';
 		$message=chunk_split($message);
 	
 		if (
 	
-		mail($_POST['validateemail'], 'Cremroad.com account creation', $message, 'From: noreply@cremroad.com'."\r\n".'Content-Type: text/html;charset=UTF-8')
+		mail(trim(file_get_contents('./d/mailing-list-owner.txt')), 'Mailing list subscription request', $message, 'Content-Type: text/html;charset=UTF-8')
 		
 		){
 		
-			echo 'An email has been sent to the address '.htmlspecialchars($_POST['validateemail']).'. Please use the link provided in it to set your password.';
+			echo 'A subscription request has been sent for the address '.htmlspecialchars($_POST['validateemail']).'. We will get in touch shortly to confirm. <a href="./">Close</a>';
 			
 		}
 		else {
-			echo 'The system has not been able to send an email to the address '.htmlspecialchars($_POST['validateemail']).'. Please check it for spelling and <a href="">try again</a> in a few minutes';
+			echo 'The system has not been able to subscribe '.htmlspecialchars($_POST['validateemail']).'. Please <a href="">try again</a> later';
 			
 			
 		}
@@ -299,43 +304,47 @@ else if (isset ($_GET['artist'])) {
 }
 
 ?>	
-	
-<span style=""><img style="float:left;width:3%;" src="http://cremroad.com/favicon.png"/></span>
-	
-<h1 style="display:inline;"><?php echo $title; ?></h1>
-<?php if (!isset($_GET['listall'])){
-	echo '<a style=float:right;" href="./?listall=albums'.$arturl.'">List all albums</a><br/>';
-	
-}
-?>
-<span style="float:right;text-align:right;">
-<?php
-	loginpanel();
-?>
-
-</span>
-<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em></h2>
-
-<?php
-//artist list
-if (!isset($_GET['artist'])&&!isset($_GET['track'])&&!isset($_GET['album'])&&!(isset($_GET['listall'])&&$_GET['listall']==='material')){
-	$artists_file=file_get_contents('./d/artists.txt'); 
-	
-	
-
-	$artists=explode("\n", trim($artists_file));
-
-	sort($artists);
-	echo '<span style="margin-top:4px;marging-bottom:4px;"><a style="float:left;padding:2px;" href="./">Artists : </a> ';
-
-	foreach ($artists as $artist) {
-		echo '<a style="float:left;border:solid 1px;background-color:#A0A0A0;padding:2px;" href="http://'.$server.'/?artist='.urlencode($artist).'"> '.htmlspecialchars($artist).' </a> ';
+<a name="menu"></a><div id="mainmenu" style="display:none;">	
+	<span style=""><img style="float:left;width:3%;" src="http://cremroad.com/favicon.png"/></span>
 		
+	<h1 id="title" style="display:inline;"><?php echo $title; ?></h1>
+	<?php if (!isset($_GET['listall'])){
+		echo '<a id="listalbums" style="float:right;display:none;" href="./?listall=albums'.$arturl.'">List all albums</a><br/>';
 		
 	}
-	echo '</span><br style="clear:both;"/>';
-}
+	?>
+	<span id="loginpanel" style="float:right;text-align:right;display:none;">
+	<?php
+		loginpanel($activateaccountcreation);
+	?>
 
+	</span>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em></h2>
+
+	<?php
+	//artist list
+	if (!isset($_GET['artist'])&&!isset($_GET['track'])&&!isset($_GET['album'])&&!(isset($_GET['listall'])&&$_GET['listall']==='material')){
+		$artists_file=file_get_contents('./d/artists.txt'); 
+		
+		
+
+		$artists=explode("\n", trim($artists_file));
+
+		sort($artists);
+		echo '<span style="margin-top:4px;marging-bottom:4px;"><a style="float:left;padding:2px;" href="./">Artists : </a> ';
+
+		foreach ($artists as $artist) {
+			echo '<a style="float:left;border:solid 1px;background-color:#A0A0A0;padding:2px;" href="http://'.$server.'/?artist='.urlencode($artist).'"> '.htmlspecialchars($artist).' </a> ';
+			
+			
+		}
+		echo '</span><br style="clear:both;"/>';
+	}
+?>
+</div>
+<div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
+
+<?php
 
 //material releases : listing products
 
@@ -789,8 +798,13 @@ if($material) {
 	echo '</form><br style="clear:both;"/>';
 	echo $materialreleasessalesagreement.'<br style="clear:both;"/>';
 }
+?>
+<a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=document.getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>
+<a name="bottommenu"></a><div style="display:none;" id="bottommenu">
+<?php
 echo $footerhtmlcode;
 
 ?>
+</div>
 </body>
 </html>

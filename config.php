@@ -139,7 +139,16 @@ $footerhtmlcode='
 Not finding what you are looking for ? Here are <a href="http://cremroad.com/?listall=material">our material releases shop</a> and <a href="http://cremroad.com/material_releases_order_history.php">the history of its orders</a><br/>';
 
 $activateaccountcreation='false';
-//don't change this for now
+//there's no true account management for now
+//only a quick way to subscribe to label news
+//without any kind of mailing list management
+//just indicate your contact email adress in d/mailing-list-owner.txt (use an .htaccess if you don't want it to be web-accessible)
+//and set this option to true
+//then any email address entered in the "subscribe to label blah blah" field will cause a message to be sent to your address
+//with the subscriber address in it
+//and you can start spamming manually
+//good luck
+
 
 $materialreleasessalesagreement='Sales Agreement/CGV : No refund in any case. Items are sens at national/international letter rate, and are produced on demand, there is then no garantee for the delay. Please note that any tentative to bypass the payment system, for example by sending malformed requests to get a lower total, will lead in to the cancellation of your order with no possibility of refund. <br/>Sold by Crem Road Distribution, microcompany based in France. SIREN : Ongoing. CNIL: Ongoing';
 $hostingfooter='&copy; 2015 Crem Road. Sales Agreement (CGV) The service is provided without any warranty. Please note that there is not need to be especially technically aware to gain download access to streaming music. No refund in case of suspension of the service. Edited by Crem Road distribution, microcompany based in France. SIREN: Ongoing. CNIL: Ongoing. According to the law you got a right to access your personnal datas and request their deletion at any time. We won\'t share any of your datas, not even your browing usage, with third parties, and this is true for your customers as well.'
