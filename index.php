@@ -309,7 +309,7 @@ else if (isset ($_GET['artist'])) {
 		
 	<h1 id="title" style="display:inline;"><?php echo $title; ?></h1>
 	<?php if (!isset($_GET['listall'])){
-		echo '<a id="listalbums" style="float:right;display:none;" href="./?listall=albums'.$arturl.'">List all albums</a><br/>';
+		echo '<a id="listalbums" style="float:right;" href="./?listall=albums'.$arturl.'">List all albums</a><br/>';
 		
 	}
 	?>
