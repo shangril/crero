@@ -313,7 +313,7 @@ else if (isset ($_GET['artist'])) {
 		
 	}
 	?>
-	<span id="loginpanel" style="float:right;text-align:right;display:none;">
+	<span id="loginpanel" style="float:right;text-align:right;">
 	<?php
 		loginpanel($activateaccountcreation);
 	?>
