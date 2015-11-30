@@ -4,8 +4,11 @@ require_once('./config.php');
 
 session_start();
 srand();
-
-
+$mosaic=false;
+if (count($_GET)==0){
+	$mosaic=true;
+	$_GET['listall']='albums';
+}
 
 
 
@@ -238,7 +241,7 @@ function displaycover($album, $ratio){
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img id="cover_'.htmlspecialchars($album).'"/>';
+			$output.='<img alt="'.$album.'" id="cover_'.htmlspecialchars($album).'"/>';
 		
 			$output.='<script>;
 			var size;
@@ -276,7 +279,7 @@ function displaycover($album, $ratio){
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
 <title><?php echo strip_tags($title); ?></title>
-<meta name="description" value="<?php echo htmlspecialchars($description); ?>" />
+<meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
 <script src="http://<?php echo $server;?>/script.js">
 </script>
 </head>
@@ -467,7 +470,9 @@ else if (!isset($_GET['artist'])&&!$material)
 {
 	echo '<a style="float:right" href="./?random=true">random play</a>';
 }
-
+if ($mosaic) {
+	echo '<br style="clear:both;"/>';
+}
 //local *****
 
 foreach ($contentlocal as $item){
@@ -488,16 +493,28 @@ foreach ($contentlocal as $item){
 		$weactuallydisplayedsomething=true;
 		$ran=true;
 
-		if (!isset($_GET['listall'])){
+		if (!isset($_GET['listall'])&&!$mosaic){
 			echo '<h1>Album : ';
 		}
-		else{
+		else if (!$mosaic){
 			echo '<h1>';
 		}
 		
-		echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
 		
-		echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+		
+		if (!$mosaic) {
+			
+			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
+			
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+
+			}
+		else  {
+				echo '<span style="float:left;border:solid 1px;">';
+				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
+				echo displaycover($item['album'], 0.25);
+
+		}
 
 		
 		if (!isset($_GET['listall'])){
@@ -547,7 +564,9 @@ foreach ($contentlocal as $item){
 
 		}
 
-
+		if ($mosaic) {
+			echo '</a></span>';
+		}
 
 
 
@@ -616,19 +635,29 @@ foreach ($content as $item){
 		$weactuallydisplayedsomething=true;
 		$ran=true;
 
-		if (!isset($_GET['listall'])){
+		if (!isset($_GET['listall'])&&!$mosaic){
 			echo '<h1>Album : ';
 		}
-		else{
+		else if (!$mosaic){
 			echo '<h1>';
 		}
 		
 		
 		
-		
-		echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
-		echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+		if (!$mosaic) {
+			
+			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
+			
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
 
+			}
+		else  {
+				echo '<span style="float:left;border:solid 1px;">';
+				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
+				echo displaycover($item['album'], 0.25);
+
+		}
+		
 		//material order form
 		if ($material) {
 			
@@ -713,7 +742,7 @@ foreach ($content as $item){
 
 
 			
-		if (in_array($item['artist'], $material_artists)&&!in_array($item['album'], $material_blacklist)&&!$material){
+		if (in_array($item['artist'], $material_artists)&&!in_array($item['album'], $material_blacklist)&&!$material&&!$mosaic){
 			echo 'available on material support at our <a href="http://'.$server.'/?listall=material">physical releases shop</a><br/>';
 			
 		}
@@ -766,6 +795,9 @@ foreach ($content as $item){
 
 
 
+		if ($mosaic) {
+			echo '</a></span>';
+		}
 
 
 		
@@ -798,7 +830,11 @@ if($material) {
 	echo '</form><br style="clear:both;"/>';
 	echo $materialreleasessalesagreement.'<br style="clear:both;"/>';
 }
+if ($mosaic) {
+	echo '<br style="clear:both;"/>';
+}
 ?>
+
 <a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=document.getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>
 <a name="bottommenu"></a><div style="display:none;" id="bottommenu">
 <?php
