@@ -13,10 +13,10 @@ if (isset($_GET['login'])){
 	unset($_SESSION['logout']);
 }
 
-if ((!isset($_SESSION['nick'])&&!isset($_SESSION['logout']))||isset($_GET['login'])&&!(strstr($_SERVER['HTTP_USER_AGENT'], 'http'))&&!(strstr($_SERVER['HTTP_USER_AGENT'], 'bot'))&&$_SERVER['HTTP_USER_AGENT']!==''){
+if (((!isset($_SESSION['nick'])&&!isset($_SESSION['logout']))&&!(strstr($_SERVER['HTTP_USER_AGENT'], 'http'))&&!(strstr($_SERVER['HTTP_USER_AGENT'], 'bot'))&&$_SERVER['HTTP_USER_AGENT']!=='')||isset($_GET['login'])){
 	
-	$_SESSION['long']=0;
-	$_SESSION['lat']=0;
+	$_SESSION['long']=3000;
+	$_SESSION['lat']=3000;
 	$_SESSION['nick']="Anonymous ".microtime(true);
 	$_SESSION['range']='Any distance';
 	$_SESSION['norange']=true;
@@ -86,6 +86,7 @@ if (!isset($_GET['lat'])&&!$getloc){?>
 else if (!$getloc) {
 	$_SESSION['lat']=$_GET['lat'];
 	$_SESSION['long']=$_GET['long'];
+	$_SESSION['norange']=false;
 	echo '<form style="display:inline;" method="POST" action="./">Enter a nickname <input type="text" name="nick" value="'.htmlspecialchars($_SESSION['nick']).'" /><input type="submit"/></form>';
 	
 	

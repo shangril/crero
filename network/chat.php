@@ -30,7 +30,7 @@ if (!isset($_SESSION['range'])){
 
 	
 }
-if (isset($_GET['range'])){
+if (isset($_GET['range'])&&($_GET['range']==='Any distance'||is_numeric($_GET['range']))){
 
 	$_SESSION['range']=$_GET['range'];
 	
@@ -44,7 +44,7 @@ if (isset($_GET['range'])){
 <?php
 if ($_SESSION['norange']!==true){
 			?>
-			<form method="GET" action="">You are seeing and being seen by people within<form action="./" id="form" style="display:inline;"><select onchange="document.getElementById('form').submit();" name="range">
+			<form method="GET" action="./" id="formrange">You are seeing and being seen by people within<select onchange="document.getElementById('formrange').submit();" name="range">
 		<?php
 		foreach ($ranges as $range) {
 			echo '<option value="'.$range.'" ';
@@ -59,14 +59,14 @@ if ($_SESSION['norange']!==true){
 		?>
 
 
-		</select>kms</form></div>
+		</select>kms</form>
 
 	
 	<?php
 }
 ?>
-<iframe style="display:inline;float:left;width:80%;height:380px;border:0px;" src="./room.php"></iframe>
-<iframe style="display:inline;float:left;width:20%;height:380px;border:0px;" src="./who.php"></iframe>
+<iframe style="display:inline;float:left;width:60%;height:380px;border:0px;" src="./room.php"></iframe>
+<iframe style="display:inline;float:left;width:40%;height:380px;border:0px;" src="./who.php"></iframe>
 <span style="clear:both;"></span>
 <form style="display:inline;" action="" method="post">Enter your chat message here : <input type="text" name="message" size="38"></input><input type="submit" value="Send"></input></form>
 <?php
