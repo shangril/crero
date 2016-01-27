@@ -1,5 +1,7 @@
 <?php
 session_start();
+
+
 if (isset($_GET['norange'])){
 	unset($_SESSION['lat']);
 	unset($_SESSION['long']);
@@ -16,7 +18,7 @@ if ((!isset($_SESSION['nick'])&&!isset($_SESSION['logout']))||isset($_GET['login
 	$_SESSION['long']=0;
 	$_SESSION['lat']=0;
 	$_SESSION['nick']="Anonymous ".microtime(true);
-	$_SESSION['range']=15000;
+	$_SESSION['range']='Any distance';
 	$_SESSION['norange']=true;
 	$_SESSION['zero']=microtime(true);
 	$_SESSION['color']='background-color:rgb('.rand(200,240).','.rand(200,240).','.rand(200,240).');';
@@ -26,7 +28,7 @@ include('site_variables.php');
 
 include ('header_functs.php');
 
-if (isset($_POST['nick'])){
+if (isset($_POST['nick'])&&trim($_POST['nick'])!==''){
 		srand();
 		$data['long']=$_SESSION['long'];
 		$data['lat']=$_SESSION['lat'];
@@ -34,6 +36,7 @@ if (isset($_POST['nick'])){
 		$data['range']=$_SESSION['range'];
 		$data['message']='changed nick to <'.$_POST['nick'].'> *';
 		$data['color']=$_SESSION['color'];
+		$data['norange']=$_SESSION['norange'];
 		$dat=serialize($data);
 		file_put_contents('./d/'.microtime(true).'.php', $dat);
 		

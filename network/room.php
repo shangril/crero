@@ -52,7 +52,21 @@ foreach ($files as $fil)
 	{
 		$data=file_get_contents('./d/'.$fil);
 		$dat=unserialize($data);
-		if (((floatval($_SESSION['range'])/111.12)> sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))) && ((floatval($dat['range'])/111.12)> sqrt(pow(floatval($dat['long'])-floatval($_SESSION['long']),2)+pow(floatval($dat['lat'])-floatval($_SESSION['lat']),2)))){
+		if (
+				(
+						($_SESSION['range']==='Any distance')
+						||
+						($dat['norange']!==true&&$_SESSION['norange']!==true&&$_SESSION['range']!=='Any distance'
+						&&
+				
+				((floatval($_SESSION['range'])/111.12)> sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))) && ((floatval($dat['range'])/111.12)> sqrt(pow(floatval($dat['long'])-floatval($_SESSION['long']),2)+pow(floatval($dat['lat'])-floatval($_SESSION['lat']),2)))
+						
+						
+						)
+				)
+				
+				
+				){
 			echo '<hr/>';
 			echo '&lt;<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> &gt; '.htmlspecialchars($dat['message']); 
 			echo '<hr/>';

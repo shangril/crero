@@ -26,11 +26,11 @@ if (isset($_POST['message'])){
 
 if (!isset($_SESSION['range'])){
 
-	$_SESSION['range']='15000';
+	$_SESSION['range']='Any distance';
 
 	
 }
-if (isset($_GET['range'])&&is_numeric($_GET['range'])){
+if (isset($_GET['range'])){
 
 	$_SESSION['range']=$_GET['range'];
 	
