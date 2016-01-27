@@ -8,6 +8,7 @@ return '<!DOCTYPE html>
 <link rel="stylesheet" href="/style.css" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="charset" content="utf-8"/>
 <meta name="description" content="'.htmlspecialchars($meta_description).'" />
 <title>'.htmlspecialchars($title).'
 </title>

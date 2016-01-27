@@ -25,7 +25,17 @@ foreach ($files as $fil)
 
 		if (((floatval($_SESSION['range'])/111.12)> sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))) && ((floatval($dat['range'])/111.12)> sqrt(pow(floatval($dat['long'])-floatval($_SESSION['long']),2)+pow(floatval($dat['lat'])-floatval($_SESSION['lat']),2)))&&!isset($keys[$dat['color']][$dat['nick']])){
 		
-			echo '<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> ('.htmlspecialchars(floor(sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))/111.12)).'kms)<br/>';
+			echo '<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> (';
+			$distance=floor(sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))/111.12);
+			
+			if ($_SESSION['norange']!==true&&$dat['norange']!==true) {
+			
+			echo htmlspecialchars($distance);
+		}
+		else {echo 'n/a ';}
+			
+			
+			echo 'kms)<br/>';
 			
 			$keys[$dat['color']][$dat['nick']]=true;
 			

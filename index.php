@@ -3,9 +3,14 @@ require_once('./config.php');
 
 
 session_start();
+
 srand();
+
+
+
+
 $mosaic=false;
-if (count($_GET)==0){
+if (count($_GET)==0||isset($_GET['message'])){
 	$mosaic=true;
 	$_GET['listall']='albums';
 }
@@ -98,8 +103,11 @@ if (isset($_GET['listall'])&&$_GET['listall']==='material') {
 	
 }
 
+function featuredvids(){
 
 
+	}
+	
 function loginpanel($activateaccountcreation){
 	if (!$activateaccountcreation) {
 
@@ -118,7 +126,7 @@ function loginpanel($activateaccountcreation){
 */ else if (!isset ($_POST['validateemail'])){
 
 
-		echo '<form id="orderform" style="display:inline;" method="POST" action="./">Subscribe to label updates : <input type="text" name="validateemail" value="your email address" onfocus="if (this.value==\'your email address\'){this.value=\'\';}"/><input type="submit"/></form>';
+		echo '<form id="orderform" style="display:inline;" method="POST" action="./"><a href="#" onclick="document.getElementById(\'friends\').style.display=\'inline\';">Let\'s make friends ! </a><span id="friends" style="display:none;"><input type="text" name="validateemail" value="your email address" onfocus="if (this.value==\'your email address\'){this.value=\'\';}"/><input type="submit"/></span></form>';
 		 	
 	}
 	else if (isset($_GET['createaccount'])) {
@@ -224,7 +232,7 @@ function showsongsheet($track) {
 	}
 	
 }
-function displaycover($album, $ratio){
+function displaycover($album, $ratio, $param='cover'){
 	if (file_exists('./d/covers.txt')){
 		$coversfile=trim(file_get_contents('./d/covers.txt'));
 		$coverslines=explode("\n", $coversfile); 
@@ -241,7 +249,7 @@ function displaycover($album, $ratio){
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img alt="'.$album.'" id="cover_'.htmlspecialchars($album).'"/>';
+			$output.='<img alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
 		
 			$output.='<script>;
 			var size;
@@ -252,7 +260,7 @@ function displaycover($album, $ratio){
 			{
 				size=document.documentElement.clientWidth;
 			}				 ';
-			$output.='document.getElementById('."'".'cover_'.str_replace("'","\\'",$album)."'".').src='."'".'./thumbnailer.php?target='."'".'+encodeURI('."'".str_replace("'","\\'",'./covers/'.$url)."'".')+'."'".'&viewportwidth='."'".'+encodeURI(size)+'."'".'&ratio='."'".'+encodeURI('."'".str_replace("'","\\'",$ratio)."'".');';
+			$output.='document.getElementById('."'".$param.'_'.str_replace("'","\\'",$album)."'".').src='."'".'./thumbnailer.php?target='."'".'+encodeURI('."'".str_replace("'","\\'",'./covers/'.$url)."'".')+'."'".'&viewportwidth='."'".'+encodeURI(size)+'."'".'&ratio='."'".'+encodeURI('."'".str_replace("'","\\'",$ratio)."'".');';
 							 
 			$output.='</script>';
 			
@@ -282,6 +290,8 @@ function displaycover($album, $ratio){
 <meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
 <script src="http://<?php echo $server;?>/script.js">
 </script>
+<style>
+</style>
 </head>
 <body>
 <?php
@@ -297,6 +307,28 @@ if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio>
 <noscript>Your browser does not support Javascript, which is required on this website if you want to stream. Don't panic, we dont include any kind of third party scripts<br/></noscript>
+<div style="text-align:center;"><a href="#" onclick="document.getElementById('recentplay').style.display='block';">Recently played</a></div>
+<span id="recentplay" style="display:none;width:100%;text-align:center;">
+<?php
+
+$recents=Array();
+if (file_exists('./d/recent.dat')){
+	$recents=unserialize(file_get_contents('./d/recent.dat'));
+	
+}
+foreach ($recents as $recent){
+	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.084, 'mini'.rand(0,1000)).'</a><br/>';
+	echo htmlspecialchars(round((time()-intval($recent['date']))/60));
+	echo ' mn<br/>';
+	echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';
+	echo '</span>';
+}
+?>
+
+</span>
+<br style="clear:both;"/>
+
+
 <?php
 if (isset ($_GET['track'])) {
 	echo '<a href="./">../</a><br/>';
@@ -306,7 +338,8 @@ else if (isset ($_GET['artist'])) {
 	echo '<a href="http://cremroad.com/">../</a><br/>';
 }
 
-?>	
+?>
+<a style="clear:both;text-align:right;float:right;" href="http://cremroad.com/licensing">Licensing packs for radios</a>	
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
 	<span style=""><img style="float:left;width:3%;" src="http://cremroad.com/favicon.png"/></span>
 		
@@ -316,13 +349,7 @@ else if (isset ($_GET['artist'])) {
 		
 	}
 	?>
-	<span id="loginpanel" style="float:right;text-align:right;">
-	<?php
-		loginpanel($activateaccountcreation);
-	?>
-
-	</span>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="http://<?php echo $server;?>">Label's home</a></h2>
 
 	<?php
 	//artist list
@@ -346,8 +373,18 @@ else if (isset ($_GET['artist'])) {
 ?>
 </div>
 <div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
+<span id="loginpanel" style="float:right;text-align:right;margin-bottom:2%;">
+	<?php
+		loginpanel($activateaccountcreation);
+	?>
 
+	</span><br style="clear:both;"/>
+	
 <?php
+
+if ($mosaic) {
+	include ('featuredvids.php');
+}
 
 //material releases : listing products
 
@@ -399,10 +436,22 @@ $querystring = '';
 			
 			
 		}
+		$opts = array(
+			'http'=>array(
+			'timeout'=>18
+		)
+		);
 
 
 
-		$albums_file=file_get_contents($clewnapiurl.'?'.$querystring);
+		$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
+
+		if ($albums_file===false){
+			echo '<h2><strong>Sorry ! </strong>It seems that Clewn.org, which hosts the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. If you want to help, <a href="http://audio.clewn.org/">visit Clewn and make a donation</a>. Clewn is funded only by this way.';
+			
+			
+		}
+
 		$albums=unserialize($albums_file);
 		ksort($albums);
 		$albums=array_reverse($albums);
@@ -463,12 +512,12 @@ if ($_SESSION['random']){
 $counter=1;
 $secondcounter=0;
 if ($_SESSION['random']&&!isset($_GET['artist'])){
-		echo '<a style="float:right" href="./?random=false">stop random</a>';
+		echo ' <a style="clear:both;" href="./?random=false">Stop random</a>';
 
 }	
 else if (!isset($_GET['artist'])&&!$material)
 {
-	echo '<a style="float:right" href="./?random=true">random play</a>';
+	echo '<a style="clear:both;" href="./?random=true">random play</a>';
 }
 if ($mosaic) {
 	echo '<br style="clear:both;"/>';
@@ -493,8 +542,44 @@ foreach ($contentlocal as $item){
 		$weactuallydisplayedsomething=true;
 		$ran=true;
 
-		if (!isset($_GET['listall'])&&!$mosaic){
+		if (!isset($_GET['listall'])&&!$mosaic&&isset($_SESSION['nick'])){
 			echo '<h1>Album : ';
+			if (!$material) {
+				$recent=Array();
+				$recent['album']=$item['album'];
+				$recent['date']=time();
+				$recent['who']['color']=$_SESSION['color'];
+				$recent['who']['nick']=$_SESSION['nick'];
+				if (file_exists('./d/recent.dat')){
+					$recents=unserialize(file_get_contents('./d/recent.dat'));
+					
+				}
+				else
+				{ $recents= Array(); }  
+				
+				if (count($recents)>=10){
+					
+					$recents=array_slice($recents, 1, 9);
+					
+				}
+				array_push($recents, $recent);
+				$dat=serialize($recents);
+				file_put_contents('./d/recent.dat', $dat);
+				
+					$data['long']=$_SESSION['long'];
+					$data['lat']=$_SESSION['lat'];
+					$data['nick']=$_SESSION['nick'];
+					$data['range']=$_SESSION['range'];
+					$data['message']=' is playing '.html_entity_decode($item['album']);
+					$data['color']=$_SESSION['color'];
+					$dat=serialize($data);
+					file_put_contents('./network/d/'.microtime(true).'.php', $dat);
+
+				
+				
+				
+				
+			}
 		}
 		else if (!$mosaic){
 			echo '<h1>';
@@ -506,20 +591,26 @@ foreach ($contentlocal as $item){
 			
 			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
 			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.1).'</div>';
 
 			}
 		else  {
 				echo '<span style="float:left;border:solid 1px;">';
-				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.25);
+				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
+				echo displaycover($item['album'], 0.06);
 
 		}
 
 		
 		if (!isset($_GET['listall'])){
-		
-		
+			echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
+			if (!isset($_GET['track'])){
+				echo 'style="display:none;"';
+			}
+			echo '>';
+			
+			
+			
 			//here we go, query local API for track list
 			$tracks_file=file_get_contents($serverapi.'?gettracks='.urlencode($item['album']));
 
@@ -559,7 +650,7 @@ foreach ($contentlocal as $item){
 			}
 			$trackcounter++;
 			}
-		
+			echo '</span>';
 		}
 
 		}
@@ -635,8 +726,45 @@ foreach ($content as $item){
 		$weactuallydisplayedsomething=true;
 		$ran=true;
 
-		if (!isset($_GET['listall'])&&!$mosaic){
+		if (!isset($_GET['listall'])&&!$mosaic&&isset($_SESSION['nick'])){
 			echo '<h1>Album : ';
+			if (!$material) {
+				$recent=Array();
+				$recent['album']=$item['album'];
+				$recent['date']=time();
+				$recent['who']['color']=$_SESSION['color'];
+				$recent['who']['nick']=$_SESSION['nick'];
+				if (file_exists('./d/recent.dat')){
+					$recents=unserialize(file_get_contents('./d/recent.dat'));
+					
+				}
+				else
+				{ $recents= Array(); }  
+				
+				if (count($recents)>=10){
+					
+					$recents=array_slice($recents, 1, 9);
+					
+				}
+				array_push($recents, $recent);
+				$dat=serialize($recents);
+				file_put_contents('./d/recent.dat', $dat);
+				
+					$data['long']=$_SESSION['long'];
+					$data['lat']=$_SESSION['lat'];
+					$data['nick']=$_SESSION['nick'];
+					$data['range']=$_SESSION['range'];
+					$data['message']=' is playing '.html_entity_decode($item['album']).' *';
+					$data['color']=$_SESSION['color'];
+					$dat=serialize($data);
+					file_put_contents('./network/d/'.microtime(true).'.php', $dat);
+
+				
+				
+				
+				
+			}
+
 		}
 		else if (!$mosaic){
 			echo '<h1>';
@@ -648,13 +776,13 @@ foreach ($content as $item){
 			
 			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
 			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.62).'</div>';
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.1).'</div>';
 
 			}
 		else  {
 				echo '<span style="float:left;border:solid 1px;">';
-				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.25);
+				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
+				echo displaycover($item['album'], 0.06);
 
 		}
 		
@@ -749,6 +877,12 @@ foreach ($content as $item){
 		
 		if (!isset($_GET['listall'])){
 			
+			echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
+			if (!isset($_GET['track'])){
+				echo 'style="display:none;"';
+			}
+			echo '>';
+			
 			//here we go, query Clewn API for track list
 			$tracks_file=file_get_contents($clewnapiurl.'?gettracks='.urlencode($item['album']));
 
@@ -789,7 +923,7 @@ foreach ($content as $item){
 				}
 			
 			}
-
+			echo '</span>';
 
 		}
 
@@ -837,10 +971,19 @@ if ($mosaic) {
 
 <a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=document.getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>
 <a name="bottommenu"></a><div style="display:none;" id="bottommenu">
+
 <?php
 echo $footerhtmlcode;
 
 ?>
 </div>
+<hr style="clear:both;">
+<?php
+if (!$activatechat===false){
+?>
+		<a name="social"/><object data="./network" style="width:100%;height:480px;" width="100%" height="480"></object>
+<?php
+}
+?>
 </body>
 </html>

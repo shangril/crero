@@ -15,6 +15,7 @@ include ('header_functs.php');
 	$data['nick']=$_SESSION['nick'];
 	$data['range']=$_SESSION['range'];
 	$data['color']=$_SESSION['color'];
+	$data['norange']=$_SESSION['norange'];
 	$dat=serialize($data);
 	file_put_contents('./e/'.microtime(true).'.php', $dat);
 
@@ -53,7 +54,7 @@ foreach ($files as $fil)
 		$dat=unserialize($data);
 		if (((floatval($_SESSION['range'])/111.12)> sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))) && ((floatval($dat['range'])/111.12)> sqrt(pow(floatval($dat['long'])-floatval($_SESSION['long']),2)+pow(floatval($dat['lat'])-floatval($_SESSION['lat']),2)))){
 			echo '<hr/>';
-			echo '<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> ('.htmlspecialchars(floor(sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))/111.12)).'kms) : '.htmlspecialchars($dat['message']); 
+			echo '&lt;<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> &gt; '.htmlspecialchars($dat['message']); 
 			echo '<hr/>';
 		}
 	}

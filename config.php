@@ -20,7 +20,7 @@
  * Then, on the modification time of each file on your server
  * 
  * 
- * Note that configuration (.txt) files expect expect UNIX-style
+ * Note that configuration (.txt) files expect UNIX-style
  * ("\n") end-of-lines. 
  * Windows/Mac OS user please set this in your text editor
  * 
@@ -114,14 +114,19 @@
  */
 
 
-$description = 'Independent music for the third millenium. Stream and download for free. Early access to works in progress for a small fee. Also CDs, SD Cards, Cassettes, posters and tees';
-$title='<a href="./">Crem Road</a> - The record label';
+$description = 'This is my really cool label that I run from my bedroom';
+$title='<a href="./">MyBedroomLabel</a> - A fresh Crero install';
 $server='cremroad.com';
+//change this to your server's domain name
 $serverapi='http://'.$server.'/api.php';
+//don't change this for typical install
 $clewnapiurl='http://audio.clewn.org/api.php';
+//you may change this to http://<your server>/whatever/path/to/free/audio/api.php
 $clewnaudiourl='http://audio.clewn.org/audio/';
+//and this to http://<your server>/whatever/path/to/free/audio/audio/ ; otherwise you can upload your free audio to clewn and use it as free audio media server tier
 
 $videoapiurl='http://video.clewn.org/api.php';
+//same applies for video, with the difference that Clewn Video doesn't currently support public upload
 $videourl='http://video.clewn.org/audio/';
 
 //whatever message you want to display if the HTTP GET message is set to this value, e.g. for advertising campaign or whatever
@@ -132,11 +137,10 @@ $message['ad20151127']='Welcome visitor ! We have\'nt got much money to spend on
 
 
 $footerhtmlcode='
-<em>This is Crem Road. Formerly C0C. Formerly ZC Virtual. Formerly Slcnc Music.</em>
-<em><br/>Copyright 1997-2015 N. Chartoire. No demo submissions for now. </em>
-<br/>All the music here is free or open licensed. Please refer to the "comment" tag in each audio file for details. <br/>
-<strong>Want to socialize ? </strong>Join our <a target="new" href="http://cremroad.com/network">fan network\'s chatroom</a> and get in touch with fans in your area !<br/>
-Not finding what you are looking for ? Here are <a href="http://cremroad.com/?listall=material">our material releases shop</a> and <a href="http://cremroad.com/material_releases_order_history.php">the history of its orders</a><br/>';
+<em>Here comes the footer code</em>
+<em><br/>Copyright MyBedroomLabel </em>
+<br/>Please refer to the "comment" tag in each audio file for details about its licensing <br/>';
+
 
 $activateaccountcreation='false';
 //there's no true account management for now
@@ -149,7 +153,18 @@ $activateaccountcreation='false';
 //and you can start spamming manually
 //good luck
 
+$activatechat=false;
+//if set to any other value than false, including null, will enable the chat widget at the bottom of every page
+//IMPORTANT : if you enable the chat feature, you'll have to create and *protect from outside access* 
+//(with (as example with Apache) an .htaccess restriction file with directive set to deny access from all)
+// two directories in <root of your install>/network/ : ./d/ and ./e/
+//that's were sensitive data, sur as (if provided by the user) geolocation will be stored
+//and you don't want the outside world to access them
 
-$materialreleasessalesagreement='Sales Agreement/CGV : No refund in any case. Items are sens at national/international letter rate, and are produced on demand, there is then no garantee for the delay. Please note that any tentative to bypass the payment system, for example by sending malformed requests to get a lower total, will lead in to the cancellation of your order with no possibility of refund. <br/>Sold by Crem Road Distribution, microcompany based in France. SIREN : Ongoing. CNIL: Ongoing';
-$hostingfooter='&copy; 2015 Crem Road. Sales Agreement (CGV) The service is provided without any warranty. Please note that there is not need to be especially technically aware to gain download access to streaming music. No refund in case of suspension of the service. Edited by Crem Road distribution, microcompany based in France. SIREN: Ongoing. CNIL: Ongoing. According to the law you got a right to access your personnal datas and request their deletion at any time. We won\'t share any of your datas, not even your browing usage, with third parties, and this is true for your customers as well.'
+
+
+
+$materialreleasessalesagreement='Sales Agreement/CGV : No refund in any case. Items are sens at national/international letter rate, and are produced on demand, there is then no garantee for the delay.';
+//what will be displayed at the bottom of the shop page if the material release eshop is enabled 
+
 ?>

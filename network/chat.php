@@ -1,7 +1,8 @@
 <?php 
 
 if (isset($_GET['logout'])){
-	session_destroy();
+	session_unset();
+	$_SESSION['logout']=true;
 	echo '<html><head><meta http-equiv="refresh" content="0"></head></html>';
 	die();
 
@@ -14,6 +15,7 @@ if (isset($_POST['message'])){
 	$data['range']=$_SESSION['range'];
 	$data['message']=$_POST['message'];
 	$data['color']=$_SESSION['color'];
+	$data['norange']=$_SESSION['norange'];
 	$dat=serialize($data);
 	file_put_contents('./d/'.microtime(true).'.php', $dat);
 	
@@ -31,7 +33,6 @@ if (!isset($_SESSION['range'])){
 if (isset($_GET['range'])&&is_numeric($_GET['range'])){
 
 	$_SESSION['range']=$_GET['range'];
-
 	
 }
 
@@ -40,11 +41,39 @@ if (isset($_GET['range'])&&is_numeric($_GET['range'])){
 
 ?>
 <div style="height:10%;"><em>Crem Road fan network</em></div>
+<?php
+if ($_SESSION['norange']!==true){
+			?>
+			<form method="GET" action="">You are seeing and being seen by people within<form action="./" id="form" style="display:inline;"><select onchange="document.getElementById('form').submit();" name="range">
+		<?php
+		foreach ($ranges as $range) {
+			echo '<option value="'.$range.'" ';
+			if ($range==$_SESSION['range']){
+				echo 'selected';
+
+				}
+			echo ' >'.$range.'</option>';
+		}
+
+
+		?>
+
+
+		</select>kms</form></div>
+
+	
+	<?php
+}
+?>
 <iframe style="display:inline;float:left;width:80%;height:380px;border:0px;" src="./room.php"></iframe>
 <iframe style="display:inline;float:left;width:20%;height:380px;border:0px;" src="./who.php"></iframe>
 <span style="clear:both;"></span>
-<form style="display:inline;" action="" method="post"><input type="text" name="message" size="38"></input><input type="submit" value="Send"></input></form>
+<form style="display:inline;" action="" method="post">Enter your chat message here : <input type="text" name="message" size="38"></input><input type="submit" value="Send"></input></form>
 <?php
+if ($_SESSION['norange']===true) {
+	echo '<br/>Add your real world location to access geolocated chatrooms : <form style="display:inline;" method="GET" action=""><input type="hidden" name="norange" value="true"/><input type="submit" value="Add my location"/></form>';
+}
+echo '<br/><form action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($_SESSION['nick']).'"/><input value="Change !" type="submit"/></form>';
 echo '<a style="clear:both;float:right;" href="./?logout=true">Logout</a><br/><span style="float:right;">';
 echo generate_footer($site_footer);
 echo '</span><div style="float:left;">';
