@@ -33,6 +33,7 @@ if (!isset($_SESSION['range'])){
 if (isset($_GET['range'])&&($_GET['range']==='Any distance'||is_numeric($_GET['range']))){
 
 	$_SESSION['range']=$_GET['range'];
+	$_SESSION['zero']=microtime(true);
 	
 }
 
