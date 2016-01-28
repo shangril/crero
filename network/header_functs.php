@@ -6,6 +6,12 @@ return '<!DOCTYPE html>
 <head>
 <link rel="shortcut icon" href="'.$_SERVER['SERVER_NAME'].'/favicon.png" />
 <link rel="stylesheet" href="/style.css" type="text/css" media="screen" />
+<style>
+body {
+	padding-left:1%;
+	padding-right:1%;
+}
+</style>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" content="utf-8"/>

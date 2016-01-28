@@ -570,7 +570,7 @@ foreach ($contentlocal as $item){
 					$data['lat']=$_SESSION['lat'];
 					$data['nick']=$_SESSION['nick'];
 					$data['range']=$_SESSION['range'];
-					$data['message']=' is playing '.html_entity_decode($item['album']);
+					$data['message']=' is playing '.html_entity_decode($item['album']).' *';
 					$data['color']=$_SESSION['color'];
 					$dat=serialize($data);
 					file_put_contents('./network/d/'.microtime(true).'.php', $dat);

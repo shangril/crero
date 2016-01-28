@@ -1,9 +1,9 @@
-<?php session_start();
+<?php if(!isset($_SESSION)){session_start();}
 include('site_variables.php');
 
 include ('header_functs.php');
 
-if (isset($_SESSION['nick'])&&trim($_SESSION['nick'])===''){
+if (isset($mysession['nick'])&&trim($mysession['nick'])===''){
 	
 	session_unset();
 }
@@ -20,21 +20,21 @@ if (isset($_SESSION['nick'])&&trim($_SESSION['nick'])===''){
 
 
 
-$files=scandir('./e');
+$files=scandir('./'.$seedroot.'/e');
 sort($files);
 $keys=array();
 foreach ($files as $fil)
 {
-		$data=file_get_contents('./e/'.$fil);
+		$data=file_get_contents('./'.$seedroot.'/e/'.$fil);
 		$dat=unserialize($data);
 		if(	$dat &&	$keys[$dat['color']][$dat['nick']]!==true &&
 				(
-						($_SESSION['range']==='Any distance'&&$dat['range']==='Any distance')
+						($mysession['range']==='Any distance'&&$dat['range']==='Any distance')
 						||
-						($dat['norange']!==true&&$_SESSION['norange']!==true&&($_SESSION['range']!=='Any distance'&&$dat['range']!=='Any distance')
+						($dat['norange']!==true&&$mysession['norange']!==true&&($mysession['range']!=='Any distance'&&$dat['range']!=='Any distance')
 						&&
 								
-				((floatval($_SESSION['range'])/111.12)> sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))) && ((floatval($dat['range'])/111.12)> sqrt(pow(floatval($dat['long'])-floatval($_SESSION['long']),2)+pow(floatval($dat['lat'])-floatval($_SESSION['lat']),2)))
+				((floatval($mysession['range'])/111.12)> sqrt(pow(floatval($mysession['long'])-floatval($dat['long']),2)+pow(floatval($mysession['lat'])-floatval($dat['lat']),2))) && ((floatval($dat['range'])/111.12)> sqrt(pow(floatval($dat['long'])-floatval($mysession['long']),2)+pow(floatval($dat['lat'])-floatval($mysession['lat']),2)))
 						
 						
 						)
@@ -47,9 +47,9 @@ foreach ($files as $fil)
 		{
 		
 			echo '<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> (';
-			$distance=floor(sqrt(pow(floatval($_SESSION['long'])-floatval($dat['long']),2)+pow(floatval($_SESSION['lat'])-floatval($dat['lat']),2))/111.12);
+			$distance=floor(sqrt(pow(floatval($mysession['long'])-floatval($dat['long']),2)+pow(floatval($mysession['lat'])-floatval($dat['lat']),2))/111.12);
 			
-			if ($_SESSION['norange']!==true&&$dat['norange']!==true) {
+			if ($mysession['norange']!==true&&$dat['norange']!==true) {
 			
 			echo htmlspecialchars($distance);
 			}
