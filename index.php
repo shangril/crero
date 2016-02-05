@@ -436,22 +436,63 @@ $querystring = '';
 			
 			
 		}
+		$timeout=18;
+		if (file_exists('./overload.dat')){
+			$timeout=intval(file_get_contents('./overload.dat'));
+		}
+		else {
+			file_put_contents('./overload.dat', '18');
+			
+		}
 		$opts = array(
 			'http'=>array(
-			'timeout'=>18
+			'timeout'=>$timeout
 		)
 		);
 
-
+		$overloadmove=$timeout+2;
 
 		$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
 
 		if ($albums_file===false){
-			echo '<h2><strong>Sorry ! </strong>It seems that Clewn.org, which hosts the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. If you want to help, <a href="http://audio.clewn.org/">visit Clewn and make a donation</a>. Clewn is funded only by this way.';
+			if (!file_exists('./remoteapicache.dat')){
 			
+				echo '<h2><strong>Sorry ! </strong>It seems that Clewn.org, which hosts the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. If you want to help, <a href="http://audio.clewn.org/">visit Clewn and make a donation</a>. Clewn is funded only by this way.';
 			
+			}
+			else {
+				$remoteapicache=unserialize(file_get_contents('./remoteapicache.dat'));
+				if (isset($remoteapicache[$querystring])){
+					$albums_file=$remoteapicache[$querystring];
+					
+				}
+				else {
+					
+					echo '<h2><strong>Deeply sorry ! </strong>It seems that Clewn.org, which hosts the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. If you want to help, <a href="http://audio.clewn.org/">visit Clewn and make a donation</a>. Clewn is funded only by this way.';
+			
+				}
+			
+			}
+			$overloadmove=$timeout-2;
 		}
+		else {
+			$cache=Array();
+			
+			if (file_exists('./remoteapicache.dat')){
+				$cache=unserialize(file_get_contents('./remoteapicache.dat'));
+			}
+			$cache[$querystring]=$albums_file;
+			file_put_contents('./remoteapicache.dat', serialize($cache));
 
+		}
+		
+		
+		if ($overloadmove<=0){
+			$overloadmove=18;
+		}
+		
+		file_put_contents('./overload.dat', $overloadmove);
+			
 		$albums=unserialize($albums_file);
 		ksort($albums);
 		$albums=array_reverse($albums);
