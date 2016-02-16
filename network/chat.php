@@ -9,6 +9,8 @@ if (isset($_GET['logout'])){
 	
 }
 if (isset($_POST['message'])){
+	$target='d';
+	
 	$data['long']=$mysession['long'];
 	$data['lat']=$mysession['lat'];
 	$data['nick']=$mysession['nick'];
@@ -16,8 +18,19 @@ if (isset($_POST['message'])){
 	$data['message']=$_POST['message'];
 	$data['color']=$mysession['color'];
 	$data['norange']=$mysession['norange'];
+	
+	if(isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
+			$target='f';
+			$data['to']['nick']=$_GET['private_nick'];
+			$data['to']['color']=$_GET['private_sid'];
+			$data['from']['nick']=$mysession['nick'];
+			$data['from']['color']=$mysession['color'];
+			
+	}
+	
+	
 	$dat=serialize($data);
-	file_put_contents('./'.$seedroot.'/d/'.microtime(true).'.php', $dat);
+	file_put_contents('./'.$seedroot.'/'.$target.'/'.microtime(true).'.php', $dat);
 	
 	
 }
@@ -51,9 +64,16 @@ if (strstr($site_name, '.')&&!strstr($site_name, ' ')){
 	echo '</a>';
 	
 }
-?></em>
-<?php
-if ($mysession['norange']!==true){
+?></em> &gt; <?php
+if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])) {
+echo '<a href="./">General chat</a> &gt; Conversation with <span style="'.htmlspecialchars($_GET['private_sid']).'">'.htmlspecialchars($_GET['private_nick']).'</span><br/>';	
+
+$mysession['seen_private'][$_GET['private_nick']][$_GET['private_sid']]=microtime(true);
+
+}
+
+
+if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['private_sid'])){
 			?>
 			<form method="GET" action="./" id="formrange" style="display:inline;">You are seeing and being seen by people within <select onchange="document.getElementById('formrange').submit();" name="range">
 		<?php
@@ -77,18 +97,37 @@ if ($mysession['norange']!==true){
 }
 ?>
 <br/>
-<iframe style="display:inline;float:left;width:60%;height:380px;border:0px;" src="./room.php"></iframe>
-<iframe style="display:inline;float:left;width:40%;height:380px;border:0px;" src="./who.php"></iframe>
+<iframe style="display:inline;float:left;width:60%;height:380px;border:0px;" src="./room.php<?php 
+
+	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
+		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
+		
+	}
+
+?>"></iframe>
+<iframe style="display:inline;float:left;width:40%;height:380px;border:0px;" src="./who.php<?php 
+
+	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
+		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
+		
+	}
+
+?>"></iframe>
 <span style="clear:both;"></span>
-<form style="display:inline;" action="" method="post">Enter your chat message here : <input type="text" name="message" size="38"></input><input type="submit" value="Send"></input></form>
+<form style="display:inline;" action="./<?php 
+
+	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
+		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
+		
+	}
+
+?>" method="post">Enter your chat message here : <input type="text" name="message" size="38"></input><input type="submit" value="Send"></input></form>
 <?php
-if ($mysession['norange']===true) {
+if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['private_sid'])) {
 	echo ' Add your real world location to access geolocated chatrooms : <form style="display:inline;" method="GET" action=""><input type="hidden" name="norange" value="true"/><input type="submit" value="Add my location"/></form>';
 }
 echo ' <form action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change !" type="submit"/></form>';
 echo '<a style="clear:both;float:right;" href="./?logout=true">Logout</a><br/><span style="float:right;">';
 echo generate_footer($site_footer);
-echo '</span><div style="float:left;">';
-echo 'Powered by the <a href="http://social.clewn.org">Clewn Social widget</a> for websites';
-echo '</div>';
+echo '</span>';
 ?>

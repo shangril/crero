@@ -11,6 +11,9 @@ body {
 	padding-left:1%;
 	padding-right:1%;
 }
+a link {
+	color:black;text-decoration:none;
+}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

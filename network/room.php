@@ -6,6 +6,11 @@ include ('header_functs.php');
 <html>
 <head>
 <meta http-equiv="refresh" content="3">
+<style>a link 
+{
+color:black;
+text-decoration:none;
+}</style>
 
 </head>
 <body id="bod">
@@ -19,7 +24,15 @@ include ('header_functs.php');
 	$dat=serialize($data);
 	file_put_contents('./'.$seedroot.'/e/'.microtime(true).'.php', $dat);
 
-
+$files=scandir('./'.$seedroot.'/f');
+sort($files);
+foreach ($files as $fil)
+{
+	if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<microtime(true)-3000)
+	{
+		unlink('./'.$seedroot.'/f/'.$fil);
+		}
+}
 
 
 $files=scandir('./'.$seedroot.'/e');
@@ -30,7 +43,7 @@ foreach ($files as $fil)
 	{
 		unlink('./'.$seedroot.'/e/'.$fil);
 		}
-	}
+}
 $files=scandir('./'.$seedroot.'/d');
 sort($files);
 foreach ($files as $fil)
@@ -40,19 +53,35 @@ foreach ($files as $fil)
 		unlink('./'.$seedroot.'/d/'.$fil);
 		}
 	}
+$target='d';
+$private=false;
+if(isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
+	$target='f';
+	$private=true;
+	$mysession['seenprivate']['private_nick']['private_sid']=microtime(true);
+}
 
 
-
-
-$files=scandir('./'.$seedroot.'/d');
+$files=scandir('./'.$seedroot.'/'.$target);
 sort($files);
 foreach ($files as $fil)
 {
 	if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))>floatval($mysession['zero']))
 	{
-		$data=file_get_contents('./'.$seedroot.'/d/'.$fil);
+		$data=file_get_contents('./'.$seedroot.'/'.$target.'/'.$fil);
 		$dat=unserialize($data);
-		if (
+		$goonbaby=true;
+		
+		if ($private){
+			if (!(($dat['to']['nick']===$mysession['nick']&&$dat['to']['color']===$mysession['color'])||($dat['from']['nick']===$mysession['nick']&&$dat['from']['color']===$mysession['color']))){
+				$goonbaby=false;
+				
+			}
+			
+		}
+		
+		
+		if ($goonbaby&&
 				(
 						($mysession['range']==='Any distance'&&$dat['range']==='Any distance')
 						||
@@ -69,7 +98,7 @@ foreach ($files as $fil)
 				
 				){
 			echo '<hr/>';
-			echo '&lt;<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> &gt; '.htmlspecialchars($dat['message']); 
+			echo '&lt;<strong style="'.$dat['color'].'"><a style="color:black;text-decoration:none;" target="_parent" href="./?private_nick='.urlencode($dat['nick']).'&private_sid='.urlencode($dat['color']).'">'.htmlspecialchars($dat['nick']).'</a></strong> &gt; '.htmlspecialchars($dat['message']); 
 			echo '<hr/>';
 		}
 	}

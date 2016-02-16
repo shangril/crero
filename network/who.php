@@ -11,13 +11,23 @@ if (isset($mysession['nick'])&&trim($mysession['nick'])===''){
 <html>
 <head>
 <meta http-equiv="refresh" content="3">
-
+<style>
+	a link {
+		color:black;
+		text-decoration:none;
+		}
+</style>
 </head>
 <body id="bod">
 <?php
+if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])) {
+	echo 'Awaiting messages : ';
+	$showonlymessages=true;
+	$displaynone=true;
+}
 
 
-
+$nicklist=Array();
 
 
 $files=scandir('./'.$seedroot.'/e');
@@ -27,7 +37,41 @@ foreach ($files as $fil)
 {
 		$data=file_get_contents('./'.$seedroot.'/e/'.$fil);
 		$dat=unserialize($data);
-		if(	$dat &&	$keys[$dat['color']][$dat['nick']]!==true &&
+		$goonbaby=true;
+		if (true){
+			$messagesfiles=scandir('./'.$seedroot.'/f');
+			sort($messagesfiles);
+			$msgcount=0;
+			foreach ($messagesfiles as $privatefile){
+					$datap=file_get_contents('./'.$seedroot.'/f/'.$privatefile);
+					$datp=unserialize($datap);
+					if ($datp['to']['nick']===$mysession['nick']&&$datp['to']['color']===$mysession['color']){
+							$lastseentimestamp=0;
+							if (isset($mysession['seen_private'][$datp['from']['nick']][$datp['from']['color']])){
+								$lastseentimestamp=$mysession['seen_private'][$datp['from']['nick']][$datp['from']['color']];
+				
+							}
+
+								if(floatval(str_replace('.php', '', $privatefile))>$lastseentimestamp){
+
+									$msgcount++;
+								
+							
+							}
+					
+				}
+				
+			}
+			if ($msgcount<=0&&$showonlymessages){
+				$goonbaby=false;
+			}
+		}
+		
+		
+		
+		
+		
+		if($goonbaby&&$dat &&	$keys[$dat['color']][$dat['nick']]!==true &&
 				(
 						($mysession['range']==='Any distance'&&$dat['range']==='Any distance')
 						||
@@ -45,25 +89,38 @@ foreach ($files as $fil)
 
 
 		{
-		
-			echo '<strong style="'.$dat['color'].'">'.htmlspecialchars($dat['nick']).'</strong> (';
+			$output='';
+			
+			if ($msgcount>0){
+				$output.='<span style="background-color:red;color:white;border-radius 4px;">'.htmlspecialchars($msgcount).'</span>';
+			}
+			$output.='<strong style="'.$dat['color'].'"><a style="color:black;text-decoration:none;" target="_parent" href="./?private_nick='.urlencode($dat['nick']).'&private_sid='.urlencode($dat['color']).'">'.htmlspecialchars($dat['nick']).'</a></strong> (';
 			$distance=floor(sqrt(pow(floatval($mysession['long'])-floatval($dat['long']),2)+pow(floatval($mysession['lat'])-floatval($dat['lat']),2))/111.12);
 			
 			if ($mysession['norange']!==true&&$dat['norange']!==true) {
 			
-			echo htmlspecialchars($distance);
+			$output.=htmlspecialchars($distance);
 			}
-		else {echo 'n/a ';}
+		else {$output.= 'n/a ';}
 			
 			
-			echo 'kms)<br/>';
+			$output.= 'kms)<br/>';
 			
 			$keys[$dat['color']][$dat['nick']]=true;
-			
+			$nicklist[$msgcount][$dat['nick']]=$output;
 			}
 	
 	
 	
+}
+krsort($nicklist);
+
+foreach ($nicklist as $nickcount){
+	$nicks=array_keys($nickcount);
+	
+	foreach ($nicks as $nick){
+		echo $nickcount[$nick];
+	}
 }
 ?>
 </body>
