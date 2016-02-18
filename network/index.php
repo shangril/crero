@@ -27,6 +27,25 @@ if (((!isset($mysession['nick'])&&!isset($mysession['logout']))&&!(strstr($_SERV
 	$mysession['norange']=true;
 	$mysession['zero']=microtime(true);
 	$mysession['color']='background-color:rgb('.rand(200,240).','.rand(200,240).','.rand(200,240).');';
+	
+	$target='d';
+	
+	$data['long']=$mysession['long'];
+	$data['lat']=$mysession['lat'];
+	$data['nick']=$mysession['nick'];
+	$data['range']=$mysession['range'];
+	$data['message']='*** '.$mysession['nick'].' joined the chatroom';
+	$data['color']=$mysession['color'];
+	$data['norange']=$mysession['norange'];
+	
+		
+	$dat=serialize($data);
+	file_put_contents('./'.$seedroot.'/'.$target.'/'.microtime(true).'.php', $dat);
+	
+	
+
+
+
 }
 
 $_SESSION['seedroot']=$seedroot;
