@@ -691,8 +691,8 @@ foreach ($contentlocal as $item){
 			}
 			$trackcounter++;
 			}
-			echo '</span>';
 		}
+			echo '</span>';
 
 		}
 
