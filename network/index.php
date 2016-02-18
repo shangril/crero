@@ -65,7 +65,7 @@ if (isset($_POST['nick'])&&trim($_POST['nick'])!==''){
 		
 		
 		$mysession['nick']=$_POST['nick'];
-		$mysession['zero']=microtime(true);
+		//$mysession['zero']=microtime(true);
 		$mysession['color']='background-color:rgb('.rand(200,240).','.rand(200,240).','.rand(200,240).');';
 		
 }
