@@ -58,7 +58,7 @@ $private=false;
 if(isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
 	$target='f';
 	$private=true;
-	$mysession['seenprivate']['private_nick']['private_sid']=microtime(true);
+	$mysession['seen_private']['private_nick']['private_sid']=microtime(true);
 }
 
 
