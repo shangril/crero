@@ -73,7 +73,34 @@ foreach ($files as $fil)
 		$goonbaby=true;
 		
 		if ($private){
-			if (!(($dat['to']['nick']===$mysession['nick']&&$dat['to']['color']===$mysession['color'])||($dat['from']['nick']===$mysession['nick']&&$dat['from']['color']===$mysession['color']))){
+				if (!
+					(
+						(
+							($dat['to']['nick']===$mysession['nick']&&
+							$dat['to']['color']===$mysession['color']&&
+							$dat['from']['nick']===$_GET['private_nick']&&
+							$dat['from']['color']===$_GET['private_sid'])
+							||
+							($dat['from']['nick']===$_GET['private_nick']&&
+							$dat['from']['color']===$_GET['private_sid']&&
+							$dat['to']['nick']===$mysession['nick']&&
+							$dat['to']['color']===$mysession['color'])
+						)
+						||
+						(
+							($dat['from']['nick']===$mysession['nick']&&
+							$dat['form']['color']===$mysession['color']&&
+							$dat['to']['nick']===$_GET['private_nick']&&
+							$dat['to']['color']===$_GET['private_sid'])
+							||
+							($dat['to']['nick']===$_GET['private_nick']&&
+							$dat['to']['color']===$_GET['private_sid']&&
+							$dat['from']['nick']===$mysession['nick']&&
+							$dat['from']['color']===$mysession['color'])
+						
+						)
+					)
+				){
 				$goonbaby=false;
 				
 			}
