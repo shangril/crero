@@ -124,6 +124,14 @@ foreach ($files as $fil)
 				
 				
 				){
+
+			$ts=floatval(str_replace('.php','',$fil));
+			$ttl=3000-(microtime(true)-$ts);
+			
+			echo htmlspecialchars(round($ttl));
+
+					
+					
 			echo '<hr/>';
 			echo '&lt;<strong style="'.$dat['color'].'"><a style="color:black;text-decoration:none;" target="_parent" href="./?private_nick='.urlencode($dat['nick']).'&private_sid='.urlencode($dat['color']).'">'.htmlspecialchars($dat['nick']).'</a></strong> &gt; '.htmlspecialchars($dat['message']); 
 			echo '<hr/>';
