@@ -45,7 +45,20 @@ foreach ($files as $fil)
 			foreach ($messagesfiles as $privatefile){
 					$datap=file_get_contents('./'.$seedroot.'/f/'.$privatefile);
 					$datp=unserialize($datap);
-					if ($datp['to']['nick']===$mysession['nick']&&$datp['to']['color']===$mysession['color']){
+					if (
+							(
+								(
+									($datp['to']['nick']===$mysession['nick']&&
+									$datp['to']['color']===$mysession['color']&&
+									$datp['from']['nick']===$dat['nick']&&
+									$datp['from']['color']===$dat['color'])								
+								)
+							)
+					
+					
+						
+					
+						){
 							$lastseentimestamp=0;
 							if (isset($mysession['seen_private'][$datp['from']['nick']][$datp['from']['color']])){
 								$lastseentimestamp=$mysession['seen_private'][$datp['from']['nick']][$datp['from']['color']];
