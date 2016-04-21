@@ -1,10 +1,22 @@
 <?php
 session_start();
+if (isset($_GET['login'])){
+	$_SESSION['logged']=true;
+	
+}
+
+
+if (!isset($_SESSION['logged'])){
+	echo '<!DOCTYPE html><html><head><link rel="stylesheet" href="/style.css" type="text/css" media="screen" /></head><body><h4 style="display:inline;">Crem Road Fan Network &gt; </h4><form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form></body></html>';
+	die();
+}
 
 
 include('site_variables.php');
 
 include ('header_functs.php');
+
+
 
 
 if (isset($_GET['norange'])){

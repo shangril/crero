@@ -307,7 +307,7 @@ if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio>
 <noscript>Your browser does not support Javascript, which is required on this website if you want to stream. Don't panic, we dont include any kind of third party scripts<br/></noscript>
-<div style="text-align:center;"><a href="#" onclick="document.getElementById('recentplay').style.display='block';">Recently played</a></div>
+<div style="text-align:center;"><a href="#" onclick="document.getElementById('recentplay').style.display='block';"></a></div>
 <span id="recentplay" style="display:none;width:100%;text-align:center;">
 <?php
 
@@ -339,7 +339,9 @@ else if (isset ($_GET['artist'])) {
 }
 
 ?>
+
 <a style="clear:both;text-align:right;float:right;" href="http://cremroad.com/licensing">Licensing packs for radios</a>	
+
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
 	<span style=""><img style="float:left;width:3%;" src="http://cremroad.com/favicon.png"/></span>
 		
@@ -373,6 +375,8 @@ else if (isset ($_GET['artist'])) {
 ?>
 </div>
 <div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
+<a style="clear:both;text-align:left;float:left;" href="http://cremroad.com/dj">Licensing packs for DJing</a>	
+
 <span id="loginpanel" style="float:right;text-align:right;margin-bottom:2%;">
 	<?php
 		loginpanel($activateaccountcreation);
