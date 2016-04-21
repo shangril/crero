@@ -76,9 +76,7 @@ management purposes.
 activatechat.txt
 
 Can be 0 or 1. If set to 0, no online chat. If set to 1, a chatroom with geolocation features will be available for visitors. 
-Make sure that the ./htaccess denial directive of the ./network/*/ subdirectories are working : d/ e/ f/ and eventually 
-<domain name>/d /e and /f must not be reachable when pointing a browser to yourserver/network/<domain name>/d /e and /f and 
-yourserver/network/d /e and /f 
+Make sure that the ./htaccess denial directive of the ./network/*/ subdirectories are working : Sensitive data such as geolocation may be exposed if the .htaccess directives are not working ! Make sure it works with your setup before actvating the chat. 
 
 clewnapiurl.txt
 
