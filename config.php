@@ -114,20 +114,21 @@
  */
 
 
-$description = 'This is my really cool label that I run from my bedroom';
-$title='<a href="./">MyBedroomLabel</a> - A fresh Crero install';
-$server='cremroad.com';
+$description = trim(file_get_contents('./d/description.txt'));
+$title=trim(file_get_contents('./d/title.txt'));
+$server=trim(file_get_contents('./d/server.txt'));;
 //change this to your server's domain name
+$sitename=trim(file_get_contents('./d/sitename.txt'));
 $serverapi='http://'.$server.'/api.php';
 //don't change this for typical install
-$clewnapiurl='http://audio.clewn.org/api.php';
+$clewnapiurl=trim(file_get_contents('./d/clewnapiurl.txt'));
 //you may change this to http://<your server>/whatever/path/to/free/audio/api.php
-$clewnaudiourl='http://audio.clewn.org/audio/';
+$clewnaudiourl=trim(file_get_contents('./d/clewnaudiourl.txt'));
 //and this to http://<your server>/whatever/path/to/free/audio/audio/ ; otherwise you can upload your free audio to clewn and use it as free audio media server tier
 
-$videoapiurl='http://video.clewn.org/api.php';
+$videoapiurl=trim(file_get_contents('./d/videoapiurl.txt'));
 //same applies for video, with the difference that Clewn Video doesn't currently support public upload
-$videourl='http://video.clewn.org/audio/';
+$videourl=trim(file_get_contents('./d/videourl.txt'));
 
 //whatever message you want to display if the HTTP GET message is set to this value, e.g. for advertising campaign or whatever
 
@@ -136,13 +137,9 @@ $message['ad20151127']='Welcome visitor ! We have\'nt got much money to spend on
 
 
 
-$footerhtmlcode='
-<em>Here comes the footer code</em>
-<em><br/>Copyright MyBedroomLabel </em>
-<br/>Please refer to the "comment" tag in each audio file for details about its licensing <br/>';
+$footerhtmlcode=trim(file_get_contents('./d/footerhtmlcode.txt'));
 
-
-$activateaccountcreation='false';
+$activateaccountcreation=boolval(trim(file_get_contents('./d/activateaccountcreation.txt'))); 
 //there's no true account management for now
 //only a quick way to subscribe to label news
 //without any kind of mailing list management
@@ -153,7 +150,7 @@ $activateaccountcreation='false';
 //and you can start spamming manually
 //good luck
 
-$activatechat=false;
+$activatechat=boolval(trim(file_get_contents('./d/activatechat.txt')));
 //if set to any other value than false, including null, will enable the chat widget at the bottom of every page
 //IMPORTANT : if you enable the chat feature, you'll have to create and *protect from outside access* 
 //(with (as example with Apache) an .htaccess restriction file with directive set to deny access from all)
@@ -161,10 +158,10 @@ $activatechat=false;
 //that's were sensitive data, sur as (if provided by the user) geolocation will be stored
 //and you don't want the outside world to access them
 
+$materialmenu=trim(file_get_contents('./d/materialmenu.txt'));
 
 
-
-$materialreleasessalesagreement='Sales Agreement/CGV : No refund in any case. Items are sens at national/international letter rate, and are produced on demand, there is then no garantee for the delay.';
+$materialreleasessalesagreement=trim(file_get_contents('./d/materialreleasessalesagreement.txt'));
 //what will be displayed at the bottom of the shop page if the material release eshop is enabled 
 
 ?>

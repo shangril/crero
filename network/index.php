@@ -1,5 +1,6 @@
 <?php
 session_start();
+include ('../config.php');
 if (isset($_GET['login'])){
 	$_SESSION['logged']=true;
 	
@@ -7,7 +8,7 @@ if (isset($_GET['login'])){
 
 
 if (!isset($_SESSION['logged'])){
-	echo '<!DOCTYPE html><html><head><link rel="stylesheet" href="/style.css" type="text/css" media="screen" /></head><body><h4 style="display:inline;">Crem Road Fan Network &gt; </h4><form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form></body></html>';
+	echo '<!DOCTYPE html><html><head><link rel="stylesheet" href="/style.css" type="text/css" media="screen" /></head><body><h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4><form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form></body></html>';
 	die();
 }
 

@@ -55,12 +55,12 @@ if (isset($_GET['range'])&&($_GET['range']==='Any distance'||is_numeric($_GET['r
 
 ?>
 <em><?php 
-if (strstr($site_name, '.')&&!strstr($site_name, ' ')){
-	echo '<a target="top" href="http://'.htmlspecialchars($site_name).'">';
+if (strstr($sitename, '.')&&!strstr($sitename, ' ')){
+	echo '<a target="top" href="http://'.htmlspecialchars($sitename).'">';
 }
-echo '<h2 style="display:inline;">'.htmlspecialchars($site_name).'</h2>';
+echo '<h2 style="display:inline;">'.htmlspecialchars($sitename).'</h2>';
 
-if (strstr($site_name, '.')&&!strstr($site_name, ' ')){
+if (strstr($sitename, '.')&&!strstr($sitename, ' ')){
 	echo '</a>';
 	
 }

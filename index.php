@@ -642,7 +642,7 @@ foreach ($contentlocal as $item){
 		else  {
 				echo '<span style="float:left;border:solid 1px;">';
 				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.06);
+				echo displaycover($item['album'], 0.65);
 
 		}
 
@@ -821,7 +821,7 @@ foreach ($content as $item){
 			
 			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
 			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.1).'</div>';
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.65).'</div>';
 
 			}
 		else  {
