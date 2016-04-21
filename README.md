@@ -28,7 +28,7 @@ In both cases, the url of the api backend goes to clewnapiurl config option.
 
 It is possible to restrict the streaming providing to albums. 
 Please note that your audios could be *easily* stolen. 
-Be sure to add a blank index.php file in /z/ to prevent public directory listing and put your streaming-only albums audio in this directory. 
+Be sure to add a blank index.php file in /z/ to prevent public directory listing and put your streaming-only albums audio in this directory. You'll also have to operate the ugly Javascript hack to change some harcoded stuff in '''script.js''' as described at http://crero.clewn.org
 
 Remember that piracy actually increases sales :)
 
