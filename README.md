@@ -3,7 +3,7 @@ CreRo is a CMS for record labels, and was initially written to power Crem Road r
 Paid download is not supported yet. 
 Physical release shop feature. 
 Streaming only or online music free download. 
-Be aware that it is simply a code dump with some things wich still hardcoded.
+Be aware that it is simply a code dump with some things still hardcoded.
 Physical releases means free download, for now.
 
 # Installation steps
