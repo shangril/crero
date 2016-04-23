@@ -1,4 +1,6 @@
 <?php
+error_reporting(0);
+
 /*** Known bugs
  * 
  * The support for non-ASCII artists, albums, tracks etc is still very partial
@@ -157,6 +159,16 @@ $activatechat=boolval(trim(file_get_contents('./d/activatechat.txt')));
 // two directories in <root of your install>/network/ : ./d/ and ./e/
 //that's were sensitive data, sur as (if provided by the user) geolocation will be stored
 //and you don't want the outside world to access them
+
+$activatestats=boolval(trim(file_get_contents('./d/activatestats.txt')));
+//if set to any other value than false, including null, will enable the chat widget at the bottom of every page
+//IMPORTANT : if you enable the chat feature, you'll have to create and *protect from outside access* 
+//(with (as example with Apache) an .htaccess restriction file with directive set to deny access from all)
+// two directories in <root of your install>/admin/ : ./d/ and ./d/stats
+//that's were sensitive data will be stored
+//and you don't want the outside world to access them
+
+
 
 $materialmenu=trim(file_get_contents('./d/materialmenu.txt'));
 

@@ -2,11 +2,43 @@
 require_once('./config.php');
 
 
-session_start();
+$sessionstarted=session_start();
 
 srand();
 
-
+if ($activatestats){
+	//if audience figures are activated, let's store the hit details in the stats directory
+	
+	if ($sessionstarted){
+		
+		if (!isset($_SESSION['statid'])){
+			$_SESSION['statid']=microtime(true);
+			$_SESSION['css_color']='rgb('.rand(140, 255).','.rand(140, 255).','.rand(140, 255).')';
+			
+		}
+		
+		$page['data']=$_SERVER;
+		$variable==='HTTP_USER_AGENT';
+		
+		if (!(strstr($page['data'][$variable],'bot')||
+		strstr($page['data'][$variable],'Yahoo! Slurp')||
+		strstr($page['data'][$variable],'+http://')||
+		strstr($page['data'][$variable],'()'))) {
+		//may be an human, we store it
+			$figure['userid']=$_SESSION['statid'];
+			$figure['css_color']=$_SESSION['css_color'];
+			$figure['page']=$_SERVER['REQUEST_URI'];
+			$figure['referer']=$_SERVER['HTTP_REFERER'];
+			$figure['random']=$_SESSION['random'];
+			file_put_contents('./admin/d/stats/'.microtime(true).'.dat', serialize($figure));
+		}
+		
+		
+	}
+		
+		
+		
+}
 
 
 $mosaic=false;
@@ -317,7 +349,7 @@ if (file_exists('./d/recent.dat')){
 	
 }
 foreach ($recents as $recent){
-	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.084, 'mini'.rand(0,1000)).'</a><br/>';
+	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.42, 'mini'.rand(0,1000)).'</a><br/>';
 	echo htmlspecialchars(round((time()-intval($recent['date']))/60));
 	echo ' mn<br/>';
 	echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';
@@ -636,7 +668,7 @@ foreach ($contentlocal as $item){
 			
 			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
 			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.1).'</div>';
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.42).'</div>';
 
 			}
 		else  {
@@ -827,7 +859,7 @@ foreach ($content as $item){
 		else  {
 				echo '<span style="float:left;border:solid 1px;">';
 				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.06);
+				echo displaycover($item['album'], 0.1);
 
 		}
 		
