@@ -23,6 +23,7 @@ if ($activatestats){
 		if (!(strstr($page['data'][$variable],'bot')||
 		strstr($page['data'][$variable],'Yahoo! Slurp')||
 		strstr($page['data'][$variable],'+http://')||
+		strstr($page['data'][$variable],'+https://')||
 		strstr($page['data'][$variable],'()'))) {
 		//may be an human, we store it
 			$figure['userid']=$_SESSION['statid'];
