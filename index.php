@@ -6,7 +6,7 @@ $sessionstarted=session_start();
 
 srand();
 
-if ($activatestats){
+if ($activatestats&&isset($_GET['pingstat'])){
 	//if audience figures are activated, let's store the hit details in the stats directory
 	
 	if ($sessionstarted){
@@ -17,8 +17,8 @@ if ($activatestats){
 			
 		}
 		
-		$page['data']=$_SERVER;
-		$variable==='HTTP_USER_AGENT';
+		$page['data']['agent']=$_GET['reqHTTP_USER_AGENT'];
+		$variable='agent';
 		
 		if (!(strstr($page['data'][$variable],'bot')||
 		strstr($page['data'][$variable],'Yahoo! Slurp')||
@@ -28,8 +28,8 @@ if ($activatestats){
 		//may be an human, we store it
 			$figure['userid']=$_SESSION['statid'];
 			$figure['css_color']=$_SESSION['css_color'];
-			$figure['page']=$_SERVER['REQUEST_URI'];
-			$figure['referer']=$_SERVER['HTTP_REFERER'];
+			$figure['page']=$_GET['reqREQUEST_URI'];
+			$figure['referer']=$_S_GET['reqHTTP_REFERER'];
 			$figure['random']=$_SESSION['random'];
 			file_put_contents('./admin/d/stats/'.microtime(true).'.dat', serialize($figure));
 		}
@@ -38,7 +38,7 @@ if ($activatestats){
 	}
 		
 		
-		
+	die();
 }
 
 
@@ -1060,6 +1060,29 @@ echo $footerhtmlcode;
 if (!$activatechat===false){
 ?>
 		<a name="social"/><object data="./network" style="width:100%;height:480px;" width="100%" height="480"></object>
+<?php
+}
+
+
+if ($activatestats){
+
+?>
+<script>
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTR_REFERER']); 
+  
+  
+  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
+  
+  
+  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
+  
+  
+  ?>", true);
+  xhttp.send();
+
+</script>
+
 <?php
 }
 ?>

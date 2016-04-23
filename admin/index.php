@@ -34,7 +34,7 @@ for ($i=0;$i<count($fields);$i++){
 <!DOCTYPE html>
 <html>
 <head>
-<title>CreRo admin panel for domain <?php echo htmlspecialchars($_SERVER['HTTP_SERVER_NAME']); ?></title>
+<title>CreRo admin panel for domain <?php echo htmlspecialchars($_SERVER['SERVER_NAME']); ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
@@ -82,7 +82,7 @@ if (isset($_GET['stats'])&&$_GET['stats']=='realtime'){
 		}
 		echo '<br/>';
 		
-		echo 'comming from '.htmlspecialchars($pageview['referer']);
+		echo 'coming from '.htmlspecialchars($pageview['referer']);
 		echo '</div>';
 		
 	}
