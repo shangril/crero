@@ -6,6 +6,12 @@ body {
     font-family: Arial,sans-serif;
     /*background-image: linear-gradient(to right, black, #373737);*/
 }
+@media screen and (max-width:800px) {
+	body {
+		padding-left:0%;
+		padding-right:0%;
+	}
+}
 a {
     color: #af5d00;
     text-decoration:none;
