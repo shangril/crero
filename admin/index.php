@@ -29,7 +29,7 @@ for ($i=0;$i<count($fields);$i++){
 	$value=$field[$i];
 	$options[$key]=$value;
 }
-
+if (!isset($_GET['ajaxstatupdate'])){
 ?>
 <!DOCTYPE html>
 <html>
@@ -43,8 +43,31 @@ for ($i=0;$i<count($fields);$i++){
 CreRo admin panel for domain <?php echo htmlspecialchars($_SERVER['HTTP_SERVER_NAME']); ?><br/>
 <a href="./?stats=realtime">Visitor figures (realtime)</a>
 <?php 
-
+}
 if (isset($_GET['stats'])&&$_GET['stats']=='realtime'){
+	echo '<div id="statpanel"><script>var lastupdate=0;</script></div>';
+	?>
+	<noscript>This feature requires Javascript</noscript>
+	<script>
+	function updateStatPanel(){
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.onreadystatechange = function() {
+			if (xhttp.readyState==4 && xhttp.status== 200) {
+			 document.getElementById("statpanel").innerHTML = xhttp.responseText;
+			}
+		  };
+		  xhttp.open("GET", "./?ajaxstatupdate="+encodeURI(lastupdate), true);
+		  xhttp.send();
+		  window.setTimeout (updateStatPanel, 25000);
+	}
+	updateStatPanel();
+	
+	
+	</script>
+	<?php
+}
+else if (isset($_GET['ajaxstatupdate'])){
+
 	$data=array_diff(scandir('./d/stats'), Array('..', '.', '.htaccess'));
 	$pageviews=Array();
 	
@@ -53,42 +76,46 @@ if (isset($_GET['stats'])&&$_GET['stats']=='realtime'){
 		$pageviews[floatval(str_replace('.dat', '', $dat))]['time']=floatval(str_replace('.dat', '', $dat));
 	}
 	krsort($pageviews);
-	
-	foreach ($pageviews as $pageview){
-		echo '<hr/>';
-		echo '<div style="background-color:'.$pageview['css_color'].';">';
-		echo 'at '.htmlspecialchars(date(DATE_RSS, round($pageview['time']))).' ';
-		echo 'user '.htmlspecialchars($pageview['userid']).' is browsing the page <br/>';
-		
-		$urlpage=Array();
-		
-		if (strstr ($pageview['page'], '?')){
-			$query=explode('?', $pageview['page'])[1];
-			$urlpage=explode('&', $query);
-		}
-		else {
-			$urlpage['/']='Label home page';
-		}
-		
-		$keyz=array_keys($urlpage);
-		
-		foreach ($keyz as $key) {
-			echo htmlspecialchars($key).' ';
-			echo htmlspecialchars($urlpage[$key]).' - ';
+	if (floatval($_GET['ajaxstatupdate'])<$pageviews[array_keys($pageviews)[0]]['time']){
+		echo '<script>var lastupdate='.htmlspecialchars($pageviews[array_keys($pageviews)[0]]['time']).';</script>';
+		foreach ($pageviews as $pageview){
+			echo '<hr/>';
+			echo '<div style="background-color:'.$pageview['css_color'].';">';
+			echo 'at '.htmlspecialchars(date(DATE_RSS, round($pageview['time']))).' ';
+			echo 'user '.htmlspecialchars($pageview['userid']).' is browsing the page <br/>';
 			
-		}
-		if ($pageview['random']){
-			echo ' in random mode';
-		}
-		echo '<br/>';
-		
-		echo 'coming from '.htmlspecialchars($pageview['referer']);
-		echo '</div>';
-		
-	}
+			$urlpage=Array();
+			
+			if (strstr ($pageview['page'], '?')){
+				$query=explode('?', $pageview['page'])[1];
+				$urlpage=explode('&', $query);
+			}
+			else {
+				$urlpage['/']='Label home page';
+			}
+			
+			$keyz=array_keys($urlpage);
+			
+			foreach ($keyz as $key) {
+				echo htmlspecialchars($key).' ';
+				echo htmlspecialchars($urlpage[$key]).' - ';
+				
+			}
+			if ($pageview['random']){
+				echo ' in random mode';
+			}
+			echo '<br/>';
+			
+			echo 'coming from '.htmlspecialchars($pageview['referer']);
+			echo '</div>';
+			
+		}//foreach pageview
+	}//if newer
 }// stats=realtime
 
+if (!isset($_GET['ajaxstatupdate'])){
 
 ?>
 </body>
 </html>
+<?php } ?>
