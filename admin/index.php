@@ -4,11 +4,11 @@ error_reporting(0);
 include('./config.php');
 
 if ($password==='hackme'){
-	echo '<html><body><h1>It\'s working</h1>Please change the $password php variable in <em>admin/config.php</em> to complete the setup</body></html>';
+	echo '<html><body><h1>It\'s working</h1>Please change the $user and $password php variables in <em>admin/config.php</em> to complete the setup</body></html>';
 	die();
 }
 if (isset($_POST['pwd'])){
-	if ($_POST['pwd']===$password){
+	if ($_POST['pwd']===$password&&$_POST['user']===$user){
 			$_SESSION['loggedadmin']=true;
 	}
 	else {
@@ -17,7 +17,7 @@ if (isset($_POST['pwd'])){
 	}
 }
 if (!$_SESSION['loggedadmin']) {
-		echo '<html><body><form method="post" action="./">Welcome to the admin panel. Connection accepted. Password : <input type="password" name="pwd"/><input type="submit"/></form></body></html>';
+		echo '<html><body><form method="post" action="./">Welcome to the admin panel. Connection accepted. Username : <input type="text" name="user"/> Password : <input type="password" name="pwd"/><input type="submit"/></form></body></html>';
 		die();
 	
 }
