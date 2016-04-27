@@ -70,7 +70,15 @@ td {border:solid 1px;}
 </head>
 <body>
 	<h1><?php echo $title; ?> - Almost complete</h1>
-	<h2>Do you feel generous today ? </h2>
+	<h2>
+		
+		
+		Do you feel generous today ? 
+		
+		
+		
+		
+		</h2>
 <?php
 
 echo '<table><tr><td>Album</td><td>Product</td><td>Quantity</td><td>Unit price</td><td>Total price</td></tr>';
@@ -163,18 +171,50 @@ echo '<tr><td colspan="4" style="background-color:yellow;">Net total</td>';
 echo '<td>'.htmlspecialchars($totalshipping+$pricecount).'</td>';
 echo '</tr>';
 echo '</table>';
-echo '<div>You may want to support our work and our will to sell cheap by making an optional donation to support the label : </div>';
+
+if (!$ismaterialnameyourprice){
+
+	echo '<div>You may want to support our work and our will to sell cheap by making an optional donation to support the label : </div>';
+
+} else {
+	echo '<div>It is time to choose how much you are willing to pay for this order. See below for information about our "name your price, no minimum" policy.</div>';
+}
 
 echo 'Order total : '.htmlspecialchars($material_currency).' ';
 echo htmlspecialchars($totalshipping+$pricecount);
-echo '<br/>Your tip : '.htmlspecialchars($material_currency).' ';
+echo '<br/>';
+if (!$ismaterialnameyourprice){
+	echo 'Your tip : '.htmlspecialchars($material_currency).' ';
+}
+else {
+			echo 'This is the <em>recommended, reasonable price</em>. You choose what you want to pay :  '.htmlspecialchars($material_currency).' ';
+
+	
+}
+
 echo '<form action="payment.php" method="post" style="display:inline;">';
-echo '<input type="text" size="5" value="00.00" name="tip"></input><br/>';
+echo '<input type="text" size="5" value="';
+
+if (!$ismaterialnameyourprice){
+		echo '00.00';
+	}
+else {
+		echo htmlspecialchars($totalshipping+$pricecount);
+}
+
+echo '" name="tip"></input><br/>';
 echo '<span  style="float:right;"><a href="./">Cancel your order</a> or <input type="hidden" name="item" value="'.htmlspecialchars(serialize($order)).'"></input>';
 echo '<input type="hidden" name="option" value="'.htmlspecialchars(serialize($options)).'"></input>';
 echo '<input type="hidden" name="shipping" value="'.htmlspecialchars(serialize($_POST['shipping'])).'"></input>';
 echo '<input type="submit" value="Process to payment"></input></form>';
-echo '<br/>Please note that our orders, no matter if the payment has been processed or the order cancelled, are anonymously but publicly available, because we want people to know how the label is going. Your name, city, country, or any other personnal data will not be displayed, and are in fact not even stored on this website. The order history available to the audience at large only includes items, options, tips and shipping rate. Then people can know how we perform in France, Europe and the rest of the world, how generously people are adding tips, which albums sells well, which formats, and so on.';
+
+if ($ismaterialnameyourprice) {
+	
+	echo '<div>'.$materialnameyourpricenotice.'</div>';
+}
+
+
+echo '<br/>Please note that our orders, no matter if the payment has been processed or the order cancelled, are anonymously but publicly available, for people to know how the label is going. Personnal data will not be displayed, Only anonymous data about orders history are made available for the audience.';
 
 
 

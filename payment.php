@@ -70,7 +70,7 @@ td {border:solid 1px;}
 </head>
 <body>
 	<h1><?php echo $title; ?> - Final step</h1>
-	<h2>It's time for the money to travel for one hand to another</h2>
+	<h2>It's time for the money to travel from one hand to another</h2>
 <?php
 
 echo '<table><tr><td>Album</td><td>Product</td><td>Quantity</td><td>Unit price</td><td>Total price</td></tr>';
@@ -181,6 +181,11 @@ $totalminusshipping=$pricecount+(floor($tip*100)/100);
 
 $bill['total']=$total;
 
+if ($ismaterialnameyourprice){
+	$bill['amount']=0;
+	$bill['total']=(floor($tip*100)/100);
+}
+
 if (file_exists('./d/orders')&&!is_dir('./d/orders')) {
 	echo 'The system is misconfigured. "orders" must be a directory. Please fix this, if you are the webmaster. If you are not, please tell him to do so.';
 	
@@ -214,8 +219,25 @@ else {
 			<input type="hidden" name="business" value="<?php echo htmlspecialchars($material_paypal_address);?>" />
 			<input type="hidden" name="item_name" value="<?php echo htmlspecialchars('Order '.$orderid.' at '.strip_tags($title)); ?>" />
 			<input type="hidden" name="currency_code" value="<?php echo htmlspecialchars($material_currency); ?>" />
-			<input type="hidden" name="amount" value="<?php echo htmlspecialchars($totalminusshipping); ?>" />
+			<input type="hidden" name="amount" value="<?php
+			if (!$ismaterialnameyourprice){
+				
+				echo htmlspecialchars($totalprice).'"/>'; 
+			?>
+			
 			<input type="hidden" name="shipping" value="<?php echo htmlspecialchars($totalshipping)?>" />
+			
+			
+			 <?php
+			 
+			}
+			
+			else {
+				
+				echo htmlspecialchars((floor($tip*100)/100)).'"/>';
+		}
+			 
+			 ?>
 			<input type="hidden" name="cancel_return" value="http://<?php echo htmlspecialchars($server); ?>" />
 			<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server); ?>/?thankyou=material" />
 			<input type="submit" name="submit" value="Pay now" />

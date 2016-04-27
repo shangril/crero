@@ -44,3 +44,7 @@ materialmenu.txt
 a free html block to insert whatever you want in a banner on top of the material relase list, like a set of external links to other online shops where your products can be found, or special custom subsection of the shop you may have created. 
 featured_vids.txt
 Not sure it is used. For information about vid integration refer to /config.php
+isMaterialNameYourPrice.txt
+if set to 1, allow to order physical item in a "name your price, no minimum" manner. Still requires a paypal payment to authenticate human customer, but allows the payment to be below Paypal's flat fee and in such case no money will be made available to you upon order
+materialNameYourPriceNotice.txt
+can be used to display terms and conditions for name your price manner of selling physical goods

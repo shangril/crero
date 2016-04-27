@@ -102,7 +102,7 @@ $material_blacklist_file=htmlentities(trim(file_get_contents('./d/material_black
 	
 $material_blacklist=explode("\n", $material_blacklist_file);
 
-if (isset($_GET['listall'])&&$_GET['listall']==='material') {
+if (isset($_GET['listall'])&&($_GET['listall']==='material'||($_GET['listall']==='mixed'&&isset($_GET['album'])))) {
 	$artists=$material_artists;
 	$material_currency=trim(file_get_contents('./d/material_currency.txt'));
 	$material_paypal_address=trim(file_get_contents('./d/material_paypal_address.txt'));
@@ -373,7 +373,6 @@ else if (isset ($_GET['artist'])) {
 
 ?>
 
-<a style="clear:both;text-align:right;float:right;" href="http://cremroad.com/licensing">Licensing packs for radios</a>	
 
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
 	<span style=""><img style="float:left;width:3%;" src="http://cremroad.com/favicon.png"/></span>
@@ -408,7 +407,6 @@ else if (isset ($_GET['artist'])) {
 ?>
 </div>
 <div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
-<a style="clear:both;text-align:left;float:left;" href="http://cremroad.com/dj">Licensing packs for DJing</a>	
 
 <span id="loginpanel" style="float:right;text-align:right;margin-bottom:2%;">
 	<?php
@@ -426,39 +424,61 @@ if ($mosaic) {
 //material releases : listing products
 
 $material=false;
-
-if((isset($_GET['listall'])&&$_GET['listall']==='material')) {
+$mixed=false;
+if((isset($_GET['listall'])&&($_GET['listall']==='material'||($_GET['listall']==='mixed'&&isset($_GET['album']))))) {
 	$material=true;
-	echo '<h1>Material releases</h1><h2>What we offer : </h2>';
-	echo 'All prices are indicated in '.htmlspecialchars($material_currency);
-	echo '<div><em>This is the minimum price. You name you price, actually, and you can pay more than this if you wish to.</em></div>';
-	$material_items=array_keys($material_support);
-	echo '<table><tr>';
-	echo '<td style="border: solid 1px;"><strong><em>Product</em></strong></td>';
-	$material_item_lines=array_keys($material_support[$material_items[0]]);
-	foreach ($material_item_lines as $material_item_line) {
-				echo '<td style="border: solid 1px;"><strong><em>'.htmlspecialchars($material_item_line).'</em></strong></td>';
-		
-	}
-		
-	echo '</tr>';
 	
-	foreach ($material_items as $material_item)
-	 {
-		echo '<tr>';
-		echo '<td style="border: solid 1px;"><strong>'.htmlspecialchars($material_item).'</strong></td>';
-		$material_item_lines=array_keys($material_support[$material_item]);
-		foreach ($material_item_lines as $material_item_line) {
-			echo '<td style="border: solid 1px;">';
-			if (isset($material_support[$material_item][$material_item_line])&&$material_support[$material_item][$material_item_line]!==''){
-				echo htmlspecialchars($material_support[$material_item][$material_item_line]);
-				}
-			echo '</td>';
-		}
-		echo '</tr>';
-			
+	if ($_GET['listall']==='mixed'){
+		$mixed=true;
 	}
-	echo '</table>';
+	if (!$mixed){
+			echo '<h1>Material releases</h1><h2>What we offer : </h2>';
+			echo 'All prices are indicated in '.htmlspecialchars($material_currency);
+			echo '<div><em>This is the '; 
+			
+			if ($ismaterialnameyourprice){
+				echo 'recommended';
+			}
+			else{
+			
+				echo 'minimum';
+			
+			}
+			echo ' price. You name you price, actually, and you can pay more';
+			
+			if ($ismaterialnameyourprice){
+				echo ' or less';
+		
+			}
+			echo ' than this if you wish to.</em></div>';
+			$material_items=array_keys($material_support);
+			echo '<table><tr>';
+			echo '<td style="border: solid 1px;"><strong><em>Product</em></strong></td>';
+			$material_item_lines=array_keys($material_support[$material_items[0]]);
+			foreach ($material_item_lines as $material_item_line) {
+						echo '<td style="border: solid 1px;"><strong><em>'.htmlspecialchars($material_item_line).'</em></strong></td>';
+				
+			}
+				
+			echo '</tr>';
+			
+			foreach ($material_items as $material_item)
+			 {
+				echo '<tr>';
+				echo '<td style="border: solid 1px;"><strong>'.htmlspecialchars($material_item).'</strong></td>';
+				$material_item_lines=array_keys($material_support[$material_item]);
+				foreach ($material_item_lines as $material_item_line) {
+					echo '<td style="border: solid 1px;">';
+					if (isset($material_support[$material_item][$material_item_line])&&$material_support[$material_item][$material_item_line]!==''){
+						echo htmlspecialchars($material_support[$material_item][$material_item_line]);
+						}
+					echo '</td>';
+				}
+				echo '</tr>';
+					
+			}
+			echo '</table>';
+		}
 	echo '<form method="POST" action="processorder.php">';
 }
 $weactuallydisplayedsomething=false;
@@ -674,19 +694,34 @@ foreach ($contentlocal as $item){
 			}
 		else  {
 				echo '<span style="float:left;border:solid 1px;">';
-				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
+				
+				if ($mixed){
+					
+					echo '<a>';
+					
+				}
+				else {
+				
+					echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
+				}
+				
 				echo displaycover($item['album'], 0.65);
 
 		}
 
 		
-		if (!isset($_GET['listall'])){
-			echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
-			if (!isset($_GET['track'])){
-				echo 'style="display:none;"';
-			}
-			echo '>';
+		if ($mixed||!isset($_GET['listall'])){
+			if (!$mixed){
+				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
+				if (!isset($_GET['track'])){
+					echo 'style="display:none;"';
+				}
+				echo '>';
+			}
+			else {
+				echo '<span id="tracklist" style=float:right;">';
+			}
 			
 			
 			//here we go, query local API for track list
@@ -730,6 +765,9 @@ foreach ($contentlocal as $item){
 			}
 		}
 			echo '</span>';
+			if ($mixed) {
+				
+				}
 
 		}
 
@@ -761,9 +799,11 @@ $counter++;
 //material header
 if($material) {
 
-	echo '<h2>Order form</h2><div>Please indicate your shipping option, then select your desired items in the list bellow. Once you are done, please click on "Process Checkout" at the bottom of the list</div>';
-	
+	if (!$mixed) {
+		echo '<h2>Order form</h2><div>Please indicate your shipping option, then select your desired items in the list below. Once you are done, please click on the payment button that is repeated below each release</div>';
+	}
 	echo 'Shipping option : <select name="shipping">';
+	
 	$shipping_options=array_keys($material_shipping);
 	$i=1;
 	foreach ($shipping_options as $shipping_option){
@@ -777,8 +817,11 @@ if($material) {
 		$i++;
 	}
 	
-	echo '</select><h2>Albums available as physical releases : </h2>';
-			
+	echo '</select>';
+	
+	if (!$mixed) { echo '<h2>Albums available as physical releases : </h2>';}
+		else
+	{echo '<br/>';}
 	$itemid=0;
 			
 }
@@ -853,15 +896,21 @@ foreach ($content as $item){
 		if (!$mosaic) {
 			
 			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
-			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.65).'</div>';
-
+			echo '<div style="margin-left:auto;margin-right:auto;';
+			if ($mixed){
+				echo 'float:left;';
+			}
+			echo '">'.displaycover($item['album'], 0.65).'</div>';
+			if ($mixed){
+				echo '<div style="float:right;text-align:right;font-size:120%;" id="mixedtracks"></div>';
+				echo '<div style="float:none;clear:both;"></div>';
+			}
 			}
 		else  {
 				echo '<span style="float:left;border:solid 1px;">';
 				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
 				echo displaycover($item['album'], 0.1);
-
+				
 		}
 		
 		//material order form
@@ -936,8 +985,10 @@ foreach ($content as $item){
 		
 			echo '</table>';
 			
-		echo '<input style="float:right;text-align:right;" type="submit" value="Process checkout now"/>';		
-			
+		echo '<input';
+		if (!$mixed){ echo ' style="float:right;text-align:right;"';}
+		echo' type="submit" value="Order now ! "/>';		
+		
 			
 			
 		}
@@ -953,13 +1004,18 @@ foreach ($content as $item){
 			
 		}
 		
-		if (!isset($_GET['listall'])){
+		if ($mixed||!isset($_GET['listall'])){
+			if (!$mixed){
+				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
-			echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
-			if (!isset($_GET['track'])){
-				echo 'style="display:none;"';
+				if (!isset($_GET['track'])){
+					echo 'style="display:none;"';
+				}
+				echo '>';
 			}
-			echo '>';
+			else {
+				echo '<span id="tracklist" style=float:right;">';
+			}
 			
 			//here we go, query Clewn API for track list
 			$tracks_file=file_get_contents($clewnapiurl.'?gettracks='.urlencode($item['album']));
@@ -982,13 +1038,24 @@ foreach ($content as $item){
 						<a href="#" onClick="play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
 						 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 						 <?php echo  $track_artist; ?></a> - 
-						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';?>
-						 <div style="background-color:#F0F0F0;text-align:right;">Download <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.flac">flac</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.ogg">ogg</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.mp3">mp3</a></div>
-						<?php
-						generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
-						showsongsheet($track);
-						?>
-						<?php
+						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';
+						 
+						 if (!$mixed){
+								
+							 ?>
+							 <div style="background-color:#F0F0F0;text-align:right;">Download <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.flac">flac</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.ogg">ogg</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.mp3">mp3</a></div>
+							<?php
+							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
+							showsongsheet($track);
+							?>
+							<?php
+							
+						}
+						else {
+							
+							echo '<br/>';
+							
+						}
 						if (isset($_GET['autoplay'])&&$hasntautoplayed){
 							?>
 							<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true);</script>
@@ -1002,6 +1069,71 @@ foreach ($content as $item){
 			
 			}
 			echo '</span>';
+			if ($mixed) {
+				?><script>document.getElementById('mixedtracks').innerHTML=document.getElementById('tracklist').innerHTML;
+						  document.getElementById('tracklist').style.display='none';
+				</script>
+				<?php
+				echo '';
+				echo '</form>';
+			
+				echo '<div style="float:none;clear:both;"></div>';
+				?>
+								Tip download : 
+				<em>Name your price and get instant download access to <strong><?php echo htmlspecialchars($_GET['album']);?></strong> in Flac, Ogg and Mp3 formats</em>
+				
+				<form  name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
+				<input type="hidden" name="cmd" value="_xclick" />
+				<input type="hidden" name="business" value="<?php echo htmlspecialchars($material_paypal_address);?>" />
+				<input type="hidden" name="item_name" value="Tip download for album <?php echo htmlspecialchars($_GET['album'])?>" />
+				<input type="hidden" name="currency_code" value="<?php echo htmlspecialchars($material_currency);?>" />
+				<br/>I want to pay <?php echo htmlspecialchars($material_currency);?> <input type="text" size="4" name="amount" value="2.50" />
+				<input type="hidden" name="shipping" value="0" />
+				<input type="hidden" name="cancel_return" value="http://<?php echo htmlspecialchars($server);?>" />
+				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode($_GET['album']);?>" />
+				<input type="submit" name="submit" value="Buy now !" />
+								<?php
+				
+				
+				?>
+
+
+				<?php
+				
+				echo '<hr/><h2>Item details : </h2>';
+				echo 'All prices are indicated in '.htmlspecialchars($material_currency);
+				echo '<div><em>This is the minimum price. You name you price, actually, and you can pay more than this if you wish to.</em></div>';
+				$material_items=array_keys($material_support);
+				echo '<table><tr>';
+				echo '<td style="border: solid 1px;"><strong><em>Product</em></strong></td>';
+				$material_item_lines=array_keys($material_support[$material_items[0]]);
+				foreach ($material_item_lines as $material_item_line) {
+							echo '<td style="border: solid 1px;"><strong><em>'.htmlspecialchars($material_item_line).'</em></strong></td>';
+					
+				}
+					
+				echo '</tr>';
+				
+				foreach ($material_items as $material_item)
+				 {
+					echo '<tr>';
+					echo '<td style="border: solid 1px;"><strong>'.htmlspecialchars($material_item).'</strong></td>';
+					$material_item_lines=array_keys($material_support[$material_item]);
+					foreach ($material_item_lines as $material_item_line) {
+						echo '<td style="border: solid 1px;">';
+						if (isset($material_support[$material_item][$material_item_line])&&$material_support[$material_item][$material_item_line]!==''){
+							echo htmlspecialchars($material_support[$material_item][$material_item_line]);
+							}
+						echo '</td>';
+					}
+					echo '</tr>';
+						
+				}
+				echo '</table>';
+
+
+			}
+
 
 		}
 
