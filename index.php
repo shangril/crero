@@ -1116,8 +1116,23 @@ foreach ($content as $item){
 				
 				echo '<hr/><h2>Item details : </h2>';
 				echo 'All prices are indicated in '.htmlspecialchars($material_currency);
-				echo '<div><em>This is the minimum price. You name you price, actually, and you can pay more than this if you wish to.</em></div>';
-				$material_items=array_keys($material_support);
+				echo '<div><em>This is the '; 
+			
+			if ($ismaterialnameyourprice){
+				echo 'recommended';
+			}
+			else{
+			
+				echo 'minimum';
+			
+			}
+			echo ' price. You name you price, actually, and you can pay more';
+			
+			if ($ismaterialnameyourprice){
+				echo ' or less';
+		
+			}
+			echo ' than this if you wish to.</em></div>';$material_items=array_keys($material_support);
 				echo '<table><tr>';
 				echo '<td style="border: solid 1px;"><strong><em>Product</em></strong></td>';
 				$material_item_lines=array_keys($material_support[$material_items[0]]);
