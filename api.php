@@ -238,6 +238,34 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 }
+else if (isset($_GET['radio'])) {
+	header('Content-Type: text/plain; charset=utf-8');
 
+	//get the radio infos for a specified file
+	$file=str_replace ('./', '', $_GET['radio']);
+	$title='';
+
+	$getID3 = new getID3;
+	$info = $getID3->analyze('z/'.$file);
+	getid3_lib::CopyTagsToComments($info); 
+	$artist=$info['comments_html']['artist'][0];
+	echo $artist."\n";
+	echo $info['comments_html']['album'][0]."\n";
+	echo $info['comments_html']['title'][0]."\n";
+	echo $info['playtime_seconds']."\n";
+	echo $info['audio']['bitrate']."\n";
+
+
+
+
+
+
+//			$nextartist=$result[0];
+//			$nextalbum=$result[1];
+//			$nexttitle=$result[2];
+//			$nextduration=$result[3];
+//			$nextbitrate=$result[4];
+
+}
 die();
 ?>

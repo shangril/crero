@@ -29,7 +29,7 @@ if ($activatestats&&isset($_GET['pingstat'])){
 			$figure['userid']=$_SESSION['statid'];
 			$figure['css_color']=$_SESSION['css_color'];
 			$figure['page']=$_GET['reqREQUEST_URI'];
-			$figure['referer']=$_S_GET['reqHTTP_REFERER'];
+			$figure['referer']=$_GET['reqHTTP_REFERER'];
 			$figure['random']=$_SESSION['random'];
 			file_put_contents('./admin/d/stats/'.microtime(true).'.dat', serialize($figure));
 		}
@@ -334,7 +334,21 @@ if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
 }
 
-
+if ($hasradio){
+	echo '<div style="width:100%;text-align:right">Now on the radio : <a href="./radio">';
+	
+	echo file_get_contents('./radio/d/nowplayingartist.txt');
+	
+	echo ' - ';
+	
+	echo file_get_contents('./radio/d/nowplayingalbum.txt');
+	
+	echo '</a>';
+	
+	
+	echo '</div>';
+	
+}
 ?>
 <audio id="player" onEnded="playNext();">
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
@@ -1201,7 +1215,7 @@ if ($activatestats){
 ?>
 <script>
   var xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTR_REFERER']); 
+  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
   
   
   ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 

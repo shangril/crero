@@ -172,6 +172,13 @@ $ismaterialnameyourprice=boolval(trim(file_get_contents('./d/isMaterialNameYourP
 //Caution : if set to 0 material shop will be a commercial one, with fixed price for items. If set to 1 people will name
 //their price for whatever order they may make with no minimum required
 
+$hasradio=boolval(trim(file_get_contents('./d/hasRadio.txt')));
+//Do you want a radio station ?
+$radiodescription=trim(file_get_contents('./d/radioDescription.txt'));
+$radioname=trim(file_get_contents('./d/radioName.txt'));
+
+
+
 $materialnameyourpricenotice=trim(file_get_contents('./d/materialNameYourPriceNotice.txt'));
 //this can be used as a disclaimer for name your price physical release
 //as "we reserve the right to refuse to complete any ordrer. No garantee"
