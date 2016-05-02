@@ -1094,7 +1094,7 @@ foreach ($content as $item){
 				echo '<div style="float:none;clear:both;"></div>';
 				?>
 								Tip download : 
-				<em>Name your price and get instant download access to <strong><?php echo htmlspecialchars($_GET['album']);?></strong> in Flac, Ogg and Mp3 formats</em>
+				<em>Name your price and get instant download access to <strong><?php echo htmlspecialchars($_GET['album']);?></strong> in Flac, Ogg and Mp3 formats</em><span style="font-size:84%;">
 				
 				<form  name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
 				<input type="hidden" name="cmd" value="_xclick" />
@@ -1104,8 +1104,8 @@ foreach ($content as $item){
 				<br/>I want to pay <?php echo htmlspecialchars($material_currency);?> <input type="text" size="4" name="amount" value="2.50" />
 				<input type="hidden" name="shipping" value="0" />
 				<input type="hidden" name="cancel_return" value="http://<?php echo htmlspecialchars($server);?>" />
-				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode($_GET['album']);?>" />
-				<input type="submit" name="submit" value="Buy now !" />
+				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>" />
+				<input type="submit" name="submit" value="Buy now !" /> or <a href="http://<?php echo $server?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>">get it for free</a></span>
 								<?php
 				
 				
