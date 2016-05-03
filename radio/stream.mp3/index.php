@@ -205,7 +205,7 @@ if (microtime(true)>$expire){
 			}
 
 		}
-		fclose($hander);
+		fclose($handler);
 		if ($save){
 			file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
 		}
