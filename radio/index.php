@@ -265,7 +265,7 @@ Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
 <div>Now Playing</div>
 <div id="block" style="padding-left:4%;"></div>
 <br style="clear:both;float:none;"/>
-<div style="text-align:left;"><audio id="player" src="" controls="controls"  onEnded="this.src='./stream.mp3?'+Math.random();this.load();this.play();" onError="this.src='./stream.mp3?'+Math.random();this.load();this.play();" ></audio></div>	
+<div style="text-align:left;"><audio id="player" src="" controls="controls"  onEnded="this.src='./stream.mp3?'+Math.random();this.load();this.play();" onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" ></audio></div>	
 
 </span>
 
