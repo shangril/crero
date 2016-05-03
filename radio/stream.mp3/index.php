@@ -168,48 +168,48 @@ $nextbitrate=$nowplayingbitrate;
 $nexttitle=$nowplayingtitle;
 
 if (microtime(true)>$expire){
-	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
-		$sid=file_get_contents('../d/ypsid.txt');
-		$nowplaying=file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt');
-		
-		$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
-		
-		$postdata = http_build_query(
-			array(
-				'action' => 'touch',
-				'sid' => $sid, 
-				'st' => $nowplaying, 
-				'listeners' => $listenerscount
-			)
-		);
+		if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+			$sid=file_get_contents('../d/ypsid.txt');
+			$nowplaying=file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt');
+			
+			$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
+			
+			$postdata = http_build_query(
+				array(
+					'action' => 'touch',
+					'sid' => $sid, 
+					'st' => $nowplaying, 
+					'listeners' => $listenerscount
+				)
+			);
 
-		$opts = array('http' =>
-			array(
-				'method'  => 'POST',
-				'header'  => 'Content-type: application/x-www-form-urlencoded',
-				'content' => $postdata
-			)
-		);
+			$opts = array('http' =>
+				array(
+					'method'  => 'POST',
+					'header'  => 'Content-type: application/x-www-form-urlencoded',
+					'content' => $postdata
+				)
+			);
 
-		$context = stream_context_create($opts);
-		$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
-		
-		$meta_data = stream_get_meta_data($handler);
-//		file_put_contents('../d/debug.txt', $meta_data);
-		$ttl=0;
-		$save=false;
-		foreach ($meta_data['wrapper_data'] as $response) {
+			$context = stream_context_create($opts);
+			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
+			
+			$meta_data = stream_get_meta_data($handler);
+	//		file_put_contents('../d/debug.txt', $meta_data);
+			$ttl=0;
+			$save=false;
+			foreach ($meta_data['wrapper_data'] as $response) {
 
-			if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-				$save = boolval(substr($response, 12));
+				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+					$save = boolval(substr($response, 12));
+				}
+
 			}
-
+			fclose($handler);
+			if ($save){
+				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
+			}
 		}
-		fclose($handler);
-		if ($save){
-			file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
-		}
-	}
 	
 	$dice=rand(1,10);
 	if ($dice==1){
