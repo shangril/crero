@@ -12,7 +12,7 @@ if ($radiohasyp&&!file_exists('../d/ypexpires.txt')){
 	file_put_contents('../d/ypexpires.txt', '0');
 }
 
-header('content-type: audio/mpeg');
+header('Content-Type: audio/mpeg');
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: no-cache');
