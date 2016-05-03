@@ -177,6 +177,9 @@ $hasradio=boolval(trim(file_get_contents('./d/hasRadio.txt')));
 $radiodescription=trim(file_get_contents('./d/radioDescription.txt'));
 $radioname=trim(file_get_contents('./d/radioName.txt'));
 
+$radiohasyp=boolval(trim(file_get_contents('./d/radioHasYp.txt')));
+
+$labelgenres=explode (' ', trim(file_get_contents('./d/labelGenres.txt')));
 
 
 $materialnameyourpricenotice=trim(file_get_contents('./d/materialNameYourPriceNotice.txt'));

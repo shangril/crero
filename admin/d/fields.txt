@@ -48,3 +48,17 @@ isMaterialNameYourPrice.txt
 if set to 1, allow to order physical item in a "name your price, no minimum" manner. Still requires a paypal payment to authenticate human customer, but allows the payment to be below Paypal's flat fee and in such case no money will be made available to you upon order
 materialNameYourPriceNotice.txt
 can be used to display terms and conditions for name your price manner of selling physical goods
+hasRadio.txt
+Can be 0 or 1. If 1 the site will feature a webradio
+radioName.txt
+A name for your radio, eg "The Really Cool Label radio"
+radioDescription.txt
+A short description for your radio, used for its webplayer page and for (if enabled) yellowpage listing
+radioHasYp.txt
+can be 0 or 1. If set to 1, the radio stream will be listed in the public dir.xyph.org webradio directory
+labelGenres.txt
+Currently used only for radio directory listing. Tag-style (space separated) list of musical genres for your label, on a single line
+radioBase.txt
+A list of http urls of mp3 files *online at the free download media tier*, one per line, to be played by the radio
+radioFeatured.txt
+A list of http urls of mp3 files *online at the streaming-only media tier*, one per line, to be played by the radio
