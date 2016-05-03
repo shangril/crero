@@ -66,6 +66,16 @@ if (isset($_GET['ajax'])){
 			echo '<br/>Available as <a target="new" href="../?listall=mixed&album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'">material release</a> at our online shop';
 			
 		}
+		if (!file_exists('./d/maxlisteners.txt')){
+			file_put_contents('./d/maxlisteners.txt', '0');
+		}
+		
+		$listeners=count(array_diff(scandir('./d/listeners'), Array ('.', '..')));
+		
+		if ($listeners>intval(file_get_contents('./d/maxlisteners.txt'))){
+			file_put_contents('./d/maxlisteners.txt', $listeners);
+		}
+		echo '<br>Listeners : '.$listeners.' (current) / '.htmlspecialchars(file_get_contents('./d/maxlisteners.txt')).' (peak)';
 	}
 	else if ($_GET['ajax']==='cover'){
 		$covers=trim(file_get_contents('../d/covers.txt'));
