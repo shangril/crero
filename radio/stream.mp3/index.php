@@ -214,8 +214,9 @@ if (microtime(true)>$expire){
 	$dice=rand(1,10);
 	if ($dice==1){
 		$featured=explode("\n", $radiofeatured);
-		shuffle($featured);
-		$thisfeatured=$featured[0];
+		//shuffle($featured);
+		//$thisfeatured=$featured[0];
+		$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
 		$featuredbasenamed=explode('/', $thisfeatured);
 		$featuredbasename=array_pop($featuredbasenamed);
 		$apihook=str_replace($featuredbasename, '', $thisfeatured);
@@ -237,8 +238,10 @@ if (microtime(true)>$expire){
 	}
 	else {
 		$featured=explode("\n", $radiobase);
-		shuffle($featured);
-		$thisfeatured=$featured[0];
+		//shuffle($featured);
+		//$thisfeatured=$featured[0];
+		$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
+		
 		$featuredbasenamed=explode('/', $thisfeatured);
 		$featuredbasename=array_pop($featuredbasenamed);
 		
@@ -331,9 +334,9 @@ usleep ($timetosleep-$sleeped);
 //while (floatval(microtime(true))<floatval($expire)){
 //	sleep(5);
 //}
-
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp);
-
+if (!isset($_GET['web'])){
+	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp);
+}
 
 }
 play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp);
