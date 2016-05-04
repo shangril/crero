@@ -133,7 +133,7 @@ if ($activatestats&&isset($_GET['pingstat'])){
 	}
 		
 		
-	die();
+	exit();
 }
 
 

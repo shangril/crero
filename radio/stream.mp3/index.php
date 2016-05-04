@@ -16,6 +16,11 @@ header('Content-Type: audio/mpeg');
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: no-cache');
+    header('icy-name: '.str_replace("\r\n", ' ', $radioname));
+    header('icy-description: '.str_replace("\r\n", ' ', $radiodescription));
+	header('icy-url: http://'.$server.'/radio');
+    
+    
     
 if (!file_exists('../d/listeners')){
 	mkdir('../d/listeners');
@@ -26,7 +31,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 	$inittime=microtime(true);
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
-		if (floatval($listener)+4<microtime(true)){
+		if (floatval($listener)+5.1<microtime(true)){
 				unlink('../d/listeners/'.$listener);
 		}
 	}
