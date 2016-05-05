@@ -43,7 +43,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		}
 		$genres=trim($genres);
 		
-		$nowplaying=file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt');
+		$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 		
 		$listenerscount=count(array_diff(scandir('./d/listeners'), Array ('.', '..')));
 		
@@ -242,7 +242,7 @@ $nowplayingbitrate=$nextbitrate;
 file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
 	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
-			$nowplaying=file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt');
+			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
 			$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
 			
