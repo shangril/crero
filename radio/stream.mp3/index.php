@@ -29,15 +29,11 @@ if (!file_exists('../d/listeners')){
 	
 }
 
-function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid){
+function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $duration){
 	$inittime=microtime(true);
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
-		if (floatval($listener)+5<=microtime(true)){
-				unlink('../d/listeners/'.$listener);
-				
-		}
-		else if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
+		if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
 				unlink('../d/listeners/'.$listener);
 			
 		}
@@ -190,7 +186,14 @@ $nextbitrate=$nowplayingbitrate;
 $nexttitle=$nowplayingtitle;
 
 if (microtime(true)>$expire){
-		
+	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
+	foreach ($listeners as $listener){
+		if (intval(file_get_contents('../d/listeners/'.$listener))!==$statid){
+				unlink('../d/listeners/'.$listener);
+			
+		}
+	}
+
 	
 	$dice=rand(1,10);
 	if ($dice==1){
@@ -345,7 +348,7 @@ $sleeped=0;
 
 while ($timetosleep-$sleeped>5000000){
 
-$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid);
+$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
 
 usleep (5000000-$offset*1000000);
 
