@@ -9,7 +9,7 @@ include ('./config.php');
   $viewportwidth= $_GET['viewportwidth'];
   $ratio=$_GET['ratio'];
   
-  if (file_exists('./'.$file) && strpos(mime_content_type('./'.$file),'image/')==0){ 
+  if (file_exists('./'.$file) && strpos(mime_content_type('./'.$file),'image/')==0&&dirname(realpath($file))===realpath('./covers')){ 
 /*	  	  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
     strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= filemtime('./'.$file)
     &&$ratio<0.5)
