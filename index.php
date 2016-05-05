@@ -728,7 +728,7 @@ foreach ($contentlocal as $item){
 			if (!$mixed){
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
-				if (!isset($_GET['track'])){
+				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])){
 					echo 'style="display:none;"';
 				}
 				echo '>';
@@ -1022,7 +1022,7 @@ foreach ($content as $item){
 			if (!$mixed){
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
-				if (!isset($_GET['track'])){
+				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])){
 					echo 'style="display:none;"';
 				}
 				echo '>';

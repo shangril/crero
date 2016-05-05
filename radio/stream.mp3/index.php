@@ -31,7 +31,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 	$inittime=microtime(true);
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
-		if (floatval($listener)+5.1<microtime(true)){
+		if (floatval($listener)+4.9<=microtime(true)){
 				unlink('../d/listeners/'.$listener);
 		}
 	}
