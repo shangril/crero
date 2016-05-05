@@ -4,6 +4,8 @@ chdir('../..');
 require_once('./config.php');
 chdir('./radio/stream.mp3');
 srand();
+$statid=mt_rand(0, 1000000);
+
 if (!$hasradio){
 	die();
 }
@@ -27,15 +29,30 @@ if (!file_exists('../d/listeners')){
 	
 }
 
-function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp){
+function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid){
 	$inittime=microtime(true);
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
-		if (floatval($listener)+4.9<=microtime(true)){
+		if (floatval($listener)+5<=microtime(true)){
 				unlink('../d/listeners/'.$listener);
+				
+		}
+		else if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
+				unlink('../d/listeners/'.$listener);
+			
 		}
 	}
-	file_put_contents('../d/listeners/'.microtime(true), '1');
+	file_put_contents('../d/listeners/'.microtime(true), $statid);
+	if (!file_exists('../d/maxlisteners.txt')){
+		file_put_contents('../d/maxlisteners.txt', '0');
+	}
+	
+	$listeners=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
+	
+	if ($listeners>intval(file_get_contents('../d/maxlisteners.txt'))){
+		file_put_contents('../d/maxlisteners.txt', $listeners);
+	}
+
 	if ($radiohasyp&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 		$genres='';
 		foreach ($labelgenres as $labelgenre){
@@ -149,7 +166,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 }
 
 
-function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp){
+function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid){
 
 $radiofeatured=file_get_contents('../../d/radioFeatured.txt');
 $radiobase=file_get_contents('../../d/radioBase.txt');
@@ -240,6 +257,7 @@ $expire=floatval(microtime(true))+floatval($nextduration);
 file_put_contents('../d/expire.txt', $expire);
 $nowplayingbitrate=$nextbitrate;
 file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
+
 	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
@@ -295,6 +313,7 @@ if (strstr( $nowplayingurl, 'cremroad.com'	)){
 
 $alpha=microtime(true);
 
+
 $opts=Array( 'http'=>
 		Array ( 'header' => 'Range: bytes='.intval((intval($nowplayingbitrate)/8)*(microtime(true)-floatval(file_get_contents('../d/starttime.txt')))).'-'
 		)
@@ -310,6 +329,7 @@ fpassthru($handle);
 
 
 fclose ($handle);
+ob_flush();
 flush();
 
 $hasstarted=file_get_contents('../d/starttime.txt');
@@ -318,14 +338,14 @@ $beta=microtime(true)-$alpha;
 
 if (floatval(microtime(true))<floatval($expire)){
 
-$timetosleep=(1000000*(floatval($nowplayingduration)-(floatval(microtime(true))-floatval($hasstarted))))-(1000000*$beta);
+$timetosleep=$beta+700000+(1000000*(floatval($nowplayingduration)-(floatval(microtime(true))-floatval($hasstarted))));//-(1000000*($beta+()));
 $sleeped=0;
 
 
 
 while ($timetosleep-$sleeped>5000000){
 
-$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp);
+$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid);
 
 usleep (5000000-$offset*1000000);
 
@@ -343,10 +363,10 @@ usleep ($timetosleep-$sleeped);
 	//}
 if (!isset($_GET['web'])){
 
-	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp);
+	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid);
 }
 
 }
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp);
+play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid);
 
 ?>
