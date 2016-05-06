@@ -193,8 +193,17 @@ if (microtime(true)>$expire){
 			
 		}
 	}
-
 	
+	$isthislistenercounted=false;
+	foreach ($listeners as $listener){
+		if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
+				$isthislistenercounted=true;
+			
+		}
+	}
+	if (!$isthislistenercounted){
+		file_put_contents('../d/listeners/'.microtime(true), $statid);
+	}
 	$dice=rand(1,10);
 	if ($dice==1){
 		$featured=explode("\n", $radiofeatured);
