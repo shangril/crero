@@ -210,7 +210,7 @@ while (file_exists('../d/lock.txt')){
 
 }
 
-if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
+if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 	file_put_contents('../d/lock.txt', microtime(true));
 	$apitimestart=microtime(true);
 	$featuredapi=false;
@@ -248,6 +248,8 @@ if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
 				
 			}
 			echo $silentfile;
+			ob_flush();
+			flush();
 		}
 		
 		$featured=explode("\n", $radiofeatured);
@@ -283,6 +285,8 @@ if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
 				
 			}
 			echo $silentfile;
+			ob_flush();
+			flush();
 		}
 		
 		$featured=explode("\n", $radiobase);
@@ -449,8 +453,9 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 			flush();
 
 			
-			if ($initialburstcounter>=10)
+			if ($initialburstcounter>=10&&!feof($handle))
 				 {//we send an initial burst of data upon client connection to fill in the cache and prevent cutoff in the first seconds
+					 //as well we won't sleep at the end of the track to prevent stall on some (m)players
 				if (!$bursthassleeped){
 					usleep(1000000);
 					$bursthassleeped=true;
