@@ -240,7 +240,7 @@ if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
 	if ($dice==1){
 		$featuredapi=true;
 		if (!$isinitial){
-			$loop=ceil(floatval(file_get_contents('../featuredapitime.txt'))/0.052);
+			$loop=ceil(floatval(file_get_contents('../d/featuredapitime.txt'))/0.052);
 			$silent='';
 			$silentfile=file_get_contents('../silence.mp3');
 			for ($i=0;$i<$loop;$i++){
@@ -275,7 +275,7 @@ if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
 	else {
 		
 		if (!$isinitial){
-			$loop=ceil(floatval(file_get_contents('../baseapitime.txt'))/0.052);
+			$loop=ceil(floatval(file_get_contents('../d/baseapitime.txt'))/0.052);
 			$silent='';
 			$silentfile=file_get_contents('../silence.mp3');
 			for ($i=0;$i<$loop;$i++){
