@@ -28,7 +28,17 @@ if (isset($_GET['ajax'])){
 			
 		$material_blacklist=explode("\n", $material_blacklist_file);
 
+		$duration=intval(file_get_contents('./d/nowplayingduration.txt'));
 		
+		$nowplayingdurationminutes=floor($duration/60);
+		
+		$nowplayingdurationseconds=$duration-$nowplayingdurationminutes*60;
+		
+		$hasplayed=intval(microtime(true)-floatval(file_get_contents('./d/starttime.txt')));
+
+		$hasplayedminutes=floor($hasplayed/60);
+		
+		$hasplayedseconds=$hasplayed-$hasplayedminutes*60;
 		
 		
 		echo '<strong style="font-size:125%;">';
@@ -40,6 +50,7 @@ if (isset($_GET['ajax'])){
 		echo '<a target="new" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'&track='.urlencode(file_get_contents('./d/nowplayingtitle.txt')).'">';
 		echo '<em style="font-size:125%;">'.file_get_contents('./d/nowplayingtitle.txt').'</em>';
 		echo '</a>';
+		echo ' - ['.htmlspecialchars($hasplayedminutes).':'.htmlspecialchars($hasplayedseconds).'/'.htmlspecialchars($nowplayingdurationminutes).':'.htmlspecialchars($nowplayingdurationseconds).']';
 		echo '<br/><span  style="font-size:125%;">(';
 		echo '<a target="new" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'">';
 		echo file_get_contents('./d/nowplayingalbum.txt');
