@@ -172,7 +172,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 }
 
 
-function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid){
+function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $isinitial){
 
 if (file_exists('../d/lock.txt')&&(microtime(true)-floatval(file_get_contents('../d/lock.txt'))>120)){
 	unlink('../d/lock.txt');
@@ -239,7 +239,16 @@ if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
 	$dice=rand(1,10);
 	if ($dice==1){
 		$featuredapi=true;
-
+		if (!$isinitial){
+			$loop=ceil(floatval(file_get_contents('../featuredapitime.txt'))/0.052);
+			$silent='';
+			$silentfile=file_get_contents('../silence.mp3');
+			for ($i=0;$i<$loop;$i++){
+				$silent.=$silentfile;
+				
+			}
+			echo $silentfile;
+		}
 		
 		$featured=explode("\n", $radiofeatured);
 		shuffle($featured);
@@ -265,7 +274,16 @@ if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
 	}
 	else {
 		
-		
+		if (!$isinitial){
+			$loop=ceil(floatval(file_get_contents('../baseapitime.txt'))/0.052);
+			$silent='';
+			$silentfile=file_get_contents('../silence.mp3');
+			for ($i=0;$i<$loop;$i++){
+				$silent.=$silentfile;
+				
+			}
+			echo $silentfile;
+		}
 		
 		$featured=explode("\n", $radiobase);
 		shuffle($featured);
@@ -466,14 +484,12 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	}
 
 	}
-
-	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent);
+	$isinitial=false;
+	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
 
 }
 $bytessent=0;
-fpassthru('../silence.mp3');
-ob_flush();
-flush();
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent);
+$isinitial=true;
+play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
 
 ?>
