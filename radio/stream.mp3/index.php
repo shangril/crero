@@ -172,7 +172,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 }
 
 
-function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $isinitial){
+function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial){
 
 if (file_exists('../d/lock.txt')&&(microtime(true)-floatval(file_get_contents('../d/lock.txt'))>120)){
 	unlink('../d/lock.txt');
