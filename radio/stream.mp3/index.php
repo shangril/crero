@@ -15,6 +15,13 @@ if (!$hasradio){
 if (!file_exists('../d/featuredapitime.txt')){
 	file_put_contents('../d/featuredapitime.txt', 0);
 }
+if (!file_exists('../d/mediafetch-0.txt')){
+	file_put_contents('../d/mediafetch-0.txt', 0);
+}
+if (!file_exists('../d/mediafetch-1.txt')){
+	file_put_contents('../d/mediafetch-1.txt', 0);
+}
+
 
 
 if (!file_exists('../d/baseapitime.txt')){
@@ -247,7 +254,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 				$silent.=$silentfile;
 				
 			}
-			echo $silentfile;
+			echo $silent;
 			ob_flush();
 			flush();
 		}
@@ -284,7 +291,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 				$silent.=$silentfile;
 				
 			}
-			echo $silentfile;
+			echo $silent;
 			ob_flush();
 			flush();
 		}
@@ -315,7 +322,7 @@ $nowplayingduration=$nextduration;
 
 file_put_contents('../d/nowplayingduration.txt', $nowplayingduration);
 $nowplayingurl=$nexturl;
-file_put_contents('../d/nowplayingurl.txt', $nowplayingurl);
+file_put_contents('../d/nowplayingurl.txt',$nowplayingurl);
 $nowplayingalbum=$nextalbum;
 file_put_contents('../d/nowplayingalbum.txt', $nowplayingalbum);
 $nowplayingtitle=$nexttitle;
@@ -413,7 +420,22 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$initialburstcounter=0; 
 	$thirdtimer=microtime(true);
 	$beta=microtime(true)-$alpha;
+
+	$boolfeatured=intval(file_get_contents('../d/nowplayingisfeatured.txt'));
+	$mediafetch=0;
+	
+	if ($boolfeatured==1){
+		$mediafetch=floatval(file_get_contents('../d/mediafetch-1.txt'));
+	}
+	else {
+		$mediafetch=floatval(file_get_contents('../d/mediafetch-0.txt'));
+	}
+	
 	$burstbytesent=0;
+
+	$hassavedfetch=false;
+
+
 	$opts=Array( 'http'=>
 			Array ( 'header' => 'Range: bytes='.intval((intval($nowplayingbitrate)/8)*(microtime(true)-floatval($hasstarted)+$beta)).'-'
 			)
@@ -421,8 +443,25 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$context=stream_context_create($opts);
 	$bravo=microtime(true);
 	
+	if (!$isinitial){
+			$loop=floor(floatval($mediafetch)/0.052);
+			$silent='';
+			$silentfile=file_get_contents('../silence.mp3');
+			for ($i=0;$i<$loop;$i++){
+				$silent.=$silentfile;
+				
+			}
+			echo $silent;
+			ob_flush();
+			flush();
+		}
+	
+	
+	
 	$handle=fopen($nowplayingurl, 'rb', false, $context);
 	if ($handle!==false&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+
+
 	$bursttimer=microtime(true);
 	$bursthassleeped=false;
 
@@ -446,16 +485,27 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 				$bytesread=ftell($handle)-$position;
 				}
 			}
+
+			if (!$hassavedfetch){
+				if ($boolfeatured==1){
+						file_put_contents('../d/mediafetch-1.txt',microtime(true)-$thirdtimer);
+					}
+					else {
+						file_put_contents('../d/mediafetch-0.txt',microtime(true)-$thirdtimer);
+					}
+
+					$hassavedfetch=true;
+				}
+
+
 			
 			echo  $content;
-
 			ob_flush();
 			flush();
 
 			
-			if ($initialburstcounter>=10&&!feof($handle))
+			if ($initialburstcounter>=10)
 				 {//we send an initial burst of data upon client connection to fill in the cache and prevent cutoff in the first seconds
-					 //as well we won't sleep at the end of the track to prevent stall on some (m)players
 				if (!$bursthassleeped){
 					usleep(1000000);
 					$bursthassleeped=true;
