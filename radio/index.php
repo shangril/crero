@@ -40,6 +40,12 @@ if (isset($_GET['ajax'])){
 		
 		$hasplayedseconds=$hasplayed-$hasplayedminutes*60;
 		
+		if ($hasplayedseconds<10){
+			$hasplayedseconds='0'.$hasplayedseconds;
+		}
+		if ($nowplayingdurationseconds<10){
+			$nowplayingdurationseconds='0'.$nowplayingdurationseconds;
+		}
 		
 		echo '<strong style="font-size:125%;">';
 		echo '<a target="new" href="../?artist='.urlencode(file_get_contents('./d/nowplayingartist.txt')).'">';
