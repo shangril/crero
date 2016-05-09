@@ -10,6 +10,18 @@ if (!$hasradio){
 	die();
 }
 
+
+
+if (!file_exists('../d/featuredapitime.txt')){
+	file_put_contents('../d/featuredapitime.txt', 0);
+}
+
+
+if (!file_exists('../d/baseapitime.txt')){
+	file_put_contents('../d/baseapitime.txt', 0);
+}
+
+
 if ($radiohasyp&&!file_exists('../d/ypexpires.txt')){
 	file_put_contents('../d/ypexpires.txt', '0');
 }
@@ -85,7 +97,6 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		$handler=fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
 		
 		$meta_data = stream_get_meta_data($handler);
-//		file_put_contents('../d/debug.txt', $meta_data);
 		$ttl=0;
 		$save=false;
 		$sid='';
@@ -138,7 +149,6 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
 			
 			$meta_data = stream_get_meta_data($handler);
-	//		file_put_contents('../d/debug.txt', $meta_data);
 			$ttl=0;
 			$save=false;
 			foreach ($meta_data['wrapper_data'] as $response) {
@@ -164,6 +174,10 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 
 function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid){
 
+if (file_exists('../d/lock.txt')&&(microtime(true)-floatval(file_get_contents('../d/lock.txt'))>120)){
+	unlink('../d/lock.txt');
+}
+
 $radiofeatured=file_get_contents('../../d/radioFeatured.txt');
 $radiobase=file_get_contents('../../d/radioBase.txt');
 
@@ -185,7 +199,25 @@ $nextartist=$nowplayingartist;
 $nextbitrate=$nowplayingbitrate;
 $nexttitle=$nowplayingtitle;
 
-if (microtime(true)>$expire){
+while (file_exists('../d/lock.txt')){
+		
+	$silenttimer=microtime(true);
+
+	fpassthru('../silence.mp3');
+	ob_flush();
+	flush();
+	usleep (round(1000000*(0.052-(microtime(true)-$silenttimer))));
+
+}
+
+if (microtime(true)>$expire&&(!file_exists('../d/lock.txt'))){
+	file_put_contents('../d/lock.txt', microtime(true));
+	$apitimestart=microtime(true);
+	$featuredapi=false;
+	
+	
+	
+	
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
 		if (intval(file_get_contents('../d/listeners/'.$listener))!==$statid){
@@ -206,9 +238,11 @@ if (microtime(true)>$expire){
 	}
 	$dice=rand(1,10);
 	if ($dice==1){
+		$featuredapi=true;
+
+		
 		$featured=explode("\n", $radiofeatured);
 		shuffle($featured);
-		//$thisfeatured=$featured[0];
 		$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
 		$featuredbasenamed=explode('/', $thisfeatured);
 		$featuredbasename=array_pop($featuredbasenamed);
@@ -230,9 +264,11 @@ if (microtime(true)>$expire){
 		}
 	}
 	else {
+		
+		
+		
 		$featured=explode("\n", $radiobase);
 		shuffle($featured);
-		//$thisfeatured=$featured[0];
 		$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
 		
 		$featuredbasenamed=explode('/', $thisfeatured);
@@ -252,8 +288,7 @@ if (microtime(true)>$expire){
 		$nextbitrate=$result[4];
 		file_put_contents('../d/nowplayingisfeatured.txt', '1');
 		file_put_contents('../d/starttime.txt', microtime(true));
-		
-	}
+		}
 $nowplayingduration=$nextduration;
 
 file_put_contents('../d/nowplayingduration.txt', $nowplayingduration);
@@ -269,6 +304,9 @@ $expire=floatval(microtime(true))+floatval($nextduration);
 file_put_contents('../d/expire.txt', $expire);
 $nowplayingbitrate=$nextbitrate;
 file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
+
+unlink('../d/lock.txt');
+
 
 	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
@@ -297,7 +335,6 @@ file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
 			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
 			
 			$meta_data = stream_get_meta_data($handler);
-	//		file_put_contents('../d/debug.txt', $meta_data);
 			$ttl=0;
 			$save=false;
 			foreach ($meta_data['wrapper_data'] as $response) {
@@ -312,7 +349,27 @@ file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
 				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
 			}
 		}
+
+if ($featuredapi){
+	file_put_contents('../d/featuredapitime.txt', microtime(true)-$apitimestart);
 }
+else {
+		file_put_contents('../d/baseapitime.txt', microtime(true)-$apitimestart);
+	}
+		
+}
+ 
+	$nowplayingduration=intval(file_get_contents('../d/nowplayingduration.txt'));
+	$nowplayingurl=file_get_contents('../d/nowplayingurl.txt');
+	$nowplayingalbum=file_get_contents('../d/nowplayingalbum.txt');
+	$nowplayingtitle=file_get_contents('../d/nowplayingtitle.txt');
+	$nowplayingartist=file_get_contents('../d/nowplayingartist.txt');
+	$expire=floatval(file_get_contents('../d/expire.txt'));
+	$nowplayingbitrate=intval(file_get_contents('../d/nowplayingbitrate.txt'));
+	$starttime=intval(file_get_contents('../d/starttime.txt'));
+
+ 
+
 $filepath='';
 if (strstr( $nowplayingurl, 'clewn.org')){
 	$filepath=str_replace('http://audio.clewn.org/audio', '../../../audio/clewn/opt/hop/audio', $nowplayingurl);
@@ -320,65 +377,103 @@ if (strstr( $nowplayingurl, 'clewn.org')){
 if (strstr( $nowplayingurl, 'cremroad.com'	)){
 	$filepath=str_replace('http://cremroad.com/z', '../../z', $nowplayingurl);
 }
-//echo $nowplayingurl;
-//echo $filepath;
 
 $alpha=microtime(true);
 
 
-$opts=Array( 'http'=>
-		Array ( 'header' => 'Range: bytes='.intval((intval($nowplayingbitrate)/8)*(microtime(true)-floatval(file_get_contents('../d/starttime.txt')))).'-'
-		)
-	);
-$context=stream_context_create($opts);
-
-$handle=fopen($nowplayingurl, 'rb', false, $context);
-
-
-//fseek($handle, intval((intval($nowplayingbitrate)/8)*(microtime(true)-floatval(file_get_contents('../d/starttime.txt')))))
-
-fpassthru($handle);
-
-
-fclose ($handle);
-ob_flush();
-flush();
 
 $hasstarted=file_get_contents('../d/starttime.txt');
 
-$beta=microtime(true)-$alpha;
 
-if (floatval(microtime(true))<floatval($expire)){
+$bytestosend=intval($nowplayingbitrate/8);
 
-$timetosleep=$beta+700000+(1000000*(floatval($nowplayingduration)-(floatval(microtime(true))-floatval($hasstarted))));//-(1000000*($beta+()));
-$sleeped=0;
+if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+	$initialburstcounter=0; 
+	$thirdtimer=microtime(true);
+	$beta=microtime(true)-$alpha;
+	$burstbytesent=0;
+	$opts=Array( 'http'=>
+			Array ( 'header' => 'Range: bytes='.intval((intval($nowplayingbitrate)/8)*(microtime(true)-floatval($hasstarted)+$beta)).'-'
+			)
+		);
+	$context=stream_context_create($opts);
+	$bravo=microtime(true);
+	
+	$handle=fopen($nowplayingurl, 'rb', false, $context);
+	if ($handle!==false&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+	$bursttimer=microtime(true);
+	$bursthassleeped=false;
 
+		while (!feof($handle)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+			
+			$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
 
+			$secondtimer=microtime(true);
+			$bytestoread=$bytestosend+intval($bytetosend*(microtime(true)-$thirdtimer));
+			
+			$bytesread=0;
+			$content='';
+			$position=ftell($handle);
+			while ($bytesread<=$bytestoread&&!feof($handle)){
+				$content.=fread($handle,8192);
+				
+				if (!feof($handle)){
+				$bytesread=$bytesread+8192;
+				}
+				else{
+				$bytesread=ftell($handle)-$position;
+				}
+			}
+			
+			echo  $content;
 
-while ($timetosleep-$sleeped>5000000){
+			ob_flush();
+			flush();
 
-$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
+			
+			if ($initialburstcounter>=10)
+				 {//we send an initial burst of data upon client connection to fill in the cache and prevent cutoff in the first seconds
+				if (!$bursthassleeped){
+					usleep(1000000);
+					$bursthassleeped=true;
+					
+				}
+				
+				
+				
+				$secondoffset=microtime(true)-$secondtimer;
 
-usleep (5000000-$offset*1000000);
+				usleep (intval(($bytesread/$bytestosend)*1000000-$offset*1000000-$secondoffset*1000000));
+			
+			}
+			else {
+				$initialburstcounter++;
+				$burstbytesent=$burstbytesent+$bytesread;
+			}
+			$thirdtimer=microtime(true);
+		}
+		fclose ($handle);
+		//and now let's resync just in case eof was reached befor the station clock says next song
+		while (microtime(true)<floatval($expire)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+		
+			$silenttimer=microtime(true);
+		
+			fpassthru('../silence.mp3');//all I found. Quite hugly
+			ob_flush();
+			flush();
+		}
 
-$sleeped=$sleeped+5000000;
+	}
+
+	}
+
+	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent);
 
 }
-usleep ($timetosleep-$sleeped);
-
-
-
-}
-
-	//while (floatval(microtime(true))<floatval($expire)){
-	//	sleep(5);
-	//}
-if (!isset($_GET['web'])){
-
-	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid);
-}
-
-}
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid);
+$bytessent=0;
+fpassthru('../silence.mp3');
+ob_flush();
+flush();
+play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent);
 
 ?>
