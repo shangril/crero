@@ -421,15 +421,6 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$thirdtimer=microtime(true);
 	$beta=microtime(true)-$alpha;
 
-	$boolfeatured=intval(file_get_contents('../d/nowplayingisfeatured.txt'));
-	$mediafetch=0;
-	
-	if ($boolfeatured==1){
-		$mediafetch=floatval(file_get_contents('../d/mediafetch-1.txt'));
-	}
-	else {
-		$mediafetch=floatval(file_get_contents('../d/mediafetch-0.txt'));
-	}
 	
 	$burstbytesent=0;
 
@@ -443,18 +434,6 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$context=stream_context_create($opts);
 	$bravo=microtime(true);
 	
-	if (!$isinitial){
-			$loop=floor(floatval($mediafetch)/0.052);
-			$silent='';
-			$silentfile=file_get_contents('../silence.mp3');
-			for ($i=0;$i<$loop;$i++){
-				$silent.=$silentfile;
-				
-			}
-			echo $silent;
-			ob_flush();
-			flush();
-		}
 	
 	
 	
@@ -486,16 +465,6 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 				}
 			}
 
-			if (!$hassavedfetch){
-				if ($boolfeatured==1){
-						file_put_contents('../d/mediafetch-1.txt',microtime(true)-$thirdtimer);
-					}
-					else {
-						file_put_contents('../d/mediafetch-0.txt',microtime(true)-$thirdtimer);
-					}
-
-					$hassavedfetch=true;
-				}
 
 
 			
