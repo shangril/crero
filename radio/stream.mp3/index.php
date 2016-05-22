@@ -67,6 +67,15 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 	if ($listeners>intval(file_get_contents('../d/maxlisteners.txt'))){
 		file_put_contents('../d/maxlisteners.txt', $listeners);
 	}
+	if ((floatval(filectime('../d/maxlisteners24hours.txt'))+24*60*60)<=microtime(true)){
+	
+		unlink('../d/maxlisteners24hours.txt');
+	
+	}
+	if ($listeners>intval(file_get_contents('../d/maxlisteners24hours.txt'))){
+		file_put_contents('../d/maxlisteners24hours.txt', $listeners);
+	}
+
 
 	if ($radiohasyp&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 		$genres='';

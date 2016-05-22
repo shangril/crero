@@ -181,6 +181,16 @@ $radiohasyp=boolval(trim(file_get_contents('./d/radioHasYp.txt')));
 
 $labelgenres=explode (' ', trim(file_get_contents('./d/labelGenres.txt')));
 
+//do we accept donations ? 
+
+$acceptdonations=boolval(trim(file_get_contents('./d/allowDonations.txt')));
+//set this to 1 to accept donations
+
+
+$donationpaypaladdress=trim(file_get_contents('./d/donationPaypal.txt'));
+//the email address of the paypal account where donations will go
+
+
 
 $materialnameyourpricenotice=trim(file_get_contents('./d/materialNameYourPriceNotice.txt'));
 //this can be used as a disclaimer for name your price physical release

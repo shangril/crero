@@ -334,6 +334,16 @@ if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
 }
 
+if ($acceptdonations){
+	echo '<span style="float:right;text-align:right">';
+	
+	include ('./donate.php');
+	
+	echo '</span><br style="clear:both;float:none;"/>';
+	
+}
+	
+
 if ($hasradio){
 	echo '<div style="width:100%;text-align:right">Now on the radio : <a href="./radio">';
 	
@@ -728,7 +738,7 @@ foreach ($contentlocal as $item){
 			if (!$mixed){
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
-				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])){
+				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&!isset($_GET['track'])){
 					echo 'style="display:none;"';
 				}
 				echo '>';
@@ -1022,7 +1032,7 @@ foreach ($content as $item){
 			if (!$mixed){
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
-				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])){
+				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&isset($_GET['track'])){
 					echo 'style="display:none;"';
 				}
 				echo '>';

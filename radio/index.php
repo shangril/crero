@@ -92,7 +92,18 @@ if (isset($_GET['ajax'])){
 		if ($listeners>intval(file_get_contents('./d/maxlisteners.txt'))){
 			file_put_contents('./d/maxlisteners.txt', $listeners);
 		}
-		echo '<br>Listeners : '.$listeners.' (current) / '.htmlspecialchars(file_get_contents('./d/maxlisteners.txt')).' (peak)';
+		if ((floatval(filectime('./d/maxlisteners24hours.txt'))+24*60*60)<=microtime(true)){
+		
+			unlink('./d/maxlisteners24hours.txt');
+		
+		}
+		if ($listeners>intval(file_get_contents('./d/maxlisteners24hours.txt'))){
+			file_put_contents('./d/maxlisteners24hours.txt', $listeners);
+		}
+		$peaktime=microtime(true)-filectime('./d/maxlisteners24hours.txt');
+		$peakhours=ceil($peaktime/(60*60));
+
+		echo '<br>Listeners<br/>Current : '.$listeners.' / Peak : '.htmlspecialchars(file_get_contents('./d/maxlisteners.txt')).' (all-time) '.htmlspecialchars(file_get_contents('./d/maxlisteners24hours.txt')).' ('.htmlspecialchars($peakhours).'-hours)';
 	}
 	else if ($_GET['ajax']==='cover'){
 		$covers=trim(file_get_contents('../d/covers.txt'));
@@ -226,6 +237,16 @@ function loginpanel($activateaccountcreation){
 </style>
 </head>
 <body>
+	<?php
+	if ($acceptdonations){
+		echo '<span style="float:right;text-align:right">';
+		
+		include ('../donate.php');
+		
+		echo '</span><br style="clear:both;float:none;"/>';
+		
+	}
+	?>
 <a name="menu"></a><div id="mainmenu" style="display:block;">	
 	<span style=""><img style="float:left;width:3%;" src="/favicon.png"/></span>
 		

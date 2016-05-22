@@ -1,6 +1,14 @@
 <?php
 include ('./config.php');
  
+ $thumbz=array_diff(scandir('./thumbcache'), Array ('..', '.'));
+ foreach ($thumbz as $thumb){
+	 if (filectime('./thumbcache/'.$thumb)+60*60*24*7<=microtime(true)){
+		 unlink ('./thumbcache/'.$thumb);
+	 }
+	 
+ }
+ 
   if (!isset($_GET['target'])&&!isset($_GET['viewportwidth'])&&!isset($_GET['ratio'])){
 	  die();
   }
