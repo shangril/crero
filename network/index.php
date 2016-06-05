@@ -8,7 +8,19 @@ if (isset($_GET['login'])){
 
 
 if (!isset($_SESSION['logged'])){
-	echo '<!DOCTYPE html><html><head><link rel="stylesheet" href="/style.css" type="text/css" media="screen" /></head><body><h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4><form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form></body></html>';
+
+	$files=scandir('./'.$seedroot.'/e');
+	sort($files);
+	foreach ($files as $fil)
+	{
+		if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<microtime(true)-6)
+		{
+			unlink('./'.$seedroot.'/e/'.$fil);
+			}
+	}
+
+
+	echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="20"><link rel="stylesheet" href="/style.css" type="text/css" media="screen" /></head><body><h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.count(array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'))).' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form></body></html>';
 	die();
 }
 

@@ -303,8 +303,51 @@ Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
 <div>Now Playing</div>
 <div id="block" style="padding-left:4%;"></div>
 <br style="clear:both;float:none;"/>
-<div style="text-align:left;"><audio id="player" src="" controls="controls"  onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();" onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" ></audio></div>	
+<script>
+<?php
+if (!$activatechat===false){
+?>
 
+function skipsong() {
+	document.getElementById('skip').InnerHTML= 'Skipping song...';
+				<?php
+				if (!isset($_SESSION['nick'])){
+					?>
+				document.getElementById('social').data="../network/?login=login";
+
+					<?php
+					
+				}
+				?>
+	
+	var xhttp = new XMLHttpRequest();
+	  xhttp.onreadystatechange = function(){
+		  if (xhttp.readyState==4 && xhttp.status==200) {
+
+				document.getElementById('skip').InnerHTML= 'Skip this song';
+				location.reload();
+
+			}
+
+		  
+		  };
+	  xhttp.open("GET", "skipsong.php", true);
+	  xhttp.send();
+
+}
+<?php
+}
+?>
+
+</script>
+<div style="text-align:left;"><audio id="player" src="" controls="controls"  onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();" onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" ></audio></div>	
+<?php
+if (!$activatechat===false){
+?>
+		<a href="javascript:void(0);" id="skip" onclick="skipsong();"/>Fork the radio!</a> (other listeners may become angry)
+<?php
+}
+?>
 </span>
 
 <hr style="float:none;clear:both;">
@@ -318,7 +361,7 @@ document.getElementById('player').play();
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"/><object data="../network" style="	width:100%;height:480px;" width="100%" height="480"></object>
+		<a name="social"/><object id="social" data="../network" style="	width:100%;height:480px;" width="100%" height="480"></object>
 <?php
 }
 
