@@ -25,7 +25,9 @@ If you got a video tier installed on your server, indicate here its api url, lik
 videourl.txt
 If you got a video tier installed on your server, indicate here its media file directory basepath url, like http://myserver.tld/video/audio
 mailing-list-owner.txt
-An email adress to which mailing list subscription requests will be forwarded. Useful only if activateaccountcreation is set. 
+An email adress to which mailing list subscription requests will be forwarded. Useful only if activateaccountcreation is set.
+activatestats.txt
+Should we enable realtime audience statistics ?  Can be 0 or 1 (disable is 0, 1 is for enable)
 material_artists.txt
 Which of your artists should be whitelisted as having material releases for sale. One per line. 
 material_blacklist.txt
