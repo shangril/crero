@@ -392,14 +392,14 @@ if (isset ($_GET['track'])) {
 }
 
 else if (isset ($_GET['artist'])) {
-	echo '<a href="http://cremroad.com/">../</a><br/>';
+	echo '<a href="http://'.$server.'/">../</a><br/>';
 }
 
 ?>
 
 
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
-	<span style=""><img style="float:left;width:3%;" src="http://cremroad.com/favicon.png"/></span>
+	<span style=""><img style="float:left;width:3%;" src="<?php echo $favicon ;?>"/></span>
 		
 	<h1 id="title" style="display:inline;"><?php echo $title; ?></h1>
 	<?php if (!isset($_GET['listall'])){
