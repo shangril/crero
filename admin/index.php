@@ -180,7 +180,80 @@ else if (isset($_GET['admin'])){
 	
 	}
 }
+else if (isset($_GET['covers'])){
+	if ($_GET['covers']==='manage'){
+		echo '<h2>Manage cover arts</h2>';
+		echo 'Use this form to upload a cover art image to ./covers ; <br/>once it is done you have to declare it in the Covers configuration option to indicate to which album it belongs<br/>';
+		echo '<br/>png, gif, jpeg formats are ok<br/>';
+		?>
+		
+		<form action="./?covers=upload" method="POST" enctype="multipart/form-data" style="display:inline;"><input name="torrent" type="file" accept="image/*"/><input type="submit"></form>
+		
 
+		
+		<?php
+		$covers=array_diff(scandir('../covers'), Array('..', '.'));
+		
+		echo '<br/><strong>Available covers currently online : </strong><br/>';
+		foreach ($covers as $cover){
+			echo htmlspecialchars($cover).'<br/>';
+			
+		}
+	}
+	else if ($_GET['covers']==='upload'){
+		$dossier = '../covers/';
+		$fichier = basename($_FILES['torrent']['name']);
+		$filesize_max = 128000000;
+		$filesize = filesize($_FILES['torrent']['tmp_name']);
+		$extensions = array('.png','.gif','.jpeg', '.jpg');
+		$extension = strrchr($_FILES['torrent']['name'], '.'); 
+		$fichier=str_replace('.php', '', $fichier);
+		if (file_exists($dossier.preg_replace('/[^-\w:";:+=\.\']/', '', str_replace(' ','',$fichier)))) {
+
+		echo "<hr/>Please change the filename. This one is already in use<hr/></body></html>";
+		die();
+
+		}
+		
+		if(!in_array($extension, $extensions)) 
+		{
+			 $error_msg = 'We only accept .png, .jpeg, .jpg and .gif file extensions, in lowercase, as mentionned on the previous page. ';
+		}
+		if($filesize>$filesize_max)
+		{
+			 $error_msg = 'We do not accept file bigger than 128 megabytes !';
+		}
+		if(!isset($error_msg)) 
+		{
+			if(move_uploaded_file($_FILES['torrent']['tmp_name'], $dossier . preg_replace('/[^-\w:";:+=\.\']/', '', str_replace(' ','',$fichier)))) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
+			 {
+				  echo '<hr/><h2>Upload OK ! </h2><hr/>';
+			 }
+			 else 
+			 {
+				  echo 'Sorry, the system encountered an error. Note : We do not accept file bigger than 128 megabytes<br/>';
+			  echo $_FILES['torrent']['tmp_name'].' '. $dossier . $fichier;
+			 }
+		}
+		else
+		{
+			 echo '<hr/>'.$error_msg.'<hr/>';
+		}
+		}
+		else
+		{echo '<hr/>Please, no quote in filenames !<hr/>';}
+
+		
+		
+		
+		
+		
+		
+	
+	
+	
+	
+}
 if (!isset($_GET['ajaxstatupdate'])){
 
 ?>
