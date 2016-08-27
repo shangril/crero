@@ -1,12 +1,21 @@
+<?php
+chdir('./..');
+require_once('./config.php');
+chdir('./script.js');
+
+
+header('Content-Type: text/javascript');
+?>
+
 var isplaying=-1;
 var currenttarget='';
 var currentclewn;
 function play(target, id, isclewn){
 	if (isclewn) {
-			target='http://audio.clewn.org/audio/'+target;
+			target='<?php echo $clewnaudiourl;?>'+target;
 	}
 	else  {
-			target='http://cremroad.com/z/'+target;
+			target='<?php echo 'http://'.$server.'/z/';?>'+target;
 	}
 	currenttarget=target;
 	currentclewn=isclewn;
