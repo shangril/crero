@@ -17,9 +17,9 @@ Physical releases means free download, for now.
 
 3. Deploy to your web server
 
-4. Check <yourserver.tld>/admin/d . If you don't get a HTTP 403 Forbidden, this means that .htaccess directives are not applied by your web server, and you'll need an alternate way to secure any sensitive data storage dir (especillay network/d/ e/ and f/ if you enable geolocated chats for your visitors)
+4. Check yourserver.tld/admin/d . If you don't get a HTTP 403 Forbidden, this means that .htaccess directives are not applied by your web server, and you'll need an alternate way to secure any sensitive data storage dir (especillay network/d/ e/ and f/ if you enable geolocated chats for your visitors)
 
-5. Go to <yourserver.tld>/admin/ and log in
+5. Go to yourserver.tld/admin/ and log in
 
 6. set the ''clewnapiurl'' and the ''clewnaudiourl'' to use audio.clewn.org as media tiers -you'll get the rights urls in the online help
 
@@ -36,9 +36,9 @@ Physical releases means free download, for now.
 
 Apply previous steps 1-5
 
-1. download php-getid3/ from sourceforge.net (1.x version should always work) and put it at <INSTALL ROOT>/php-getid3
+1. download php-getid3/ from sourceforge.net (1.x version should always work) and put it at INSTALL ROOT/php-getid3
 
-2. put your audio in <INSTALL ROOT>/api/audio (same basename flac ogg mp3 with correct artist, album, title and comment tags)
+2. put your audio in INSTALL ROOT/api/audio (same basename flac ogg mp3 with correct artist, album, title and comment tags)
 
 3. update ''clewnapiurl'' to <your server>/<install path>/api/api.php and ''clewnaudiourl'' to <your server>/<install path>/api/audio/ (mind the trailing slash)
 
@@ -48,7 +48,7 @@ Apply previous steps 1-5
 
 1. same id3 download as previous scenario step 1
 
-2. same audio upload as previous scenario step 2 but in <INSTALL ROOT>/z
+2. same audio upload as previous scenario step 2 but in INSTALL ROOT/z
 
 3. create an empty index.html in this very directory if you want to prevent public listing
 
@@ -76,7 +76,7 @@ In both cases, the url of the api backend goes to clewnapiurl config option.
 
 It is possible to restrict the acces to albums to streaming-only. 
 Please note that your audios could be *easily* stolen. 
-Be sure to add a blank index.php file in `<install root>/z/` to prevent public directory listing and put your streaming-only albums audio in this directory. 
+Be sure to add a blank i	ndex.php file in `<install root>/z/` to prevent public directory listing and put your streaming-only albums audio in this directory. 
 
 Remember that piracy actually increases sales :)
 
