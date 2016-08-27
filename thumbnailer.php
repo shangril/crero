@@ -40,11 +40,12 @@ include ('./config.php');
 				exit;
 			}  
 			
-			
+			/*
 			$handle=fopen('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', 'rb');
 			
 			fpassthru($handle);
-			fclose($handle);
+			fclose($handle);*/
+			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			die();
 			
 		}
