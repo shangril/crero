@@ -40,7 +40,7 @@ Apply previous steps 1-5
 
 2. put your audio in INSTALL ROOT/api/audio (same basename flac ogg mp3 with correct artist, album, title and comment tags)
 
-3. update ''clewnapiurl'' to <your server>/<install path>/api/api.php and ''clewnaudiourl'' to <your server>/<install path>/api/audio/ (mind the trailing slash)
+3. update ''clewnapiurl'' to http://your server/install path/api/api.php and ''clewnaudiourl'' to http://your server/install path/api/audio/ (mind the trailing slash)
 
 4. Same as previous scenario steps 8 and 9
 
