@@ -3,20 +3,68 @@ CreRo is a CMS for record labels, and was initially written to power Crem Road r
 Paid download is not supported yet. 
 Physical release shop feature. 
 Streaming only or online music free download. 
-Be aware that it is simply a code dump with some things wich still hardcoded.
 Physical releases means free download, for now.
 
 # Installation steps
+
+## Crash course ; free download albums, media files served by audio.clewn.org
 
 1. Clone the CreRo repository.
 
   `git clone https://github.com/shangril/crero.git`
 
-2. Set the various config option in the `<install root>/d/` subdir (see below for details about each available option).
+2. edit ./admin/config.php and change username and password
 
 3. Deploy to your web server
 
-4. Upload audio, covers, text songsheets or videos via ftp. No upload form available yet. 
+4. Check <yourserver.tld>/admin/d . If you don't get a HTTP 403 Forbidden, this means that .htaccess directives are not applied by your web server, and you'll need an alternate way to secure any sensitive data storage dir (especillay network/d/ e/ and f/ if you enable geolocated chats for your visitors)
+
+5. Go to <yourserver.tld>/admin/ and log in
+
+6. set the ''clewnapiurl'' and the ''clewnaudiourl'' to use audio.clewn.org as media tiers -you'll get the rights urls in the online help
+
+7. set ''server'' config option to reflect the path of your install ; set site ''title'', site ''description'', maybe page footer... It should be enough for now
+
+8. declare your artists list with the option called ''artists''
+
+9. use Cover Art section to upload your cover arts. Indicate each file's corresponding album in configuration options -> covers
+
+10. upload your audio files (same basename flac ogg mp3 with correctly set artist, album, title, comment tags) to audio.clewn.org
+
+
+##  Hosting free download album on your own
+
+Apply previous steps 1-5
+
+1. download php-getid3/ from sourceforge.net (1.x version should always work) and put it at <INSTALL ROOT>/php-getid3
+
+2. put your audio in <INSTALL ROOT>/api/audio (same basename flac ogg mp3 with correct artist, album, title and comment tags)
+
+3. update ''clewnapiurl'' to <your server>/<install path>/api/api.php and ''clewnaudiourl'' to <your server>/<install path>/api/audio/ (mind the trailing slash)
+
+4. Same as previous scenario steps 8 and 9
+
+## Provide streaming only albums
+
+1. same id3 download as previous scenario step 1
+
+2. same audio upload as previous scenario step 2 but in <INSTALL ROOT>/z
+
+3. create an empty index.html in this very directory if you want to prevent public listing
+
+4. usual stuff for artist declaring and cover uploads
+
+## Sell merch
+
+1. providing your audio and covers are here, define your products in ''material_support_and_price''. Define ''material_shipping'', ''material_currency'', and don't forget to set **your own** paypal adress for payment routing
+
+2. optionnal : if you wish "name your price, no minimum", set this option, otherwise it will be "name your price, with minimum"
+
+3. declare whitlisted material artist in ''material_artist''. Maybe, blacklist some particular albums with ''material_blacklist''
+
+## Fan network's chatrooms, label radio, and so on
+
+1. refer to online help. Note that a bug in FF48 prevent your user to indicate their HTML5 geoloc currently (august 2016)
 
 # Understanding the system architecure
 
@@ -38,7 +86,7 @@ Concerning the free download audio, if you run a local media tier for free album
 
 To host free audio by yourself or to host streaming only albums, you must download and install php-getID3, which is GPLed software primarily avaiable from SourceForge.net. Extract the php-getid3 archive directory at the root of your CreRo install.
 
-# The configuration files you'll have to create in `<install root>/d/`
+# The configuration options most commonly update - refer to admin panel for a more up-to-date liste with online help
 
 * The server name or path to your Crero install. Examples : "(myserver.com)", ("crero.myserver.com)" or "myserver.com/path/to/crero".
 
