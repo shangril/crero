@@ -25,7 +25,7 @@ If you got a video tier installed on your server, indicate here its api url, lik
 videourl.txt
 If you got a video tier installed on your server, indicate here its media file directory basepath url, like http://myserver.tld/video/audio
 mailing-list-owner.txt
-An email adress to which mailing list subscription requests will be forwared. Useful only if activateaccountcreation is set. 
+An email adress to which mailing list subscription requests will be forwarded. Useful only if activateaccountcreation is set. 
 material_artists.txt
 Which of your artists should be whitelisted as having material releases for sale. One per line. 
 material_blacklist.txt
@@ -33,7 +33,7 @@ Which particular albums should be blacklisted and not available as material rele
 material_currency.txt
 The base, three letter currency code used for money transfers. Ex : EUR or USD or JPY
 material_paypal_address.txt
-The email address of the paypal account to where payments will be sent
+The email address of the paypal account to where material order payments will be sent
 material_shipping.txt
 A file defining shipping zones and shipping price, per item ordered, in the globally configured currency. Example : firste line "France", next line "1.80", third line "Europe", next line "2.60", fifth line "Rest of the world", next line "3.40"
 material_supports_and_prices.txt
@@ -49,7 +49,7 @@ if set to 1, allow to order physical item in a "name your price, no minimum" man
 materialNameYourPriceNotice.txt
 can be used to display terms and conditions for name your price manner of selling physical goods
 hasRadio.txt
-Can be 0 or 1. If 1 the site will feature a webradio
+Can be 0 or 1. If 1 the site will feature a webradio. radioBase and radioFeatured have to be filled in order for your radio to work.
 radioName.txt
 A name for your radio, eg "The Really Cool Label radio"
 radioDescription.txt
@@ -59,6 +59,14 @@ can be 0 or 1. If set to 1, the radio stream will be listed in the public dir.xy
 labelGenres.txt
 Currently used only for radio directory listing. Tag-style (space separated) list of musical genres for your label, on a single line
 radioBase.txt
-A list of http urls of mp3 files *online at the free download media tier*, one per line, to be played by the radio
+A list of http urls of mp3 files, one per line, to be played by the radio normally
 radioFeatured.txt
-A list of http urls of mp3 files *online at the streaming-only media tier*, one per line, to be played by the radio
+A list of http urls of mp3 files, one per line, to be played by the radio in a highlighted way (more often)
+../style.css
+The CSS file that you can edit to change colors for your install site
+allowDonations.txt
+if set to 1, will allow site visitor to donate to your label through paypal
+donationPaypal.txt
+Mandatory if allowDonation is set. The business adress associated with the paypal account where donation money will be routed. 
+user_notes.txt
+Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

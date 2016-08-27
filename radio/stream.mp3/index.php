@@ -274,7 +274,9 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 		$featuredbasenamed=explode('/', $thisfeatured);
 		$featuredbasename=array_pop($featuredbasenamed);
 		$apihook=str_replace($featuredbasename, '', $thisfeatured);
-		$apihook=str_replace('z/', 'api.php', $apihook);
+		$apihook=str_replace('/z/', '/api.php', $apihook);
+		$apihook=str_replace('/audio/', '/api.php', $apihook);
+		
 		$apihook.='?radio='.urlencode($featuredbasename);
 		$apirequest=file_get_contents($apihook);
 		if (count($apirequest)>0){
@@ -313,7 +315,9 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 		$featuredbasename=array_pop($featuredbasenamed);
 		
 		$apihook=str_replace($featuredbasename, '', $thisfeatured);
-		$apihook=str_replace('audio/', 'api.php', $apihook);
+		$apihook=str_replace('/audio/', '/api.php', $apihook);
+		$apihook=str_replace('/z/', '/api.php', $apihook);
+
 		$apihook.='?radio='.urlencode($featuredbasename);
 		$apirequest=file_get_contents($apihook);
 		$result=explode("\n", $apirequest);
