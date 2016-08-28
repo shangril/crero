@@ -1,6 +1,13 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
-require_once('./php-getid3/getid3.php');
+
+if (file_exists('./php-getid3/getid3.php')){
+	require_once('./php-getid3/getid3.php');
+}
+else {
+	require_once('./php-getid3/getid3/getid3.php');
+
+}
 if (isset($_GET['listalbums'])) {
 header('Content-Type: text/plain; charset=utf-8');
 
