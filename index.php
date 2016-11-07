@@ -1,10 +1,54 @@
 <?php
 require_once('./config.php');
-
+//error_reporting(E_WARNING|E_NOTICE);
 
 $sessionstarted=session_start();
 
 srand();
+
+$album_scores=Array();
+if ($activatestats)
+{
+//we gonna compute the score for each album
+	$raw_scores=Array();
+	$scoredats=array_diff(scandir ('./admin/d/stats/'), Array ('.', '..', '.htaccess'));
+	foreach ($scoredats as $score_dat){
+			$thisscoredat=unserialize(file_get_contents('./admin/d/stats/'.$score_dat));
+			if (strstr($thisscoredat['page'], '?')){
+				$scoretokens=explode('?', $thisscoredat['page']);
+				$scoreuri=$scoretokens[1];
+				$scoregets=explode('&', $scoreuri);
+				foreach ($scoregets as $scoreget){
+					$scorepair=explode('=', $scoreget);
+					for ($dex=0;$dex<count($scorepair);$dex++){
+						if ($scorepair[$dex]==='album'){
+							if (!isset($raw_scores[urldecode($scorepair[$dex+1])])){
+								$raw_scores[urldecode($scorepair[$dex+1])]=1;
+							}
+							else {
+								$raw_scores[urldecode($scorepair[$dex+1])]++;
+							}
+						}
+						$dex++;
+					}
+				}
+			}
+	}
+	
+	arsort($raw_scores);
+	$albums_scored=array_keys($raw_scores);
+	$maxscore=$raw_scores[$albums_scored[0]];
+	$multiplicant=floatval($maxscore/155);
+	
+	foreach ($albums_scored as $album_scored){
+		$album_scores[$album_scored]=floatval($raw_scores[$album_scored]*$multiplicant);
+		
+	}
+	//var_dump($raw_scores);
+	//var_dump($album_scores);
+}
+
+
 
 if ($activatestats&&isset($_GET['pingstat'])){
 	//if audience figures are activated, let's store the hit details in the stats directory
@@ -69,7 +113,7 @@ error_reporting(E_ERROR | E_PARSE);
 if (isset($_GET['artist'])) {
 	$favicon='http://'.$server.'/favicon.png';
 	$arturl='&artist='.urlencode($_GET['artist']);
-	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A Crem Road artist';
+	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A '.htmlspecialchars($title).' artist';
 	$artists_file=file_get_contents('./d/artists.txt'); 
 
 	$artists=explode("\n", $artists_file);
@@ -717,7 +761,32 @@ foreach ($contentlocal as $item){
 
 			}
 		else  {
-				echo '<span style="float:left;border:solid 1px;">';
+				if ($activatestats){
+					if (isset($album_scores[$item['album']])){
+						$thisalbumscore=intval($album_scores[$item['album']])+100;
+						
+					}
+					else {
+						$thisalbumscore=0;
+					}
+				}
+				else {
+					$thisalbumscore=177;
+				}
+				$displaythatcover=true;
+
+				if (file_exists('./d/covers.txt')){
+					$coversfile=trim(file_get_contents('./d/covers.txt'));
+					$coverslines=explode("\n", $coversfile); 
+					if (!in_array(html_entity_decode($item['album']), $coverslines)){
+							$displaythatcover=false;
+					}
+				}
+				echo '<span style="float:left;border:solid 1px;';
+				if ($displaythatcover){
+					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
+				}
+				echo '">';
 				
 				if ($mixed){
 					
@@ -931,7 +1000,36 @@ foreach ($content as $item){
 			}
 			}
 		else  {
-				echo '<span style="float:left;border:solid 1px;">';
+				if ($activatestats){
+					if (isset($album_scores[$item['album']])){
+						$thisalbumscore=intval($album_scores[$item['album']])+100;
+						
+					}
+					else {
+						$thisalbumscore=0;
+					}
+				}
+				else {
+					$thisalbumscore=177;
+				}
+
+			
+				$displaythatcover=true;
+
+				if (file_exists('./d/covers.txt')){
+					$coversfile=trim(file_get_contents('./d/covers.txt'));
+					$coverslines=explode("\n", $coversfile); 
+					if (!in_array(html_entity_decode($item['album']), $coverslines)){
+							$displaythatcover=false;
+					}
+				}
+				echo '<span style="float:left;border:solid 1px;';
+				if ($displaythatcover){
+					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
+				}
+				echo '">';
+			
+
 				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
 				echo displaycover($item['album'], 0.1);
 				
