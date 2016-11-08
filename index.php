@@ -113,7 +113,7 @@ error_reporting(E_ERROR | E_PARSE);
 if (isset($_GET['artist'])) {
 	$favicon='http://'.$server.'/favicon.png';
 	$arturl='&artist='.urlencode($_GET['artist']);
-	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A '.htmlspecialchars($title).' artist';
+	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A '.htmlspecialchars($sitename).' artist';
 	$artists_file=file_get_contents('./d/artists.txt'); 
 
 	$artists=explode("\n", $artists_file);
@@ -918,7 +918,7 @@ if($material) {
 	$itemid=0;
 			
 }
-
+$animindex=0;
 foreach ($content as $item){
 	$ran=false;
 	
@@ -939,6 +939,8 @@ foreach ($content as $item){
 	if (isset ($item['album'])&&$running){
 		$weactuallydisplayedsomething=true;
 		$ran=true;
+		$float=true;
+
 
 		if (!isset($_GET['listall'])&&!$mosaic&&isset($_SESSION['nick'])){
 			echo '<h1>Album : ';
@@ -1000,6 +1002,7 @@ foreach ($content as $item){
 			}
 			}
 		else  {
+				$animindex++;
 				if ($activatestats){
 					if (isset($album_scores[$item['album']])){
 						$thisalbumscore=intval($album_scores[$item['album']])+100;
@@ -1023,15 +1026,26 @@ foreach ($content as $item){
 							$displaythatcover=false;
 					}
 				}
-				echo '<span style="float:left;border:solid 1px;';
+				echo '<span id="anim'.$animindex.'" style="float:';
+				
+				if ($float) {
+					echo 'left';
+				}
+				else{
+				
+					echo 'right';
+				
+				}
+				$float=!$float;
+				echo ';border:solid 1px;';
 				if ($displaythatcover){
 					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
 				}
 				echo '">';
-			
+				echo '<script>var anim=\'anim\'</script>';
 
 				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.1);
+				echo displaycover($item['album'], 0.1+$thisalbumscore/7550);
 				
 		}
 		
@@ -1355,6 +1369,49 @@ if ($activatestats){
 <?php
 }
 ?>
+<script>
+var animmax=<?php echo $animindex; ?>;
+var donez = new Array();
+var senz = new Array();
+var coverz = new Array();
+var target=0;
+
+if (anim='anim'){
+for (var z=1;z<=animmax;z++)	{
+	donez[z]=0;
+}
+for (var z=1;z<=animmax;z++)	{
+	senz[z]=0;
+}
+
+
+
+setInterval(function (){
+	target++;
+	if (target>animmax){
+		target=1;
+	}
+	if (senz[target]==1){
+		donez[target]=donez[target]+1;
+	}
+	else{
+		donez[target]=donez[target]-1;
+	}
+	if (donez[target]<=0){
+		senz[target]=1;
+	}
+	if (donez[target]>=5){
+		senz[target]=0;
+	}
+		
+	document.getElementById('anim'+target).style.margin=donez[target]+'px';
+	document.getElementById('anim'+target).style.padding=5-donez[target]+'px';
+	
+}, 1);
+
+}
+
+</script>
 <div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels">CreRo, the CMS for record labels</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
 </body>
 </html>
