@@ -848,7 +848,7 @@ foreach ($contentlocal as $item){
 					<?php
 					if (isset($_GET['autoplay'])&&$hasntautoplayed){
 						?>
-						<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, false);</script>
+						<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, false, true);</script>
 						<?php
 						$hasntautoplayed=false;
 					}
@@ -1194,7 +1194,7 @@ foreach ($content as $item){
 						}
 						if (isset($_GET['autoplay'])&&$hasntautoplayed){
 							?>
-							<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true);</script>
+							<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true, true);</script>
 							<?php
 							$hasntautoplayed=false;
 						}

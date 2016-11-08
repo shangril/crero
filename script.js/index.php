@@ -10,7 +10,7 @@ header('Content-Type: text/javascript');
 var isplaying=-1;
 var currenttarget='';
 var currentclewn;
-function play(target, id, isclewn){
+function play(target, id, isclewn, isautoplay = false){
 	if (isclewn) {
 			target='<?php echo $clewnaudiourl;?>'+target;
 	}
@@ -22,7 +22,11 @@ function play(target, id, isclewn){
 	var player=document.getElementById('player');
 	
 	if (isplaying!=id){
-	document.getElementById(id).innerHTML='■';	
+		if (!isautoplay) 
+		{	
+			document.getElementById(id).innerHTML='■';	
+	
+		}
 	isplaying=id;
 	player.pause();
 	player.innerHTML=null;
