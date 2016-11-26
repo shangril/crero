@@ -204,4 +204,23 @@ $materialmenu=trim(file_get_contents('./d/materialmenu.txt'));
 $materialreleasessalesagreement=trim(file_get_contents('./d/materialreleasessalesagreement.txt'));
 //what will be displayed at the bottom of the shop page if the material release eshop is enabled 
 
+
+$socialmediaicons=Array();
+//facebook twitter youtube links, things like that
+if (file_exists('./d/social_media_icons.txt')){
+	$socdata=trim(file_get_contents('./d/social_media_icons.txt'));
+	$soctokens=explode("\n", $socdata);
+	for ($p=0;$p<count($soctokens);$p++){
+		$socialone=Array();
+		$socialone['letter']=$soctokens[$p];
+		$p++;
+		$socialone['color']=$soctokens[$p];
+		$p++;
+		$socialone['background-color']=$soctokens[$p];
+		$p++;
+		$socialone['link']=$soctokens[$p];
+		array_push($socialmediaicons, $socialone);
+	}
+}
+
 ?>

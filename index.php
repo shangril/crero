@@ -378,6 +378,22 @@ if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
 }
 
+if (count($socialmediaicons)>0){
+	//let's display the social media icons
+	echo '<span style="float:left;">';
+	
+	foreach ($socialmediaicons as $socialicon){
+		echo '<strong><a target="new" href="'.$socialicon['link'].'" style="color:'.$socialicon['color'].';background-color:'.$socialicon['background-color'].';border-radius:3px;">';
+		
+		echo htmlspecialchars($socialicon['letter']);
+		
+		echo '</a></strong> ';
+		
+		
+	}
+	echo '</span>';
+}
+
 if ($acceptdonations){
 	echo '<span style="float:right;text-align:right">';
 	
