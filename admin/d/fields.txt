@@ -17,13 +17,13 @@ Can be 0 or 1. If set to 0, no mailing list management. If set to 1, the people 
 activatechat.txt
 Can be 0 or 1. If set to 0, no online chat. If set to 1, a chatroom with geolocation features will be available for visitors. Make sure that the ./htaccess denial directive of the ./network/*/ subdirectories are working : d/ e/ f/ and eventually <domain name>/d /e and /f must not be reachable when pointing a browser to yourserver/network/<domain name>/d /e and /f and yourserver/network/d /e and /f 
 clewnapiurl.txt
-the http url of a the media server tier used to provide free download albums. If this tier is local to your install it would be probably http://yourserver.tld/api/api.php. If your server is somewhere else on the internet, as example if you use Clewn.org for free audio hosting, it will be http://audio.clewn.org/api.php
+the http url of a the media server tier used to provide free download albums. If this tier is local to your install it would be probably http://yourserver.tld/api/api.php . If your server is somewhere else on the internet, as example if you use Clewn.org for free audio hosting, it will be http://audio.clewn.org/api.php
 clewnaudiourl.txt
-the basepath of the directory containing audio files on the free album media server tier. Like http://yourserver/api/audio if you run your own, or http://audio.clewn.org/audio for an install using Clewn.org for free hosting
+the basepath of the directory containing audio files on the free album media server tier. Like http://yourserver/api/audio/ if you run your own, or http://audio.clewn.org/audio/ for an install using Clewn.org for free hosting
 videoapiurl.txt
-If you got a video tier installed on your server, indicate here its api url, like http://myserver.tld/video/api.php
+If you got a video tier installed on your server, indicate here its api url, like http://myserver.tld/video/api.php/
 videourl.txt
-If you got a video tier installed on your server, indicate here its media file directory basepath url, like http://myserver.tld/video/audio
+If you got a video tier installed on your server, indicate here its media file directory basepath url, like http://myserver.tld/video/audio/
 mailing-list-owner.txt
 An email adress to which mailing list subscription requests will be forwarded. Useful only if activateaccountcreation is set.
 activatestats.txt
@@ -72,5 +72,7 @@ donationPaypal.txt
 Mandatory if allowDonation is set. The business adress associated with the paypal account where donation money will be routed. 
 social_media_icons.txt
 Social media links : each social media you want to display an icon for is defined over a four-lines block : first line is the letter that will be displayed by the icon ; second line is the CSS color used for the letter (ex : "blue", "red", or "#CEFA00"), third line is the background CSS color of the icon ; fourth line is the url of the social media page that will be linked. Then fifth line is the letter of a second social media icon, etc. Ex first line "T", second line "white", third line, "cyan", fourth line "https://twitter/slcnc", fifth line "F", sixth line "white", seventh line "blue", eighth line "https://facebook.com/cremroad"... etc. 
+crero_yp_services.txt
+If you wish to announce the existence of your label website on some CreRo yellopages services, insert here the ping url of each of them, one per line. Example : "http://clewn.org/yp/" (don't forget the trailing slash)
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

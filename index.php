@@ -90,6 +90,10 @@ $mosaic=false;
 if (count($_GET)==0||isset($_GET['message'])){
 	$mosaic=true;
 	$_GET['listall']='albums';
+	//some stuff when displaying the homepage : pinging the yp servers
+	foreach ($creroypservices as $ypservice){
+		file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description));
+	}
 }
 
 

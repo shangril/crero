@@ -222,5 +222,11 @@ if (file_exists('./d/social_media_icons.txt')){
 		array_push($socialmediaicons, $socialone);
 	}
 }
+$creroypservices=Array();
+//facebook twitter youtube links, things like that
+if (file_exists('./d/crero_yp_services.txt')){
+	$ypdata=trim(file_get_contents('./d/crero_yp_services.txt'));
+	$creroypservices=explode("\n", $ypdata);
+}
 
 ?>
