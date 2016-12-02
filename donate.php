@@ -49,5 +49,11 @@ function toggleMonthly(){
 <input type="checkbox" onClick="toggleMonthly();" /><?php echo $trans[$lang]['monthly'] ;?>
 <input type="submit" name="submit" value="<?php echo $trans[$lang]['donate']?>" />
 </form>
+<?php
+if (file_exists('./supporters') && is_dir('./supporters')){
+	
+	echo '<a href="./supporters">Our supporters</a>';
+}
+?>
 </span>
 <?php ?>

@@ -5,6 +5,8 @@ Physical release shop feature.
 Streaming only or online music free download. 
 Physical releases means free download, for now.
 
+# New feature 16.11.30.0033 : create a subdir called "supporters" and put an index.php that you can code as you wish in it if you want to display a hall of fame of your donators. A "Our supporters" link will display then in the donation module.   
+
 # Installation steps
 
 ## Crash course ; free download albums, media files served by audio.clewn.org
