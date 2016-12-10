@@ -64,7 +64,7 @@ if ($activatestats&&isset($_GET['pingstat'])){
 		$page['data']['agent']=$_GET['reqHTTP_USER_AGENT'];
 		$variable='agent';
 		
-		if (!(strstr($page['data'][$variable],'bot')||
+		if (isset($_SESSION['is_human'])&&!(strstr($page['data'][$variable],'bot')||
 		strstr($page['data'][$variable],'Yahoo! Slurp')||
 		strstr($page['data'][$variable],'+http://')||
 		strstr($page['data'][$variable],'+https://')||
@@ -84,7 +84,12 @@ if ($activatestats&&isset($_GET['pingstat'])){
 		
 	die();
 }
-
+if ($activatestats&&isset($_GET['is_human'])){
+		if ($sessionstarted){
+			$_SESSION['is_human']=true;
+		}
+		
+}
 
 $mosaic=false;
 if (count($_GET)==0||isset($_GET['message'])){
@@ -371,10 +376,49 @@ function displaycover($album, $ratio, $param='cover'){
 <meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
 <script src="http://<?php echo $server;?>/script.js">
 </script>
+<?php if ($activatestats) {?>
+
+
+<script>
+var first_human_validated_stats_sent = false;
+	  
+	  
+function is_human(){
+	  if (!first_human_validated_stats_sent){
+		  first_human_validated_stats_sent=true;
+
+
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.open("GET", "./?is_human=true");
+		  xhttp.send();
+
+		  
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
+		  
+		  
+		  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
+		  
+		  
+		  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
+		  
+		  
+		  ?>", true);
+		  xhttp.send();
+	}
+}
+</script>
+<?php } else { ?>
+<script>
+	function is_human(){
+		return;
+	}
+</script>
+<?php } ?>
 <style>
 </style>
 </head>
-<body>
+<body onMouseOver="is_human();">
 <?php
 if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
@@ -1371,19 +1415,21 @@ if ($activatestats){
 
 ?>
 <script>
-  var xhttp = new XMLHttpRequest();
-  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
-  
-  
-  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
-  
-  
-  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
-  
-  
-  ?>", true);
-  xhttp.send();
-
+	if (!first_human_validated_stats_sent){
+	  
+	  var xhttp = new XMLHttpRequest();
+	  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
+	  
+	  
+	  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
+	  
+	  
+	  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
+	  
+	  
+	  ?>", true);
+	  xhttp.send();
+	}
 </script>
 
 <?php
