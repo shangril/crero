@@ -134,8 +134,12 @@ $videourl=trim(file_get_contents('./d/videourl.txt'));
 
 //whatever message you want to display if the HTTP GET message is set to this value, e.g. for advertising campaign or whatever
 
-$message['ad20151127']='Welcome visitor ! We have\'nt got much money to spend on advertising. If you like what you hear, please be kind enough to share broadly';
-//will be displayed for http://yourserver.com/?message=ad
+$message['show_youtube']='
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uWvgKIdnvGE?list=UUf8dSxqrjMkzXn8-OtNerkg" frameborder="0" allowfullscreen></iframe>
+
+';
+//will be displayed for http://yourserver.com/?message=show_youtube
 
 
 
@@ -223,10 +227,24 @@ if (file_exists('./d/social_media_icons.txt')){
 	}
 }
 $creroypservices=Array();
-//facebook twitter youtube links, things like that
+//yellopages services
 if (file_exists('./d/crero_yp_services.txt')){
 	$ypdata=trim(file_get_contents('./d/crero_yp_services.txt'));
 	$creroypservices=explode("\n", $ypdata);
 }
+//latest level html page caching
+$activatehtmlcache=false;
+if (file_exists('./d/activatehtmlcache.txt')){
+	$activatehtmlcache=boolval(trim(file_get_contents('./d/activatehtmlcache.txt')));
+}
+$htmlcacheexpires=7;
+if (file_exists('./d/htmlcacheexpires.txt')){
+	$htmlcacheexpires=floatval(trim(file_get_contents('./d/activatehtmlcache.txt')));
+}
+if (!file_exists('./htmlcache/cached')){
+	mkdir('./htmlcache/cached');
+	
+}
+
 
 ?>

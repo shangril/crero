@@ -74,5 +74,9 @@ social_media_icons.txt
 Social media links : each social media you want to display an icon for is defined over a four-lines block : first line is the letter that will be displayed by the icon ; second line is the CSS color used for the letter (ex : "blue", "red", or "#CEFA00"), third line is the background CSS color of the icon ; fourth line is the url of the social media page that will be linked. Then fifth line is the letter of a second social media icon, etc. Ex first line "T", second line "white", third line, "cyan", fourth line "https://twitter/slcnc", fifth line "F", sixth line "white", seventh line "blue", eighth line "https://facebook.com/cremroad"... etc. 
 crero_yp_services.txt
 If you wish to announce the existence of your label website on some CreRo yellopages services, insert here the ping url of each of them, one per line. Example : "http://clewn.org/yp/" (don't forget the trailing slash)
+activatehtmlcache.txt
+Can be 0 (not activated) or 1 (activated). If activated, all the html rendering of the core site (album pages, index page, arrist pages and so on) will be cached server-side on disk, for a duration defined in htmlcacheexpires.txt ; it is only useful for high load website. Please note that it will mean, if activated, that newly published track will not appear immediately on the site ; you will have to wait until the cached version has expired for the page to be rebuild and the new track to appear. Default is "not activated". 
+htmlcacheexpires.txt
+The duration, expressed in hours, util a cached version of an html page expires. See activatehtmlcache for more information. Default is 7. Non-integer values are accepted. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

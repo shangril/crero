@@ -2,9 +2,46 @@
 require_once('./config.php');
 //error_reporting(E_WARNING|E_NOTICE);
 
+require_once('./crero-lib.php');
+
+ob_start();
+
 $sessionstarted=session_start();
 
 srand();
+
+$willhavetocache=false;
+
+$cachingkey='key:';
+
+$get_keys=array_keys($_GET);
+
+foreach ($get_keys as $get_key){
+	$cachingkey.=$get_key.':'.$_GET[$get_key];
+	
+}
+
+$myhtmlcache=new creroHtmlCache($htmlcacheexpires);
+
+//* caching of htmlpage ; here we are
+
+
+if ($activatehtmlcache){
+
+	
+	if ($myhtmlcache->hasPageExpired($cachingkey)){
+		$willhavetocache=true;
+		
+	}
+	else {
+		echo $myhtmlcache->getCachedPage($cachingkey);
+		exit();
+	}
+
+
+}
+
+//caching of html page ; almost done. Just cache the output buffer once the page is fully generated. See end of this file
 
 $album_scores=Array();
 if ($activatestats)
@@ -1480,4 +1517,16 @@ setInterval(function (){
 </script>
 <div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels">CreRo, the CMS for record labels</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
 </body>
-</html>
+</html><?php
+if ($activatehtmlcache){
+
+
+	if ($willhavetocache){
+			$htmlcode=ob_get_contents();
+			if ($htmlcode!==false){
+				$myhtmlcache->cachePage($cachingkey, $htmlcode);
+		}
+	}
+
+}
+?>
