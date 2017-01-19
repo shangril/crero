@@ -1276,16 +1276,16 @@ foreach ($content as $item){
 				<?php
 				echo '';
 				echo '</form>';
-			
+				echo '<hr/';
 				echo '<div style="float:none;clear:both;"></div>';
 				?>
-								Tip download : 
-				<em>Name your price and get instant download access to <strong><?php echo htmlspecialchars($_GET['album']);?></strong> in Flac, Ogg and Mp3 formats</em><span style="font-size:84%;">
+								<h3></h3>Tip download :</h3> 
+				<em>Name your price and get instant download access to <strong><?php echo $item['album'];?></strong> in Flac, Ogg and Mp3 formats</em><span style="font-size:84%;">
 				
 				<form  name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
 				<input type="hidden" name="cmd" value="_xclick" />
 				<input type="hidden" name="business" value="<?php echo htmlspecialchars($material_paypal_address);?>" />
-				<input type="hidden" name="item_name" value="Tip download for album <?php echo htmlspecialchars($_GET['album'])?>" />
+				<input type="hidden" name="item_name" value="Tip download for album <?php echo str_replace('"', '', $item['album'])?>" />
 				<input type="hidden" name="currency_code" value="<?php echo htmlspecialchars($material_currency);?>" />
 				<br/>I want to pay <?php echo htmlspecialchars($material_currency);?> <input type="text" size="4" name="amount" value="2.50" />
 				<input type="hidden" name="shipping" value="0" />
