@@ -26,7 +26,7 @@ $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 //* caching of htmlpage ; here we are
 
 
-if ($activatehtmlcache&&!isset($_POST)){
+if ($activatehtmlcache&&!isset($_POST['validateemail'])){
 
 	
 	if ($myhtmlcache->hasPageExpired($cachingkey)){

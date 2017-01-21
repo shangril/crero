@@ -239,7 +239,7 @@ if (file_exists('./d/activatehtmlcache.txt')){
 }
 $htmlcacheexpires=7;
 if (file_exists('./d/htmlcacheexpires.txt')){
-	$htmlcacheexpires=floatval(trim(file_get_contents('./d/activatehtmlcache.txt')));
+	$htmlcacheexpires=floatval(trim(file_get_contents('./d/htmlcacheexpires.txt')));
 }
 if (!file_exists('./htmlcache/cached')){
 	mkdir('./htmlcache/cached');

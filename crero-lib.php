@@ -18,7 +18,7 @@ class creroHtmlCache {
 		
 		if ((floatval($cachedpage['expires'])
 				+floatval($this::$htmlcacheexpires*3600))
-				>microtime(true)){
+				<floatval(microtime(true))){
 					unlink('./htmlcache/cached/'.$cachedpage['expires'].'.html');
 					unset($this::$cachedat[$cachedkey]);
 				}
@@ -28,12 +28,13 @@ class creroHtmlCache {
 	
 	}
 	public function hasPageExpired($cachedkey){
-		if (in_array($cachedkey, array_keys($this::$cachedat))){
+		if (array_key_exists($cachedkey, $this::$cachedat))
+			{
 			$cachedpage=$this::$cachedat[$cachedkey];
 			if (
 					(floatval($cachedpage['expires'])
 				+floatval($this::$htmlcacheexpires*3600))
-				>microtime(true)
+				<floatval(microtime(true))
 			
 				){
 					return true;
