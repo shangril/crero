@@ -522,8 +522,13 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 
 	}
 	$isinitial=false;
-	play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
-
+	if (!isset($_GET['web'])){
+		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
+	}
+	else {
+		ob_flush();
+		exit();
+	}
 }
 $bytessent=0;
 $isinitial=true;

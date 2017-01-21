@@ -33,7 +33,7 @@ include ('./config.php');
 	if (!isset($_GET['hook'])){
 	if (file_exists('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')){
 		  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
-			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
+			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) !== filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
 			)
 			{
 				header('HTTP/1.0 304 Not Modified');
