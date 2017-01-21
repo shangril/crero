@@ -28,16 +28,17 @@ include ('./config.php');
 */
 	header('Content-type: application/x-png'); 
 	list($width, $height) = getimagesize($file);
-	$modwidth=floatval($ratio)*(floatval($viewportwidth)); 
+	$modwidth=intval(floatval($ratio)*(floatval($viewportwidth))); 
 	$modheight = $modwidth;
 	if (!isset($_GET['hook'])){
 	if (file_exists('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')){
 		  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
-			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) !== filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
+			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) < filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
 			)
 			{
 				header('HTTP/1.0 304 Not Modified');
-				exit;
+				
+				exit();
 			}  
 			
 			/*
@@ -46,17 +47,14 @@ include ('./config.php');
 			fpassthru($handle);
 			fclose($handle);*/
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
-			die();
+			exit();
 			
 		}
 		else {
 			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', file_get_contents(
 			'http://'.$server.'/thumbnailer.php?hook=hook&ratio='.urlencode($_GET['ratio']).'&target='.urlencode($_GET['target']).'&viewportwidth='.urlencode($_GET['viewportwidth'])
 			));
-			$handle=fopen('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', 'rb');
-			
-			fpassthru($handle);
-			fclose($handle);
+			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			die();
 
 		}
