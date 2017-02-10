@@ -6,14 +6,44 @@ chdir('./..');
 require_once('./config.php');
 chdir('./admin/');
 
+if (!file_exists('./d/pwd.dat')){
+
+	if ($password==='hackme'){
+		echo '<html><body><h1>It\'s working</h1>Please change the $user and $password php variables in <em>admin/config.php</em> to complete the setup</body></html>';
+		die();
+	}
+	else {
+		$userhash=password_hash($user, PASSWORD_DEFAULT);
+		$pwdhash=password_hash($password, PASSWORD_DEFAULT);
+		if ($userhash&&$pwdhash){
+			$credentials=Array();
+			$credentials ['user']=$userhash;
+			$credentials ['pwd']=$pwdhash;
+			if (!file_put_contents('./d/pwd.dat', serialize($credentials))){
+				die('<html><body>Could not save your admin credentials to disk. Does your http server have right write permission over ./admin/d ? </body></html>');
+			}
+			else {
+				file_put_contents('./config.php', '<?php
+				$user=\'\';
+				$password=\'\';
+				?>');
+				
+			}
+		}
+		else {
+			die('<html><body>Could not encrypt the admin credentials. Please look at your PHP configuration.</body></html>');
+			
+		}
+	}
 
 
-if ($password==='hackme'){
-	echo '<html><body><h1>It\'s working</h1>Please change the $user and $password php variables in <em>admin/config.php</em> to complete the setup</body></html>';
-	die();
-}
+} //!file_exist pwd.dat
+
+$credentials=unserialize(file_get_contents('./d/pwd.dat'));
+
+
 if (isset($_POST['pwd'])){
-	if ($_POST['pwd']===$password&&$_POST['user']===$user){
+	if (password_verify($_POST['pwd'], $credentials['pwd'])&&password_verify($_POST['user'], $credentials['user'])){
 			$_SESSION['loggedadmin']=true;
 	}
 	else {
@@ -50,7 +80,7 @@ if (!isset($_GET['ajaxstatupdate'])){
 CreRo admin panel for domain <?php echo htmlspecialchars($_SERVER['SERVER_NAME']); ?><br/>
 <a href="./?stats=realtime">Visitor figures (realtime)</a>
 <a href="./?admin=config">Edit configuration options</a>
-<a href="./?covers=manage">Manage cover arts</a>
+<a href="./?covers=manage">Manage cover arts</a> <a href="../?purge=cache" target="new">Purge htmlcache</a>
 <?php 
 }
 if (isset($_GET['stats'])&&$_GET['stats']=='realtime'){
