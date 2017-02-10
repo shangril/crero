@@ -72,6 +72,16 @@ class creroHtmlCache {
 		
 		
 	}
+	public function purgeCache(){
+		unlink ('./htmlcache/cached.dat');
+		$cachedfilez=array_diff(scandir('./htmlcache/cached'), array('..', '.'));
+		foreach ($cachedfilez as $cachedfile){
+			unlink ('./htmlcache/cached/'.$cachedfile);
+			
+		}
+		unlink ('./htmlcache/cached.dat');
+		
+	}
 }
 
 ?>

@@ -22,11 +22,15 @@ foreach ($get_keys as $get_key){
 }
 
 $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
-
+if (isset($_GET['purge'])){
+	$myhtmlcache->purgeCache();
+	echo '<html><body>Cache purged. <a href="./">Proceed</a></body></html>';
+	exit();
+}
 //* caching of htmlpage ; here we are
 
 
-if ($activatehtmlcache&&!isset($_POST['validateemail'])){
+if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'])){
 
 	
 	if ($myhtmlcache->hasPageExpired($cachingkey)){
