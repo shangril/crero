@@ -413,7 +413,20 @@ function displaycover($album, $ratio, $param='cover'){
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
-<title><?php echo strip_tags($title); ?></title>
+<title><?php echo strip_tags($title); 
+
+if (isset($_GET['artist'])){
+	echo ' - '.htmlspecialchars($_GET['artist']);
+}
+
+if (isset($_GET['album'])){
+	echo ' - '.htmlspecialchars($_GET['album']);
+}
+if (isset($_GET['track'])){
+	echo ' - '.htmlspecialchars($_GET['track']);
+}
+
+?></title>
 <meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
 <script src="http://<?php echo $server;?>/script.js">
 </script>
