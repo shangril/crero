@@ -468,12 +468,66 @@ function is_human(){
 		return;
 	}
 </script>
-<?php } ?>
+<?php }
+
+if ($activatestats){
+
+?>
+<script>
+
+	function ajaxstats(){
+		if (!first_human_validated_stats_sent){
+		  
+		  var xhttp = new XMLHttpRequest();
+		  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
+		  
+		  
+		  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
+		  
+		  
+		  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
+		  
+		  
+		  ?>", true);
+		  xhttp.send();
+		}
+	}
+</script>
+
+<?php
+}
+
+
+ ?>
 <style>
 </style>
 </head>
 <body onMouseOver="is_human();">
+	<?php
+	if ($activatestats){
+
+?>
+<script>
+
+	ajaxstats();
+</script>
+
 <?php
+}
+
+
+ ?>
+	
+	
+	
+	
+	
+<?php
+
+if (file_exists('./splash.php')){
+	include ('./splash.php');
+}
+
 if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
 	echo '<div style="color:red;background-color:black;width:100%;text-align:center;"><span><strong>'.$message[$_GET['message']].'</strong><a href="./" style="color:black;background-color:red;text-decoration:underline;float:right;text-align:right;">X</a></span></div>';
@@ -1465,29 +1519,7 @@ if (!$activatechat===false){
 }
 
 
-if ($activatestats){
 
-?>
-<script>
-	if (!first_human_validated_stats_sent){
-	  
-	  var xhttp = new XMLHttpRequest();
-	  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
-	  
-	  
-	  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
-	  
-	  
-	  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
-	  
-	  
-	  ?>", true);
-	  xhttp.send();
-	}
-</script>
-
-<?php
-}
 ?>
 <script>
 var animmax=<?php echo $animindex; ?>;
