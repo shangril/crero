@@ -237,59 +237,105 @@ while (file_exists('../d/lock.txt')){
 }
 
 if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
-	file_put_contents('../d/lock.txt', microtime(true));
-	$apitimestart=microtime(true);
-	$featuredapi=false;
 	
+	$nextartist='';
 	
-	
-	
-	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
-	foreach ($listeners as $listener){
-		if (intval(file_get_contents('../d/listeners/'.$listener))!==$statid){
-				unlink('../d/listeners/'.$listener);
-			
-		}
-	}
-	
-	$isthislistenercounted=false;
-	foreach ($listeners as $listener){
-		if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
-				$isthislistenercounted=true;
-			
-		}
-	}
-	if (!$isthislistenercounted){
-		file_put_contents('../d/listeners/'.microtime(true), $statid);
-	}
-	$dice=rand(1,10);
-	if ($dice==1){
-		$featuredapi=true;
-		if (!$isinitial){
-			$loop=ceil(floatval(file_get_contents('../d/featuredapitime.txt'))/0.052);
-			$silent='';
-			$silentfile=file_get_contents('../silence.mp3');
-			for ($i=0;$i<$loop;$i++){
-				$silent.=$silentfile;
+		while (strlen($nextartist===0){
+		
+		
+		file_put_contents('../d/lock.txt', microtime(true));
+		$apitimestart=microtime(true);
+		$featuredapi=false;
+		
+		
+		
+		
+		$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
+		foreach ($listeners as $listener){
+			if (intval(file_get_contents('../d/listeners/'.$listener))!==$statid){
+					unlink('../d/listeners/'.$listener);
 				
 			}
-			echo $silent;
-			ob_flush();
-			flush();
 		}
 		
-		$featured=explode("\n", $radiofeatured);
-		shuffle($featured);
-		$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
-		$featuredbasenamed=explode('/', $thisfeatured);
-		$featuredbasename=array_pop($featuredbasenamed);
-		$apihook=str_replace($featuredbasename, '', $thisfeatured);
-		$apihook=str_replace('/z/', '/api.php', $apihook);
-		$apihook=str_replace('/audio/', '/api.php', $apihook);
-		
-		$apihook.='?radio='.urlencode($featuredbasename);
-		$apirequest=file_get_contents($apihook);
-		if (count($apirequest)>0){
+		$isthislistenercounted=false;
+		foreach ($listeners as $listener){
+			if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
+					$isthislistenercounted=true;
+				
+			}
+		}
+		if (!$isthislistenercounted){
+			file_put_contents('../d/listeners/'.microtime(true), $statid);
+		}
+		$dice=rand(1,10);
+		if ($dice==1){
+			$featuredapi=true;
+			if (!$isinitial){
+				$loop=ceil(floatval(file_get_contents('../d/featuredapitime.txt'))/0.052);
+				$silent='';
+				$silentfile=file_get_contents('../silence.mp3');
+				for ($i=0;$i<$loop;$i++){
+					$silent.=$silentfile;
+					
+				}
+				echo $silent;
+				ob_flush();
+				flush();
+			}
+			
+			$featured=explode("\n", $radiofeatured);
+			shuffle($featured);
+			$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
+			$featuredbasenamed=explode('/', $thisfeatured);
+			$featuredbasename=array_pop($featuredbasenamed);
+			$apihook=str_replace($featuredbasename, '', $thisfeatured);
+			$apihook=str_replace('/z/', '/api.php', $apihook);
+			$apihook=str_replace('/audio/', '/api.php', $apihook);
+			
+			$apihook.='?radio='.urlencode($featuredbasename);
+			$apirequest=file_get_contents($apihook);
+			if (count($apirequest)>0){
+				$result=explode("\n", $apirequest);
+				
+				$nexturl=$thisfeatured;
+				$nextartist=$result[0];
+				$nextalbum=$result[1];
+				$nexttitle=$result[2];
+				$nextduration=$result[3];
+				$nextbitrate=$result[4];
+				file_put_contents('../d/nowplayingisfeatured.txt', '0');
+				file_put_contents('../d/starttime.txt', microtime(true));
+			}
+		}
+		else {
+			
+			if (!$isinitial){
+				$loop=ceil(floatval(file_get_contents('../d/baseapitime.txt'))/0.052);
+				$silent='';
+				$silentfile=file_get_contents('../silence.mp3');
+				for ($i=0;$i<$loop;$i++){
+					$silent.=$silentfile;
+					
+				}
+				echo $silent;
+				ob_flush();
+				flush();
+			}
+			
+			$featured=explode("\n", $radiobase);
+			shuffle($featured);
+			$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
+			
+			$featuredbasenamed=explode('/', $thisfeatured);
+			$featuredbasename=array_pop($featuredbasenamed);
+			
+			$apihook=str_replace($featuredbasename, '', $thisfeatured);
+			$apihook=str_replace('/audio/', '/api.php', $apihook);
+			$apihook=str_replace('/z/', '/api.php', $apihook);
+
+			$apihook.='?radio='.urlencode($featuredbasename);
+			$apirequest=file_get_contents($apihook);
 			$result=explode("\n", $apirequest);
 			
 			$nexturl=$thisfeatured;
@@ -298,48 +344,9 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			$nexttitle=$result[2];
 			$nextduration=$result[3];
 			$nextbitrate=$result[4];
-			file_put_contents('../d/nowplayingisfeatured.txt', '0');
+			file_put_contents('../d/nowplayingisfeatured.txt', '1');
 			file_put_contents('../d/starttime.txt', microtime(true));
-		}
-	}
-	else {
-		
-		if (!$isinitial){
-			$loop=ceil(floatval(file_get_contents('../d/baseapitime.txt'))/0.052);
-			$silent='';
-			$silentfile=file_get_contents('../silence.mp3');
-			for ($i=0;$i<$loop;$i++){
-				$silent.=$silentfile;
-				
 			}
-			echo $silent;
-			ob_flush();
-			flush();
-		}
-		
-		$featured=explode("\n", $radiobase);
-		shuffle($featured);
-		$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
-		
-		$featuredbasenamed=explode('/', $thisfeatured);
-		$featuredbasename=array_pop($featuredbasenamed);
-		
-		$apihook=str_replace($featuredbasename, '', $thisfeatured);
-		$apihook=str_replace('/audio/', '/api.php', $apihook);
-		$apihook=str_replace('/z/', '/api.php', $apihook);
-
-		$apihook.='?radio='.urlencode($featuredbasename);
-		$apirequest=file_get_contents($apihook);
-		$result=explode("\n", $apirequest);
-		
-		$nexturl=$thisfeatured;
-		$nextartist=$result[0];
-		$nextalbum=$result[1];
-		$nexttitle=$result[2];
-		$nextduration=$result[3];
-		$nextbitrate=$result[4];
-		file_put_contents('../d/nowplayingisfeatured.txt', '1');
-		file_put_contents('../d/starttime.txt', microtime(true));
 		}
 $nowplayingduration=$nextduration;
 
