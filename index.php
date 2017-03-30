@@ -57,16 +57,6 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 
 //caching of html page ; almost done. Just cache the output buffer once the page is fully generated. See end of this file
 
-
-if (count($artists)==0)
-{
-	$querystring.='&listalbums-noartist=true';
-	$artists=explode("\n", file_get_contents($clewnapiurl.'?listartists=true'));
-	
-	
-}
-
-
 $album_scores=Array();
 if ($activatestats)
 {
@@ -187,7 +177,7 @@ if (isset($_GET['artist'])) {
 	$artists_file=file_get_contents('./d/artists.txt'); 
 
 	$artists=explode("\n", $artists_file);
-	if (!in_array($_GET['artist'], $artists)) {
+	if (!in_array($_GET['artist'], $artists)&&count($artists)>0) {
 		echo 'ooops... Invalid artist !';
 		exit();
 	}
@@ -203,6 +193,18 @@ if (!isset($_GET['artist'])){
 	$artists_file=file_get_contents('./d/artists.txt'); 
 
 	$artists=explode("\n", $artists_file);
+	
+	
+		if (count($artists)==0)
+		{
+			$artists=explode("\n", file_get_contents($clewnapiurl.'?listartists=true'));
+			
+			
+		}
+
+
+
+
 }
 else {
 	$artists=Array($_GET['artist']);
