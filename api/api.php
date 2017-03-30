@@ -624,7 +624,13 @@ header('Content-Type: text/plain; charset=utf-8');
 			
 				$getID3 = new getID3;
 				$info = $getID3->analyze('audio/'.$file);
-				getid3_lib::CopyTagsToComments($info); 
+				getid3_lib::CopyTagsToComments($info);
+				if (!isset($info['comments_html']['artist'][0])&&strlen($info['comments_html']['artist'])>=1){
+							$art=$info['comments_html']['artist'];
+							$info['comments_html']['artist']=array($art);
+						}
+					
+				 
 						$albums[$info['comments_html']['artist'][0]]=$info['comments_html']['artist'][0];
 					
 			
