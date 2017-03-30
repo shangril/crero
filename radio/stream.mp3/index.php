@@ -359,7 +359,7 @@ file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
 
 unlink('../d/lock.txt');
 
-if((!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntagguedtracks&&$dice!==1){
+if((!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntagguedtracks){
 			$basename=array_reverse(explode('/', $nowplayingurl))[0];
 			file_put_contents($autodeleteprefixpath.$basename, file_get_contents('../silence.mp3'));
 			file_put_contents('../d/expire.txt', '0');
