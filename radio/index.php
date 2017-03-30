@@ -256,7 +256,7 @@ function loginpanel($activateaccountcreation){
 	<span style=""><img style="float:left;width:3%;" src="/favicon.png"/></span>
 		
 	<h1 id="title" style="display:inline;"><?php echo $radioname; ?></h1>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($radiodescription);?></em> <br/><a href="http://<?php echo $server;?>">Label's home</a></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($radiodescription);?></em> <br/><a href="http://<?php echo $server;?>">Home</a></h2>
 </div>
 <!--<div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($radioname);?></a></div>-->
 
