@@ -8,7 +8,45 @@ else {
 	require_once('../php-getid3/getid3/getid3.php');
 
 }
-if (isset($_GET['freshness'])){
+
+if (isset($_GET['listformats'])){
+	//returns the list of available audio formats for the current catalog
+	//it is expected that the whole catalog is coherent : if one format is available
+	//each file of the catalog has to have it provided
+
+	header('Content-Type: text/plain; charset=utf-8');
+
+	$files=array_diff(scandir('./audio'), array ('..', '.', '.htaccess'));
+	shuffle($files);
+	$sample=$files[0];
+	$toks=explode ('.', $sample);
+	$extension=array_reverse($toks)[0];
+	
+	$formats=array();
+	
+	$formats[$extension]=$extension;
+	
+	$supported=array('.flac', '.ogg', '.mp3');
+	
+	$result=$formats;
+	
+	
+	
+	foreach ($formats as $format){
+			foreach ($supported as $tested){
+				if (file_exists('./audio/'.str_replace('.'.array_reverse($toks)[0], $tested, $sample))){
+						$result[str_replace('.', '', $tested)]=str_replace('.', '', $tested);
+						
+				}
+			}
+	}	
+	foreach ($result as $line) {
+						echo $line."\n";
+						
+				}
+}
+
+else if (isset($_GET['freshness'])){
 	header('Content-Type: text/plain; charset=utf-8');
 
 	$files=scandir('./audio');
