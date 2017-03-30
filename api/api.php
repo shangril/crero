@@ -504,6 +504,9 @@ else if (isset($_GET['radio'])) {
 	
 	if((!isset($artist)||strlen(trim($artist)))<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
 			
+		$getID3 = new getID3;
+		$getID3->encoding = $TaggingFormat;
+		
 		require_once('../php-getid3/write.php');
 			
 		$tagwriter = new getid3_writetags;
