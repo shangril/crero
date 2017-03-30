@@ -747,12 +747,6 @@ $supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformat
 $content=Array();
 
 $querystring = '';
-		foreach ($artists as $artist) 
-		{
-			$querystring.='&listallalbums[]='.urlencode($artist);
-			
-			
-		}
 		if (count($artists)==0)
 		{
 			$querystring.='&listalbums-noartist=true';
@@ -760,6 +754,14 @@ $querystring = '';
 			
 			
 		}
+		
+		foreach ($artists as $artist) 
+		{
+			$querystring.='&listallalbums[]='.urlencode($artist);
+			
+			
+		}
+		
 		$timeout=18;
 		if (file_exists('./overload.dat')){
 			$timeout=intval(file_get_contents('./overload.dat'));
