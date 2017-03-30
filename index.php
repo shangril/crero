@@ -753,6 +753,12 @@ $querystring = '';
 			
 			
 		}
+		if ($querystring=='')
+		{
+			$querystring.='&listalbums-noartist=true';
+			
+			
+		}
 		$timeout=18;
 		if (file_exists('./overload.dat')){
 			$timeout=intval(file_get_contents('./overload.dat'));

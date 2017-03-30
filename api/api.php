@@ -505,5 +505,100 @@ else if (isset($_GET['radio'])) {
 //			$nextbitrate=$result[4];
 
 }
+
+else if (isset($_GET['listalbums-noartist'])) {
+header('Content-Type: application/x-httpd-php; charset=utf-8');
+	//returns a serialized array of all albums for a specified array of artists
+	//keys are mtime of the albums
+	//values are ['album'] : album title
+
+
+//basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
+	$id='noartist';
+	
+	
+	$cachedoutput=Array();
+	if (file_exists('./apicache-noartist.php')){
+		$cachedoutput=unserialize(file_get_contents('./apicache-noartist.php'));
+		$cachedfressness=intval($cachedoutput[$id]['freshness']);
+		
+	}
+	else
+	{
+		$cachedfreshness=0;
+		
+	}
+	$files=scandir('./audio');
+	$albums=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+	
+		}
+	}
+	krsort($albums);
+
+	$currentfreshness=intval(array_keys($albums)[0]);
+	if ($cachedfreshness>=$currentfreshness){
+		echo $cachedoutput[$id]['data'];
+		
+	}
+	else {
+		
+			//outdated cache
+
+
+
+
+		$artists=$_GET['listallalbums'];
+		$files=scandir('./audio');
+		$albumlist=Array();
+		
+		foreach ($files as $file){
+		
+
+			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				
+					$getID3 = new getID3;
+					$info = $getID3->analyze('audio/'.$file);
+					getid3_lib::CopyTagsToComments($info); 
+					if(!in_array($info['comments_html']['album'][0],$albumlist)){
+							
+							
+							
+							$albumlist[filemtime('audio/'.$file)]=$info['comments_html']['album'][0];
+							
+							$year=$info['comments_html']['date'][0];
+							
+							$year=array_reverse(explode('-', $year))[0];
+							
+							$content[$year.'.'.filemtime('audio/'.$file)]['album']=$info['comments_html']['album'][0];
+							$content[$year.'.'.filemtime('audio/'.$file)]['artist']=$info['comments_html']['artist'][0];
+							
+							
+							//bogus; do not use !
+							if (!isset($content[$year.'.'.filemtime('audio/'.$file)]['artists'])){
+								$content[$year.'.'.filemtime('audio/'.$file)]['artists']=Array();
+							}
+							//end of bogus
+							
+							array_push($content[$year.'.'.filemtime('audio/'.$file)]['artists'],$info['comments_html']['artist'][0]);
+							
+					
+					
+					}
+				
+			}
+			
+		}
+		echo serialize($content);
+		//storing the cache
+		$cachedoutput[$id]['freshness']=time();
+		$cachedoutput[$id]['data']=serialize($content);
+		file_put_contents('./apicache-noartist.php', serialize($cachedoutput));
+
+	}
+}
+
 die();
 ?>
