@@ -204,7 +204,7 @@ header('Content-Type: text/plain; charset=utf-8');
 				$info = $getID3->analyze('audio/'.$file);
 				getid3_lib::CopyTagsToComments($info); 
 				if($info['comments_html']['album'][0]===$album){
-						$tracks[str_replace('.flac', '', $file)]=str_replace('.flac', '', $file);
+						$tracks[str_replace($format, '', $file)]=str_replace($format, '', $file);
 					
 				}
 			
