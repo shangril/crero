@@ -502,7 +502,7 @@ else if (isset($_GET['radio'])) {
 	getid3_lib::CopyTagsToComments($info); 
 	$artist=$info['comments_html']['artist'][0];
 	
-	if((!isset($artist)||strlen($artist))<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
+	if((!isset($artist)||strlen(trim($artist)))<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
 			
 		require_once('../php-getid3/write.php');
 			
