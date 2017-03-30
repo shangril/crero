@@ -240,7 +240,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 	
 	$nextartist='';
 	
-		while (strlen($nextartist===0){
+		while (strlen($nextartist)===0){
 		
 		
 		file_put_contents('../d/lock.txt', microtime(true));
