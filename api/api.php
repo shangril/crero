@@ -501,11 +501,9 @@ else if (isset($_GET['radio'])) {
 	$info = $getID3->analyze('audio/'.$file);
 	getid3_lib::CopyTagsToComments($info); 
 	$artist=$info['comments_html']['artist'][0];
-	
-	if((!isset($artist)||strlen(trim($artist)))<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
+	if((!isset($artist)||strlen(trim($artist))<1||)&&$format==='.mp3'&&strstr($file, 'www.dogmazic.net')) {
 			
 		$getID3 = new getID3;
-		$getID3->encoding = $TaggingFormat;
 		
 		require_once('../php-getid3/write.php');
 			
@@ -519,7 +517,7 @@ else if (isset($_GET['radio'])) {
 
 
 		$first=explode('_[', $file);
-		$second=explode('_]', $first[1]);
+		$second=explode(']_', $first[1]);
 
 		$artist=str_replace('_', ' ', $second[0]);
 
@@ -528,6 +526,8 @@ else if (isset($_GET['radio'])) {
 		$title=str_replace('_', ' ', $third[0]);
 		
 		$fourth=explode(']_', $third[1]);
+
+	
 
 		$comment=str_replace('_', ' ', $fourth[0]);
 		$TagData=array();
