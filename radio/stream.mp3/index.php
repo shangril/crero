@@ -11,8 +11,14 @@ if (!$hasradio){
 }
 if ($autobuildradiobase){
 
-
-	file_put_contents('../../d/radioBase.txt', file_get_contents($clewnapiurl.'?listfiles=true'));
+	$linez=explode("\n",  file_get_contents($clewnapiurl.'?listfiles=true'));
+	
+	$a2='';
+	
+	foreach ($linez as $line){
+		$a2.=$clewnaudiourl.$line."\n";
+	}
+	file_put_contents('../../d/radioBase.txt',$a2);
 }
 
 
