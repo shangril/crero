@@ -756,6 +756,7 @@ $querystring = '';
 		if (count($artists)==0)
 		{
 			$querystring.='&listalbums-noartist=true';
+			$artists=explode("\n", file_get_contents($clewnapiurl.'?listartists=true'));
 			
 			
 		}

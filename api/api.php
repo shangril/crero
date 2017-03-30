@@ -599,6 +599,30 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 
 	}
 }
+else if (isset($_GET['listartists'])) {
+header('Content-Type: text/plain; charset=utf-8');
+
+
+	$files=scandir('./audio');
+	$albums=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			
+				$getID3 = new getID3;
+				$info = $getID3->analyze('audio/'.$file);
+				getid3_lib::CopyTagsToComments($info); 
+						$albums[$info['comments_html']['artist'][0]]=$info['comments_html']['artist'][0];
+					
+			
+		}
+		
+		
+	}
+	foreach ($albums as $album){
+		echo $album."\n";
+		
+	}
+}
 
 die();
 ?>
