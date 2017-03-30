@@ -518,11 +518,11 @@ else if (isset($_GET['radio'])) {
 
 		$artist=str_replace('_', ' ', $second[0]);
 
-		$third=explode('_[', $second[1];
+		$third=explode('_[', $second[1]);
 		
 		$title=str_replace('_', ' ', $third[0]);
 		
-		$fourth=explode(']_', $third[1];
+		$fourth=explode(']_', $third[1]);
 
 		$comment=str_replace('_', ' ', $fourth[0]);
 
