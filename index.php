@@ -753,7 +753,7 @@ $querystring = '';
 			
 			
 		}
-		if ($querystring=='')
+		if (count($artists)==0)
 		{
 			$querystring.='&listalbums-noartist=true';
 			
