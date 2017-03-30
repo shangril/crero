@@ -557,7 +557,7 @@ else if (isset($_GET['radio'])) {
 		$tagwriter->filename = 'audio/'.$file;
 		$tagwriter->tagformats = array('id3v1', 'id3v2.3');
 
-		$tagwriter->overwrite_tags = false;
+		//$tagwriter->overwrite_tags = false;
 		$tagwriter->tag_encoding = 'UTF-8';
 		$tagwriter->remove_other_tags = false;
 
