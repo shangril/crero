@@ -769,7 +769,7 @@ $querystring = '';
 		
 		foreach ($artists as $artist) 
 		{
-			$querystring.='&listallalbums[]='.urlencode($artist);
+			$querystring.='&listallalbums[]='.urlencode(htmlentities($artist));
 			
 			
 		}
@@ -840,7 +840,7 @@ $querystring = '';
 $querystring = '';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='&listallalbums[]='.urlencode($artist);
+			$querystring.='&listallalbums[]='.urlencode(htmlentities($artist));
 			
 			
 		}
