@@ -551,6 +551,9 @@ else if (isset($_GET['radio'])) {
 		
 	}
 	if (!isset($info['comments_html']['album'][0])){
+		$getID3 = new getID3;
+		
+		require_once('../php-getid3/write.php');
 			
 			
 		$tagwriter = new getid3_writetags;
@@ -570,6 +573,9 @@ else if (isset($_GET['radio'])) {
 		$tagwriter->tag_data = $TagData;
 		if ($tagwriter->WriteTags()) {
 
+			$info = $getID3->analyze('audio/'.$file);
+			getid3_lib::CopyTagsToComments($info); 
+			$artist=$info['comments_html']['artist'][0];
 	
 			
 	
