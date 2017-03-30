@@ -177,7 +177,7 @@ if (isset($_GET['artist'])) {
 	$artists_file=trim(file_get_contents('./d/artists.txt')); 
 
 	$artists=explode("\n", $artists_file);
-	if (!in_array($_GET['artist'], $artists)&&count($artists)>0) {
+	if (!in_array($_GET['artist'], $artists)&&(count($artists)>0&&file_exists('./d/artists.txt'))) {
 		echo 'ooops... Invalid artist !';
 		exit();
 	}
