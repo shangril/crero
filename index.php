@@ -174,7 +174,7 @@ if (isset($_GET['artist'])) {
 	$favicon='http://'.$server.'/favicon.png';
 	$arturl='&artist='.urlencode($_GET['artist']);
 	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A '.htmlspecialchars($sitename).' artist';
-	$artists_file=file_get_contents('./d/artists.txt'); 
+	$artists_file=trim(file_get_contents('./d/artists.txt')); 
 
 	$artists=explode("\n", $artists_file);
 	if (!in_array($_GET['artist'], $artists)&&count($artists)>0) {
@@ -190,7 +190,7 @@ else {
 
 if (!isset($_GET['artist'])){
 
-	$artists_file=file_get_contents('./d/artists.txt'); 
+	$artists_file=trim(file_get_contents('./d/artists.txt')); 
 
 	$artists=explode("\n", $artists_file);
 	
