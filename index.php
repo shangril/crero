@@ -724,6 +724,12 @@ if((isset($_GET['listall'])&&($_GET['listall']==='material'||($_GET['listall']==
 $weactuallydisplayedsomething=false;
 
 //here we are, let's query  apis to fill the content arrays
+
+$supported_formats_remote=explode("\n", file_get_contents($clewnapiurl.'?listformats=true'));
+$supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformats=true'));
+
+
+
 $content=Array();
 
 $querystring = '';
@@ -1351,7 +1357,19 @@ foreach ($content as $item){
 						 if (!$mixed){
 								
 							 ?>
-							 <div style="background-color:#F0F0F0;text-align:right;">Download <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.flac">flac</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.ogg">ogg</a> <a href="<?php echo $clewnaudiourl.urlencode ($track); ?>.mp3">mp3</a></div>
+							 <div style="background-color:#F0F0F0;text-align:right;">Download 
+							 
+							 <?php
+							 foreach ($supported_formats_remote as $mat){
+							 ?>
+							 <a href="<?php 
+							 echo $clewnaudiourl.urlencode ($track).'.'.$mat.'">'.htmlspecialchars($mat); 
+							 ?></a> 
+							 <?php
+							 }
+							 ?>
+							 
+							 </div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
 							showsongsheet($track);
@@ -1519,7 +1537,7 @@ if (!$activatechat===false){
 }
 
 
-
+if ($mosaic){
 ?>
 <script>
 var animmax=<?php echo $animindex; ?>;
@@ -1564,6 +1582,9 @@ setInterval(function (){
 }
 
 </script>
+<?php  
+}
+?>
 <div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels">CreRo, the CMS for record labels</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
 </body>
 </html><?php

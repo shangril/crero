@@ -4,6 +4,11 @@ require_once('./config.php');
 chdir('./script.js');
 
 
+$supported_formats_remote=explode("\n", file_get_contents($clewnapiurl.'?listformats=true'));
+$supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformats=true'));
+
+
+
 header('Content-Type: text/javascript');
 ?>
 
@@ -29,9 +34,12 @@ function play(target, id, isclewn, isautoplay = false){
 		}
 	isplaying=id;
 	player.pause();
-	player.innerHTML=null;
-	
-	player.innerHTML='<source type="application/ogg" src="'+target+'.ogg"/><source type="audio/mpeg" src="'+target+'.mp3"/>';
+	player.innerHTML='';
+	<?php if (in_array('ogg', $supported_formats_local)&&in_array('ogg', $supported_formats_local)) { ?>
+	player.innerHTML+='<source type="application/ogg" src="'+target+'.ogg"/>';
+	<?php }  if (in_array('mp3', $supported_formats_remote)&&in_array('mp3', $supported_formats_remote)) {?>
+	player.innerHTML+='<source type="audio/mpeg" src="'+target+'.mp3"/>';
+	<?php } ?>
 	player.load();
 	player.autoplay='autoplay';
 	player.play();
