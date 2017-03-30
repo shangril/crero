@@ -11,7 +11,7 @@ $supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformat
 
 header('Content-Type: text/javascript');
 ?>
-
+var infoselected=null;
 var isplaying=-1;
 var currenttarget='';
 var currentclewn;
@@ -74,3 +74,15 @@ function playNext() {
 	}
 	
 }
+function loadInfo(track) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	 infoselected.style.display='block';
+     infoselected.innerHTML = this.responseText;
+    }
+  };
+  xhttp.open("GET", "./?getinfo="+encodeURI(track), true);
+  xhttp.send();
+} 
+

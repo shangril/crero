@@ -56,7 +56,36 @@ function listFormats() {
 	return $return;
 }
 $format=findAFormat();
-if (isset($_GET['listformats'])){
+if (isset($_GET['getinfo'])){
+
+	header('Content-Type: text/plain; charset=utf-8');
+		$file=str_replace ('./', '', $_GET['getinfo']);
+	$title='';
+
+	$getID3 = new getID3;
+	$info = $getID3->analyze('audio/'.$file.$format);
+	getid3_lib::CopyTagsToComments($info); 
+	$artist=$info['comments_html']['comment'][0];
+	echo $artist;
+
+}
+
+else if (isset($_GET['freshness'])){
+	header('Content-Type: text/plain; charset=utf-8');
+
+	$files=scandir('./audio');
+	$albums=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+	
+		}
+	}
+	krsort($albums);
+
+	echo array_keys($albums)[0];
+}
+else if (isset($_GET['listformats'])){
 	//returns the list of available audio formats for the current catalog
 	//it is expected that the whole catalog is coherent : if one format is available
 	//each file of the catalog has to have it provided

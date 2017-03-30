@@ -26,7 +26,17 @@ if (isset($_GET['purge'])){
 	$myhtmlcache->purgeCache();
 	echo '<html><body>Cache purged. <a href="./">Proceed</a></body></html>';
 	exit();
+
 }
+
+
+if (isset($_GET['getinfo'])){
+	echo file_get_contents($clewnapiurl.'?getinfo='.urlencode($_GET['getinfo']));
+	exit();
+}
+
+
+
 //* caching of htmlpage ; here we are
 
 
@@ -46,6 +56,10 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 }
 
 //caching of html page ; almost done. Just cache the output buffer once the page is fully generated. See end of this file
+
+
+
+
 
 $album_scores=Array();
 if ($activatestats)
@@ -1368,8 +1382,9 @@ foreach ($content as $item){
 							 <?php
 							 }
 							 ?>
-							 
+							 <a href="javascript:void(0);" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>
 							 </div>
+							 <div style="display:none;" id="info<?php echo $trackcounter;?>"></div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
 							showsongsheet($track);
