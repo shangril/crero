@@ -527,7 +527,7 @@ else if (isset($_GET['radio'])) {
 		$fourth=explode(']_', $third[1]);
 
 		$comment=str_replace('_', ' ', $fourth[0]);
-		$TagData
+		$TagData=array();
 		// populate data array
 		$TagData['title'][] = $title;
 		$TagData['artist'][] = $artist;
