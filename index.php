@@ -661,7 +661,7 @@ else if (isset ($_GET['artist'])) {
 	
 		if (!file_exists('./d/artists.txt')||count($artists)==0)
 		{
-			$artists=explode("\n", trim(file_get_contents($clewnapiurl.'?listartists=true')));
+			$artists=explode("\n", trim(html_entity_decode(file_get_contents($clewnapiurl.'?listartists=true'))));
 			
 			
 		}
