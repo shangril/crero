@@ -365,6 +365,7 @@ if((!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntag
 			file_put_contents('../d/expire.txt', '0');
 			fpassthru('../silence.mp3');
 			if (!isset($_GET['web'])){
+					$isinitial=false;
 					play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
 				}
 				else {
