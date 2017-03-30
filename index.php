@@ -656,6 +656,16 @@ else if (isset ($_GET['artist'])) {
 
 		$artists=explode("\n", trim($artists_file));
 
+
+	
+	
+		if (count($artists)==0)
+		{
+			$artists=explode("\n", trim(file_get_contents($clewnapiurl.'?listartists=true')));
+			
+			
+		}
+
 		sort($artists);
 		echo '<span style="margin-top:4px;marging-bottom:4px;"><a style="float:left;padding:2px;" href="./">Artists : </a> ';
 
