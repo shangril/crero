@@ -500,6 +500,7 @@ else if (isset($_GET['radio'])) {
 	$getID3 = new getID3;
 	$info = $getID3->analyze('audio/'.$file);
 	getid3_lib::CopyTagsToComments($info); 
+	
 	$artist=$info['comments_html']['artist'][0];
 	if((!isset($artist)||strlen(trim($artist))<1)&&$format==='.mp3'&&strstr($file, 'www.dogmazic.net')) {
 			
@@ -547,8 +548,35 @@ else if (isset($_GET['radio'])) {
 			
 	
 		}
-	
+		
 	}
+	if (!isset($info['comments_html']['album'][0])){
+			
+			
+		$tagwriter = new getid3_writetags;
+		$tagwriter->filename = 'audio/'.$file;
+		$tagwriter->tagformats = array('id3v1', 'id3v2.3');
+
+		$tagwriter->overwrite_tags = false;
+		$tagwriter->tag_encoding = 'UTF-8';
+		$tagwriter->remove_other_tags = false;
+
+
+	
+		$TagData=array();
+		// populate data array
+		$TagData['album'][] = $artist;
+		
+		$tagwriter->tag_data = $TagData;
+		if ($tagwriter->WriteTags()) {
+
+	
+			
+	
+		}
+
+	}
+
 	echo $artist."\n";
 	echo $info['comments_html']['album'][0]."\n";
 	echo $info['comments_html']['title'][0]."\n";
