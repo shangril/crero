@@ -637,7 +637,7 @@ else if (isset ($_GET['artist'])) {
 		
 	}
 	?>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="http://<?php echo $server;?>">Label's home</a></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="http://<?php echo $server;?>">Home</a></h2>
 
 	<?php
 	//artist list
