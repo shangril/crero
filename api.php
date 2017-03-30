@@ -8,12 +8,25 @@ else {
 	include('./php-getid3/getid3/getid3.php');
 
 }
-if (isset($_GET['listformats'])){
+
+function findAFormat(){
+
+
+	$formats=explode("\n", listformats());
+	$format='.'.$formats[0];
+
+
+	if (in_array('flac', $formats)){
+		$format='.flac';
+		
+	}
+	return $format;
+}
+
+function listformats(){
 	//returns the list of available audio formats for the current catalog
 	//it is expected that the whole catalog is coherent : if one format is available
 	//each file of the catalog has to have it provided
-
-	header('Content-Type: text/plain; charset=utf-8');
 
 	$files=array_diff(scandir('./z'), array ('..', '.', '.htaccess'));
 	shuffle($files);
@@ -39,10 +52,28 @@ if (isset($_GET['listformats'])){
 				}
 			}
 	}	
+	ksort($result);
+	$return='';
 	foreach ($result as $line) {
-						echo $line."\n";
+						$return.=$line."\n";
 						
 				}
+
+	return $return;
+
+}
+$format=findAFormat();
+
+
+if (isset($_GET['listformats'])){
+	//returns the list of available audio formats for the current catalog
+	//it is expected that the whole catalog is coherent : if one format is available
+	//each file of the catalog has to have it provided
+
+	header('Content-Type: text/plain; charset=utf-8');
+
+	echo listformats();
+
 }
 
 else if (isset($_GET['listalbums'])) {
@@ -50,11 +81,13 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 	//returns the list of albums for a specified artist
+	
+	
 	$artist=$_GET['listalbums'];
 	$files=scandir('./z');
 	$albums=Array();
 	foreach ($files as $file){
-		if (! is_dir('./z/'.$file)&&strpos($file, '.flac')===(strlen($file)-5)){
+		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 			
 				$getID3 = new getID3;
 				$info = $getID3->analyze('z/'.$file);
@@ -82,7 +115,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	$files=scandir('./z');
 	$mtime=Array();
 	foreach ($files as $file){
-		if (! is_dir('./z/'.$file)&&strpos($file, '.flac')===(strlen($file)-5)){
+		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 			
 				$getID3 = new getID3;
 				$info = $getID3->analyze('z/'.$file);
@@ -120,7 +153,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	$files=scandir('./z');
 	$tracks=Array();
 	foreach ($files as $file){
-		if (! is_dir('./z/'.$file)&&strpos($file, '.flac')===(strlen($file)-5)){
+		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 			
 				$getID3 = new getID3;
 				$info = $getID3->analyze('z/'.$file);
@@ -153,7 +186,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	$title='';
 
 	$getID3 = new getID3;
-	$info = $getID3->analyze('z/'.$file.'.flac');
+	$info = $getID3->analyze('z/'.$file.$format);
 	getid3_lib::CopyTagsToComments($info); 
 	$title=$info['comments_html']['title'][0];
 			
@@ -178,7 +211,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	$title='';
 
 	$getID3 = new getID3;
-	$info = $getID3->analyze('z/'.$file.'.flac');
+	$info = $getID3->analyze('z/'.$file.$format);
 	getid3_lib::CopyTagsToComments($info); 
 	$artist=$info['comments_html']['artist'][0];
 			
@@ -209,7 +242,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	foreach ($files as $file){
 	
 
-		if (! is_dir('./z/'.$file)&&strpos($file, '.flac')===(strlen($file)-5)){
+		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 			
 				$getID3 = new getID3;
 				$info = $getID3->analyze('z/'.$file);
