@@ -503,7 +503,9 @@ else if (isset($_GET['radio'])) {
 	$artist=$info['comments_html']['artist'][0];
 	
 	if((!isset($artist)||strlen($artist))<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
-				
+			
+		require_once('../php-getid3/write.php');
+			
 		$tagwriter = new getid3_writetags;
 		$tagwriter->filename = 'audio/'.$file;
 		$tagwriter->tagformats = array('id3v1', 'id3v2.3');
@@ -525,7 +527,7 @@ else if (isset($_GET['radio'])) {
 		$fourth=explode(']_', $third[1]);
 
 		$comment=str_replace('_', ' ', $fourth[0]);
-
+		$TagData
 		// populate data array
 		$TagData['title'][] = $title;
 		$TagData['artist'][] = $artist;
