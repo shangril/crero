@@ -550,7 +550,7 @@ else if (isset($_GET['radio'])) {
 		}
 		
 	}
-	if (!isset($info['comments_html']['album'][0])){
+	if (!isset($info['comments_html']['album'][0])||strlen(trim($info['comments_html']['album'][0]))<1){
 		$getID3 = new getID3;
 		
 		require_once('../php-getid3/write.php');
