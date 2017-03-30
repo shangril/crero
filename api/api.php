@@ -56,7 +56,21 @@ function listFormats() {
 	return $return;
 }
 $format=findAFormat();
-if (isset($_GET['getinfo'])){
+if (isset($_GET['listfiles'])){
+
+	header('Content-Type: text/plain; charset=utf-8');
+	$filez=array_diff(scandir('audio'), array ('.', '..'));
+	foreach ($filez as $fil)
+		{
+			
+			if (strpos($fil, '.mp3')==strlen($fil)-4;{
+				echo $fil."\n"
+
+			}
+
+		}
+}
+else if (isset($_GET['getinfo'])){
 
 	header('Content-Type: text/plain; charset=utf-8');
 		$file=str_replace ('./', '', $_GET['getinfo']);

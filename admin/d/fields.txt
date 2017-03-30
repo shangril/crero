@@ -78,5 +78,7 @@ activatehtmlcache.txt
 Can be 0 (not activated) or 1 (activated). If activated, all the html rendering of the core site (album pages, index page, arrist pages and so on) will be cached server-side on disk, for a duration defined in htmlcacheexpires.txt ; it is only useful for high load website. Please note that it will mean, if activated, that newly published track will not appear immediately on the site ; you will have to wait until the cached version has expired for the page to be rebuild and the new track to appear. Default is "not activated". 
 htmlcacheexpires.txt
 The duration, expressed in hours, util a cached version of an html page expires. See activatehtmlcache for more information. Default is 7. Non-integer values are accepted. 
+autoBuildRadioBase
+If set to 1, will auto build radioBase with what's available on the free download media tier. If set to 0, nothing happens. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

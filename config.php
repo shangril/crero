@@ -245,6 +245,9 @@ if (!file_exists('./htmlcache/cached')){
 	mkdir('./htmlcache/cached');
 	
 }
-
+$autobuildradiobase=false;
+if (file_exists('./d/autoBuildRadioBase.txt')){
+	$autobuildradiobase=boolval(trim(file_get_contents('./d/autoBuildRadioBase.txt')));
+}
 
 ?>

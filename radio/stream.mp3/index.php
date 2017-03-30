@@ -9,7 +9,11 @@ $statid=mt_rand(0, 1000000);
 if (!$hasradio){
 	die();
 }
+if ($autobuildradiobase){
 
+
+	file_put_contents('../../d/radioBase.txt', file_get_contents($clewnapiurl.'?listfiles=true'));
+}
 
 
 if (!file_exists('../d/featuredapitime.txt')){
