@@ -765,7 +765,21 @@ $supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformat
 $content=Array();
 
 $querystring = '';
+$artists_file=file_get_contents('./d/artists.txt'); 
+		
+		
 
+		$artists=explode("\n", trim($artists_file));
+
+
+	
+	
+		if (!file_exists('./d/artists.txt')||count($artists)==0)
+		{
+			$artists=explode("\n", trim(html_entity_decode(file_get_contents($clewnapiurl.'?listartists=true'))));
+			
+			
+		}
 		
 		foreach ($artists as $artist) 
 		{
