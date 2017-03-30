@@ -63,8 +63,8 @@ if (isset($_GET['listfiles'])){
 	foreach ($filez as $fil)
 		{
 			
-			if (strpos($fil, '.mp3')==strlen($fil)-4;{
-				echo $fil."\n"
+			if (strpos($fil, '.mp3')==strlen($fil)-4){
+				echo $fil."\n";
 
 			}
 
