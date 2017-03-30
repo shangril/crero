@@ -58,7 +58,13 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 //caching of html page ; almost done. Just cache the output buffer once the page is fully generated. See end of this file
 
 
-
+if (count($artists)==0)
+{
+	$querystring.='&listalbums-noartist=true';
+	$artists=explode("\n", file_get_contents($clewnapiurl.'?listartists=true'));
+	
+	
+}
 
 
 $album_scores=Array();
@@ -747,13 +753,7 @@ $supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformat
 $content=Array();
 
 $querystring = '';
-		if (count($artists)==0)
-		{
-			$querystring.='&listalbums-noartist=true';
-			$artists=explode("\n", file_get_contents($clewnapiurl.'?listartists=true'));
-			
-			
-		}
+
 		
 		foreach ($artists as $artist) 
 		{
