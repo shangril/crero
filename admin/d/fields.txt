@@ -80,5 +80,9 @@ htmlcacheexpires.txt
 The duration, expressed in hours, util a cached version of an html page expires. See activatehtmlcache for more information. Default is 7. Non-integer values are accepted. 
 autoBuildRadioBase.txt
 If set to 1, will auto build radioBase with what's available on the free download media tier. If set to 0, nothing happens. 
+autoDeleteUntagguedTracks.txt
+Dangerous. If set to 1, will replace, each time a track that has no artist tag set is selected to be played by the radio, the content of its audio file by a short mp3 silence. Useful in very special cases only. If set to 0, does nothing. Works only with "radioBase" tracks ; if on the same filesystem only (see autoDeletePrefixPath)
+autoDeletePrefixPath.txt
+Useful only with autoDeleteUntagguedTracks. The base filename will be prepend to this relative-to-/radio/stream.mp3 path to search the file that has to be replaced by silent. Then, autoDelete can only be used if the free download media tier is on the same physical filesystem than the front end component of Crero. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

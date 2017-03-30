@@ -249,5 +249,12 @@ $autobuildradiobase=false;
 if (file_exists('./d/autoBuildRadioBase.txt')){
 	$autobuildradiobase=boolval(trim(file_get_contents('./d/autoBuildRadioBase.txt')));
 }
-
+$autodeleteuntagguedtracks=false;
+if (file_exists('./d/autoDeleteUntagguedTracks.txt')){
+	$autodeleteuntagguedtracks=boolval(trim(file_get_contents('./d/autoDeleteUntagguedTracks.txt')));
+}
+$autodeleteprefixpath='';
+if (file_exists('./d/autoDeletePrefixPath.txt')){
+	$autodeleteprefixpath=boolval(trim(file_get_contents('./d/autoDeletePrefixPath.txt')));
+}
 ?>
