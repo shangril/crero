@@ -502,7 +502,7 @@ else if (isset($_GET['radio'])) {
 	getid3_lib::CopyTagsToComments($info); 
 	$artist=$info['comments_html']['artist'][0];
 	
-	if(strlen($artist)<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
+	if((!isset($artist)||strlen($artist))<1&&$format==='mp3'&&strstr($file, 'www.dogmazic.net')) {
 				
 		$tagwriter = new getid3_writetags;
 		$tagwriter->filename = 'audio/'.$file;
