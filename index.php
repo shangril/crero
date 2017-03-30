@@ -197,7 +197,7 @@ if (!isset($_GET['artist'])){
 	
 		if (count($artists)==0)
 		{
-			$artists=explode("\n", file_get_contents($clewnapiurl.'?listartists=true'));
+			$artists=explode("\n", trim(file_get_contents($clewnapiurl.'?listartists=true')));
 			
 			
 		}
