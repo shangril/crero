@@ -113,9 +113,14 @@ if (isset($_GET['ajax'])){
 			$artworks[$coverlines[$i]]=$coverlines[$i+1];
 			$i++;
 		}
-		echo $artworks[html_entity_decode(trim(file_get_contents('./d/nowplayingalbum.txt')))];
+		if (isset( $artworks[html_entity_decode(trim(file_get_contents('./d/nowplayingalbum.txt')))]))++){
+			echo $artworks[html_entity_decode(trim(file_get_contents('./d/nowplayingalbum.txt')))]
 		
+		}
+		else {
 		
+			echo '../favicon.png';
+		}
 	}
 	exit();
 }
