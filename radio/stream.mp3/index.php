@@ -363,7 +363,7 @@ if((!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntag
 			$basename=array_reverse(explode('/', $nowplayingurl))[0];
 			file_put_contents($autodeleteprefixpath.$basename, file_get_contents('../silence.mp3'));
 			file_put_contents('../d/expire.txt', '0');
-			readfile('../silence.mp3');
+			fpassthru('../silence.mp3');
 			if (!isset($_GET['web'])){
 					play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
 				}
