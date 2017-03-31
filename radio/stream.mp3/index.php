@@ -365,8 +365,8 @@ $nowplayingbitrate=$nextbitrate;
 file_put_contents('../d/nowplayingbitrate.txt',$nowplayingbitrate);
 
 unlink('../d/lock.txt');
-
-if((!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntagguedtracks){
+/*
+if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntagguedtracks){
 			$basename=array_reverse(explode('/', $nowplayingurl))[0];
 			file_put_contents($autodeleteprefixpath.$basename, file_get_contents('../silence.mp3'));
 			file_put_contents('../d/expire.txt', '0');
@@ -380,8 +380,8 @@ if((!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodeleteuntag
 					exit();
 				}
 			
-			}
-	else{
+			}*/
+//	else{
 	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
@@ -550,7 +550,7 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 			flush();
 		}
 
-	}
+	
 	}
 	
 	}
