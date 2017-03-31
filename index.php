@@ -10,6 +10,11 @@ $sessionstarted=session_start();
 
 srand();
 
+if (isset($_SESSION[$get_key])){
+	$_GET['twist']='random';//necessary if cache enabled
+	
+}
+
 $willhavetocache=false;
 
 $cachingkey='key:';
