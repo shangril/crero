@@ -780,6 +780,11 @@ $artists_file=file_get_contents('./d/artists.txt');
 			
 			
 		}
+		if (isset($_GET['artist']))
+		{
+			$artists=array($_GET['artist']);
+			
+		}
 		
 		foreach ($artists as $artist) 
 		{
