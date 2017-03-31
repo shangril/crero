@@ -501,88 +501,98 @@ else if (isset($_GET['radio'])) {
 	$info = $getID3->analyze('audio/'.$file);
 	getid3_lib::CopyTagsToComments($info); 
 	
-	$artist=$info['comments_html']['artist'][0];
-	if((!isset($artist)||strlen(trim($artist))<1)&&$format==='.mp3'&&strstr($file, 'www.dogmazic.net')) {
+	$artist=html_entity_decode($info['comments_html']['artist'][0]);
+	
+	$title=html_entity_decode($info['comments_html']['title'][0]);
+	
+	$comment=html_entity_decode($info['comments_html']['comment'][0]);
+	
+	$album=html_entity_decode($info['comments_html']['album'][0]);
+	
+	
+	$run=false;
+	
+	if(
+	
+	(
+	(!isset($artist)||strlen(trim($artist))<1)
+	||
+			(!isset($title)||strlen(trim($title))<1)
+
+	||
+			(!isset($comment)||strlen(trim($comment))<1)
+
+	)
+	&&strstr($file, 'www.dogmazic.net')) {
 			
+		$suite=str_replace('[','*', $file);
+		$suite2=str_replace(']','*', $suite);
+		$suite3=str_replace('.mp3','*', $suite2);
+		
+		$tok=explode('*', $suite3);
+
+		$artist=trim(str_replace('_', ' ', $tok[1]));
+
+		
+		$title=trim(str_replace('_', ' ', $tok[2]));
+		
+
+	
+
+		$comment=trim(str_replace('_', ' ', $tok[3]));
+		$run=true;
+		
+	}
+	if (!isset($info['comments_html']['album'][0])||strlen(trim($info['comments_html']['album'][0]))<1){
+			
+			
+		
+
+	
+		$album=$artist;
+		// populate data array
+		$run=true;
+		
+
+	}
+	if($run){
+		
 		$getID3 = new getID3;
 		
 		require_once('../php-getid3/write.php');
 			
+		
 		$tagwriter = new getid3_writetags;
 		$tagwriter->filename = 'audio/'.$file;
 		$tagwriter->tagformats = array('id3v1', 'id3v2.3');
+
+
+		$TagData=array();
+		$TagData['title'][] = $title;
+		$TagData['artist'][] = $artist;
+		$TagData['comment'][] = $comment;
+		$TagData['album'][] = $album;
+		
+		
+
+		$tagwriter->tag_data = $TagData;
+		
 
 		$tagwriter->overwrite_tags = true;
 		$tagwriter->tag_encoding = 'UTF-8';
 		$tagwriter->remove_other_tags = true;
 
-
-		$first=explode('_[', $file);
-		$second=explode(']_', $first[1]);
-
-		$artist=str_replace('_', ' ', $second[0]);
-
-		$third=explode('_[', $second[1]);
 		
-		$title=str_replace('_', ' ', $third[0]);
 		
-		$fourth=explode(']_', $third[1]);
 
-	
-
-		$comment=str_replace('_', ' ', $fourth[0]);
-		$TagData=array();
-		// populate data array
-		$TagData['title'][] = $title;
-		$TagData['artist'][] = $artist;
-		$TagData['comment'][] = $comment;
-		
-		$tagwriter->tag_data = $TagData;
-
-		// write tags
 		if ($tagwriter->WriteTags()) {
 			$info = $getID3->analyze('audio/'.$file);
 			getid3_lib::CopyTagsToComments($info); 
 			$artist=$info['comments_html']['artist'][0];
 	
 			
-	
+			}
 		}
-		
-	}
-	if (!isset($info['comments_html']['album'][0])||strlen(trim($info['comments_html']['album'][0]))<1){
-		$getID3 = new getID3;
-		
-		require_once('../php-getid3/write.php');
-			
-			
-		$tagwriter = new getid3_writetags;
-		$tagwriter->filename = 'audio/'.$file;
-		$tagwriter->tagformats = array('id3v1', 'id3v2.3');
-
-		//$tagwriter->overwrite_tags = false;
-		$tagwriter->tag_encoding = 'UTF-8';
-		$tagwriter->remove_other_tags = false;
-
-
-	
-		$TagData=array();
-		// populate data array
-		$TagData['album'][] = $artist;
-		
-		$tagwriter->tag_data = $TagData;
-		if ($tagwriter->WriteTags()) {
-
-			$info = $getID3->analyze('audio/'.$file);
-			getid3_lib::CopyTagsToComments($info); 
-			$artist=$info['comments_html']['artist'][0];
-	
-			
-	
-		}
-
-	}
-
 	echo $artist."\n";
 	echo $info['comments_html']['album'][0]."\n";
 	echo $info['comments_html']['title'][0]."\n";
