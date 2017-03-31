@@ -10,7 +10,7 @@ $sessionstarted=session_start();
 
 srand();
 
-if (isset($_SESSION['random'])){
+if (isset($_SESSION['random'])&&$_SESSION['random']){
 	$_GET['twist']='random';//necessary if cache enabled
 	
 }
