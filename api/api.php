@@ -707,33 +707,72 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 }
 else if (isset($_GET['listartists'])) {
 header('Content-Type: text/plain; charset=utf-8');
-
-
+//basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
+	$id='noartist';
+	
+	
+	$cachedoutput=Array();
+	if (file_exists('./apicache-artist-list.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache-artist-list.dat'));
+		$cachedfressness=intval($cachedoutput[$id]['freshness']);
+		
+	}
+	else
+	{
+		$cachedfreshness=0;
+		
+	}
 	$files=scandir('./audio');
 	$albums=Array();
 	foreach ($files as $file){
 		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			
-				$getID3 = new getID3;
-				$info = $getID3->analyze('audio/'.$file);
-				getid3_lib::CopyTagsToComments($info);
-				if (!isset($info['comments_html']['artist'][0])&&strlen($info['comments_html']['artist'])>=1){
-							$art=$info['comments_html']['artist'];
-							$info['comments_html']['artist']=array($art);
-						}
-					
-				 
-						$albums[$info['comments_html']['artist'][0]]=$info['comments_html']['artist'][0];
-					
-			
+			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+	
 		}
-		
+	}
+	krsort($albums);
+
+	$currentfreshness=intval(array_keys($albums)[0]);
+	if ($cachedfreshness>=$currentfreshness){
+		echo $cachedoutput[$id]['data'];
 		
 	}
-	foreach ($albums as $album){
-		echo $album."\n";
+	else {
 		
-	}
+			//outdated cache
+
+
+			$files=scandir('./audio');
+			$albums=Array();
+			foreach ($files as $file){
+				if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+					
+						$getID3 = new getID3;
+						$info = $getID3->analyze('audio/'.$file);
+						getid3_lib::CopyTagsToComments($info);
+						if (!isset($info['comments_html']['artist'][0])&&strlen($info['comments_html']['artist'])>=1){
+									$art=$info['comments_html']['artist'];
+									$info['comments_html']['artist']=array($art);
+								}
+							
+						 
+								$albums[$info['comments_html']['artist'][0]]=$info['comments_html']['artist'][0];
+							
+					
+				}
+				
+				
+			}
+			foreach ($albums as $album){
+				echo $album."\n";
+				
+			}
+			//storing the cache
+			$cachedoutput[$id]['freshness']=time();
+			$cachedoutput[$id]['data']=implode("\n", $albums);
+			file_put_contents('./apicache-artist-list.dat', serialize($cachedoutput));
+
+		}
 }
 
 die();
