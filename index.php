@@ -790,10 +790,10 @@ $artists_file=file_get_contents('./d/artists.txt');
 			$artists=array($_GET['artist']);
 			
 		}
-		
+		$querystring='';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='&listallalbums[]='.urlencode(htmlentities($artist));
+			$querystring.='l[]='.urlencode(htmlentities($artist)).'&';
 			
 			
 		}
@@ -806,15 +806,33 @@ $artists_file=file_get_contents('./d/artists.txt');
 			file_put_contents('./overload.dat', '18');
 			
 		}
-		$opts = array(
-			'http'=>array(
-			'timeout'=>$timeout
-		)
-		);
+		//$opts = array(
+		//	'http'=>array(
+		//	'timeout'=>$timeout
+		//)
+		//);
 
 		$overloadmove=$timeout+2;
 
-		$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL,$clewnapiurl.'?l=true');
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $querystring);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
+		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$albums_file= curl_exec ($ch);
+
+		curl_close ($ch);
+
+
+
+
+		//$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
 
 		if ($albums_file===false){
 			if (!file_exists('./remoteapicache.dat')){

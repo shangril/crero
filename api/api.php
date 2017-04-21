@@ -273,12 +273,17 @@ header('Content-Type: text/plain; charset=utf-8');
 
 }
 
-else if (isset($_GET['listallalbums'])) {
+else if (isset($_GET['listallalbums'])||isset($_GET['l'])) {
 header('Content-Type: application/x-httpd-php; charset=utf-8');
 	//returns a serialized array of all albums for a specified array of artists
 	//keys are mtime of the albums
 	//values are ['album'] : album title
-
+	if (isset($_GET['l'])){
+		$_GET['listallalbums']=$_GET['l'];
+	}
+	if (isset($_POST['l'])){
+		$_GET['listallalbums']=$_POST['l'];
+	}
 
 //basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
 	$id='';
@@ -287,12 +292,14 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	foreach ($artists as $artist) {
 		$id.=$artist."\n";
 	}
-	
+	$numberoffiles=file_get_contents('./numberoffile.dat');
+	$currentfreshness=file_get_contents('./storedfreshness.dat');
+
 	
 	$cachedoutput=Array();
 	if (file_exists('./apicache.php')){
 		$cachedoutput=unserialize(file_get_contents('./apicache.php'));
-		$cachedfressness=intval($cachedoutput[$id]['freshness']);
+		$cachedfreshness=intval($cachedoutput[$id]['freshness']);
 		
 	}
 	else
@@ -300,17 +307,23 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		$cachedfreshness=0;
 		
 	}
-	$files=scandir('./audio');
-	$albums=Array();
-	foreach ($files as $file){
-		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
-	
+	if ($numberoffile!==count(scandir('audio')))
+	{
+		$files=scandir('./audio');
+		$albums=Array();
+		foreach ($files as $file){
+			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+		
+			}
 		}
-	}
-	krsort($albums);
+		krsort($albums);
 
-	$currentfreshness=intval(array_keys($albums)[0]);
+		$currentfreshness=intval(array_keys($albums)[0]);
+		file_put_contents('./numberoffiles.dat', count(scandir('./audio')));
+		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
 	if ($cachedfreshness>=$currentfreshness){
 		echo $cachedoutput[$id]['data'];
 		
@@ -709,12 +722,13 @@ else if (isset($_GET['listartists'])) {
 header('Content-Type: text/plain; charset=utf-8');
 //basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
 	$id='noartist';
-	
+	$numberoffiles=file_get_contents('./numberoffile.dat');
+	$currentfreshness=file_get_contents('./storedfreshness.dat');
 	
 	$cachedoutput=Array();
 	if (file_exists('./apicache-artist-list.dat')){
 		$cachedoutput=unserialize(file_get_contents('./apicache-artist-list.dat'));
-		$cachedfressness=intval($cachedoutput[$id]['freshness']);
+		$cachedfreshness=intval($cachedoutput[$id]['freshness']);
 		
 	}
 	else
@@ -722,17 +736,25 @@ header('Content-Type: text/plain; charset=utf-8');
 		$cachedfreshness=0;
 		
 	}
-	$files=scandir('./audio');
-	$albums=Array();
-	foreach ($files as $file){
-		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
 	
+	if ($numberoffile!==count(scandir('audio')))
+	{
+		$files=scandir('./audio');
+		$albums=Array();
+		foreach ($files as $file){
+			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+		
+			}
 		}
-	}
-	krsort($albums);
+		krsort($albums);
 
-	$currentfreshness=intval(array_keys($albums)[0]);
+		$currentfreshness=intval(array_keys($albums)[0]);
+		file_put_contents('./numberoffiles.dat', count(scandir('./audio')));
+		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	
 	if ($cachedfreshness>=$currentfreshness){
 		echo $cachedoutput[$id]['data'];
 		
