@@ -69,6 +69,7 @@ if (isset($_GET['ajax'])){
 			$targetogg=str_replace('.mp3', '.ogg', $target);
 			
 			echo 'Download <a target="new" href="'.$targetflac.'">flac</a> <a target="new" href="'.$targetogg.'">ogg</a> <a target="new" href="'.$target.'">mp3</a>';
+			echo '<br/>'.file_get_contents('./d/license.txt');
 		}
 		else {
 			echo 'Exclusive premiere track. Out for download soon';
@@ -103,7 +104,7 @@ if (isset($_GET['ajax'])){
 		$peaktime=microtime(true)-filectime('./d/maxlisteners24hours.txt');
 		$peakhours=ceil($peaktime/(60*60));
 
-		echo '<br>Listeners<br/>Current : '.$listeners.' / Peak : '.htmlspecialchars(file_get_contents('./d/maxlisteners.txt')).' (all-time) '.htmlspecialchars(file_get_contents('./d/maxlisteners24hours.txt')).' ('.htmlspecialchars($peakhours).'-hours)';
+		echo '<br/>Listeners<br/>Current : '.$listeners.' / Peak : '.htmlspecialchars(file_get_contents('./d/maxlisteners.txt')).' (all-time) '.htmlspecialchars(file_get_contents('./d/maxlisteners24hours.txt')).' ('.htmlspecialchars($peakhours).'-hours)';
 	}
 	else if ($_GET['ajax']==='cover'){
 		$covers=trim(file_get_contents('../d/covers.txt'));

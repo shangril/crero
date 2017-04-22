@@ -306,6 +306,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 				$nextbitrate=$result[4];
 				file_put_contents('../d/nowplayingisfeatured.txt', '0');
 				file_put_contents('../d/starttime.txt', microtime(true));
+				file_put_contents('../d/license.txt', '');
 			}
 		}
 		else {
@@ -333,7 +334,9 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			$apihook=str_replace($featuredbasename, '', $thisfeatured);
 			$apihook=str_replace('/audio/', '/api.php', $apihook);
 			$apihook=str_replace('/z/', '/api.php', $apihook);
-
+			
+			$apibase=$apihook;
+			
 			$apihook.='?radio='.urlencode($featuredbasename);
 			$apirequest=file_get_contents($apihook);
 			$result=explode("\n", $apirequest);
@@ -344,6 +347,10 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			$nexttitle=$result[2];
 			$nextduration=$result[3];
 			$nextbitrate=$result[4];
+			
+			file_put_contents('../d/license.txt', file_get_contents($apibase.'?getinfo='.urlencode(str_replace('.mp3', '', $featuredbasename))));
+			
+			
 			file_put_contents('../d/nowplayingisfeatured.txt', '1');
 			file_put_contents('../d/starttime.txt', microtime(true));
 			}
