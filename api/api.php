@@ -535,7 +535,7 @@ else if (isset($_GET['radio'])) {
 	||
 			(!isset($comment)||strlen(trim($comment))<1)
 
-	|| (!strstr($comment, 'Creative')&&!strstr($comment('Licence')))
+	|| (!strstr($comment, 'Creative')&&!strstr($comment,('Licence')))
 	)
 	&&strstr($file, 'www.dogmazic.net')) {
 			
