@@ -537,7 +537,13 @@ else if (isset($_GET['radio'])) {
 
 	|| (!strstr($comment, 'Creative')&&!strstr($comment,('Licence')))
 	)
-	&&strstr($file, 'www.dogmazic.net')) {
+	&&(
+	
+	strstr($file, 'www.dogmazic.net')
+	
+	|| (strstr($file, 'dogmazic_net')&&strstr($file, '_ogg'))
+	)
+	) {
 			
 		$suite=str_replace('[','*', $file);
 		$suite2=str_replace(']','*', $suite);
