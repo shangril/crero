@@ -554,6 +554,10 @@ else if (isset($_GET['radio'])) {
 	
 
 		$comment=trim(str_replace('_', ' ', $tok[3]));
+		if (!strstr($comment, 'Creative')&&!strstr($comment,('Licence'))) {
+				$comment=trim(str_replace('_', ' ', $tok[4]));
+		
+			}
 		$run=true;
 		
 	}
