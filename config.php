@@ -257,4 +257,33 @@ $autodeleteprefixpath='';
 if (file_exists('./d/autoDeletePrefixPath.txt')){
 	$autodeleteprefixpath=boolval(trim(file_get_contents('./d/autoDeletePrefixPath.txt')));
 }
+
+//download cart options
+
+$enableDownloadCart=false;
+if (file_exists('./d/enable_download_cart.txt')){
+	$enableDownloadCart=boolval(trim(file_get_contents('./d/enable_download_cart.txt')));
+}
+$isDownloadCartNameYourPrice=false;
+if (file_exists('./d/is_download_cart_name_your_price.txt')){
+	$isDownloadCartNameYourPrice=boolval(trim(file_get_contents('./d/is_download_cart_name_your_price.txt')));
+}
+$downloadCartCurrency='';
+if (file_exists('./d/download_cart_currency.txt')){
+	$downloadCartCurrency=trim(file_get_contents('./d/download_cart_currency.txt'));
+}
+$downloadCartTrackPrice=1;
+if (file_exists('./d/download_cart_track_price.txt')){
+	$downloadCartTrackPrice=floatval(trim(file_get_contents('./d/download_cart_track_price.txt')));
+}
+$downloadCartAlbumPrice=9;
+if (file_exists('./d/download_cart_album_price.txt')){
+	$downloadCartAlbumPrice=floatval(trim(file_get_contents('./d/download_cart_album_price.txt')));
+}
+$downloadCartPaypalAddress='';
+if (file_exists('./d/download_cart_paypal_address.txt')){
+	$downloadCartPaypalAddress=trim(file_get_contents('./d/download_cart_paypal_address.txt'));
+}
+
+
 ?>

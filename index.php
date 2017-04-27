@@ -457,6 +457,39 @@ if (isset($_GET['track'])){
 <meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
 <script src="http://<?php echo $server;?>/script.js">
 </script>
+<script>
+<?php if ($enableDownloadCart) {?>
+function addFullAlbumToCart(album_cart)
+		{
+		 var xhttpcartalb = new XMLHttpRequest();
+		  xhttpcartalb.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			 document.getElementById("ajax_splash").style.display="block";
+			 document.getElementById("ajax_splash_message").innerHTML = this.responseText;
+			 update_cart();
+			}
+		  };
+		  xhttpcartalb.open("GET", "add_album_to_cart.php?album="+encodeURI(album_cart), true);
+		  xhttpcartalb.send();
+
+		}
+function addTrackToCart(track_title, track_album, track_basefile, track_artist)
+		{
+		 var xhttpcarttrk = new XMLHttpRequest();
+		  xhttpcarttrk.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			 document.getElementById("ajax_splash").style.display="block";
+			 document.getElementById("ajax_splash_message").innerHTML = this.responseText;
+			 update_cart();
+			}
+		  };
+		  xhttpcarttrk.open("GET", "add_track_to_cart.php?track_title="+encodeURI(track_title)+"&track_basefile="+encodeURI(track_basefile)+"&track_album="+encodeURI(track_album)+"&track_artist="+encodeURI(track_artist), true);
+		  xhttpcarttrk.send();
+
+		}
+
+<?php }?>
+</script>
 <?php if ($activatestats) {?>
 
 
@@ -530,6 +563,32 @@ if ($activatestats){
 </style>
 </head>
 <body onMouseOver="is_human();">
+	
+	<?php
+	if ($enableDownloadCart)
+	{
+	?>
+	<script>
+	function update_cart(){
+		
+	 xhttpcart = new XMLHttpRequest();
+	  xhttpcart.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+		 document.getElementById("dlcartcounter").innerHTML = this.responseText;
+		}
+	  };
+	  xhttpcart.open("GET", "count_cart_items.php", true);
+	  xhttpcart.send();
+		
+	
+	
+	}
+	update_cart();
+	</script>
+	<div style="width:100%;text-align:right">In your download cart: <a href="./view_cart.php"><span id="dlcartcounter"></span> items</a></div>
+	<?php
+	}
+	?>
 	<?php
 	if ($activatestats){
 
@@ -1397,6 +1456,22 @@ foreach ($content as $item){
 		
 		if ($mixed||!isset($_GET['listall'])){
 			if (!$mixed){
+				
+				if ($enableDownloadCart)
+				{
+					echo '<div id="ajax_splash" style="position:absolute; top:0; left:0;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="javascript:void(0);" style="text-align:right;width:100%;" onclick="document.getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
+					echo '<a href="javascript:void(0);" onclick="addFullAlbumToCart(\''.str_replace('\'', '&quot,', $item['album']).'\');">Add full album to download cart</a><br/>';	
+					
+				}
+					
+					
+				
+				
+				
+				
+				
+				
+				
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&isset($_GET['track'])){
@@ -1407,6 +1482,17 @@ foreach ($content as $item){
 			else {
 				echo '<span id="tracklist" style=float:right;">';
 			}
+			if ($enableDownloadCart)
+			{
+					if (!isset($_SESSION['album_tracklisting']))
+				{
+					$_SESSION['album_tracklisting']=array();
+					
+				}
+				$_SESSION['album_tracklisting'][$item['album']]=array();
+					
+				
+			}
 			
 			//here we go, query Clewn API for track list
 			$tracks_file=file_get_contents($clewnapiurl.'?gettracks='.urlencode($item['album']));
@@ -1416,11 +1502,27 @@ foreach ($content as $item){
 			$hasntautoplayed=true;
 			foreach ($tracks as $track) {
 				if ($track!==''){
-				
 					//we want its name and the artist name as well
 					$track_name=trim(file_get_contents($clewnapiurl.'?gettitle='.urlencode($track)));
 			
 					$track_artist=trim(file_get_contents($clewnapiurl.'?getartist='.urlencode($track)));
+					
+					if ($enableDownloadCart&&in_array($track_artist, $artists))
+					{
+						$mypair=array();
+						
+						$mypair['title']=$track_name;
+						$mypair['file_basename']=$track;
+						
+						
+						
+						array_push($_SESSION['album_tracklisting'][$item['album']],$mypair );
+						
+						
+						
+					}
+					
+					
 					
 					if (!isset($_GET['track'])||$_GET['track']==$track_name)
 					{
@@ -1431,7 +1533,7 @@ foreach ($content as $item){
 						 <?php echo  $track_artist; ?></a> - 
 						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';
 						 
-						 if (!$mixed){
+						 if (!$mixed&&!$enableDownloadCart){
 								
 							 ?>
 							 <div style="background-color:#F0F0F0;text-align:right;">Download 
@@ -1445,9 +1547,20 @@ foreach ($content as $item){
 							 <?php
 							 }
 							 ?>
-							 <a href="javascript:void(0);" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>
-							 </div>
+							 
 							 <div style="display:none;" id="info<?php echo $trackcounter;?>"></div>
+							<?php
+							}
+						else if (!$mixed&&$enableDownloadCart){
+								?>
+							 <div style="background-color:#F0F0F0;text-align:left;"><a href="javascript:void(0);" onclick="addTrackToCart('<?php echo htmlentities($track_name);?>', '<?php echo htmlentities($item['album']);?>', '<?php echo htmlentities($track);?>', '<?php echo htmlentities($track_artist);?>' );">Add to download cart</a> 
+							 
+							 <?php
+								}
+						if (!$mixed){
+							?>
+							<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>
+							 </div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
 							showsongsheet($track);
