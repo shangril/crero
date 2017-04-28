@@ -80,7 +80,9 @@ if (!isset($_GET['ajaxstatupdate'])){
 CreRo admin panel for domain <?php echo htmlspecialchars($_SERVER['SERVER_NAME']); ?><br/>
 <a href="./?stats=realtime">Visitor figures (realtime)</a>
 <a href="./?admin=config">Edit configuration options</a>
-<a href="./?covers=manage">Manage cover arts</a> <a href="../?purge=cache" target="new">Purge htmlcache</a>
+<a href="./?covers=manage">Manage cover arts</a>
+ <a href="../?purge=cache" target="new">Purge htmlcache</a>
+  <a href="./?cart=rawstats">Download cart raw stats</a>
 <?php 
 }
 if (isset($_GET['stats'])&&$_GET['stats']=='realtime'){
@@ -284,6 +286,33 @@ else if (isset($_GET['covers'])){
 	
 	
 }
+else if (isset($_GET['cart'])){
+ $filez=array_diff(scandir('./d/cartstats'), array('..', '.'));
+ ksort($filez);
+ $stats=array_reverse($filez);
+ foreach ($stats as $stat)
+	 {
+		$mystat=unserialize(file_get_contents('./d/cartstats/'.$stat));
+		echo '<hr/>'.htmlspecialchars(date(DATE_RSS, str_replace ('.dat', '', $stat))).'<br/>';
+		echo 'Albums<br/>';
+		$albs=$mystat['album'];
+		foreach ($albs as $alb)
+		 {
+			echo $alb['title'].'<br/>';
+		 
+		 } 
+		echo 'Tracks<br/>';
+		$albs=$mystat['track'];
+		foreach ($albs as $alb)
+		 {
+			echo $alb['title'].' <em>on</em> '.$alb['album'].'<br/>';
+		 
+		 } 
+	 
+	 } 
+ 
+ } 
+
 if (!isset($_GET['ajaxstatupdate'])){
 
 ?>
