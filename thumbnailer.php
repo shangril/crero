@@ -1,6 +1,5 @@
 <?php
 include ('./config.php');
- 
  $thumbz=array_diff(scandir('./thumbcache'), Array ('..', '.'));
  foreach ($thumbz as $thumb){
 	 if (filectime('./thumbcache/'.$thumb)+60*60*24*7<=microtime(true)){
@@ -10,7 +9,7 @@ include ('./config.php');
  }
  
   if (!isset($_GET['target'])&&!isset($_GET['viewportwidth'])&&!isset($_GET['ratio'])){
-	  die();
+	  die('no opt');
   }
   
   $file = str_replace('./','',$_GET['target']);
@@ -81,7 +80,8 @@ include ('./config.php');
 
 
 		if (isset($_GET['hook'])){
-			
+			header('Content-type: application/x-png'); 
+	
 			imagepng($output);
 		} 
 }
