@@ -562,7 +562,7 @@ if ($activatestats){
 <style>
 </style>
 </head>
-<body onMouseOver="is_human();">
+<body onLoad="is_human();">
 	
 	<?php
 	if ($enableDownloadCart)
