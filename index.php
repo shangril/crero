@@ -151,6 +151,8 @@ $mosaic=false;
 if (count($_GET)==0||isset($_GET['message'])){
 	$mosaic=true;
 	$_GET['listall']='albums';
+	
+	
 	//some stuff when displaying the homepage : pinging the yp servers
 	foreach ($creroypservices as $ypservice){
 		file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description));
@@ -455,6 +457,22 @@ if (isset($_GET['track'])){
 
 ?></title>
 <meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
+<?php 
+if ($mosaic&&$artisthighlighthomepage)
+{
+//if the highlight artist is on, we got to change the css
+?>
+	<style>
+	body {
+		margin-left:0%;
+		margin-right:0%;
+		padding-left:0%;
+		padding-right:0%;
+		}
+	
+	</style>
+	
+<?php }?> 
 <script src="http://<?php echo $server;?>/script.js">
 </script>
 <script>
@@ -966,9 +984,10 @@ if ($_SESSION['random']){
 
 ?>
 
-
+<div>
 
 <?php
+
 //here we go, let's output the content
 if (isset($_GET['offset'])&&is_numeric($_GET['offset'])) {
 	$offset=intval($_GET['offset']);
@@ -999,9 +1018,54 @@ else if (!isset($_GET['artist'])&&!$material)
 {
 	echo '<a style="clear:both;" href="./?random=true">random play</a>';
 }
+
+
 if ($mosaic) {
 	echo '<br style="clear:both;"/>';
 }
+
+//the main block of artists if enabled
+$flipcoin=true;
+$boolflipcoin=false;
+
+///
+
+
+if ($mosaic&&$artisthighlighthomepage){
+	$flipcoin=true;
+	echo '<span style="float:left;position: static; top:Opx;text-align:center;display:inline;">';
+	$nobr=true;
+	echo '<table><tr>';
+	foreach ($hlartists as $hlart){
+		echo '<td><span style="float:left;width:100%;background-color:white;padding:2%;text-align;center;border:solid 3px; border-radius:8px;"><h2 style="display:inline;">';
+		echo '<a href="./?artist='.urlencode($hlart['name']).'">'.htmlspecialchars($hlart['name']).'</a><br/>';
+				echo '</h2>';
+		echo '<em>'.htmlspecialchars($hlart['styles']).'</em>';
+		echo '<br/>';
+		echo '<strong>'.htmlspecialchars($hlart['infos']).'</strong>';
+		
+		echo '</span></td>';
+			if (!$nobr)
+		{
+		echo '</tr><tr>';
+		$nobr=true;
+		}
+		else
+		{
+		$nobr=false;
+		}
+		
+		
+		}
+	echo '</tr></table>';
+	echo '</span>';
+		
+	}
+
+
+
+///
+
 //local *****
 
 foreach ($contentlocal as $item){
@@ -1096,7 +1160,22 @@ foreach ($contentlocal as $item){
 							$displaythatcover=false;
 					}
 				}
-				echo '<span style="float:left;border:solid 1px;';
+				echo '<span style="border:solid 1px;';
+				if ($artisthighlighthomepage){
+					if ($flipcoin)
+					{	echo 'float:right;';
+						$flipcoin=false;
+					}
+					else
+					{
+						echo 'float:right;';
+						
+					$flipcoin=true;
+					}
+				}
+				else {
+					echo 'float:left;';
+				}
 				if ($displaythatcover){
 					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
 				}
@@ -1112,7 +1191,7 @@ foreach ($contentlocal as $item){
 					echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
 				}
 				
-				echo displaycover($item['album'], 0.65);
+				echo displaycover($item['album'], $streaming_albums_ratio);
 
 		}
 
@@ -1197,6 +1276,9 @@ if ($ran) {
 $counter++;
 
 }
+
+
+
 
 
 //remote ****
@@ -1340,18 +1422,28 @@ foreach ($content as $item){
 							$displaythatcover=false;
 					}
 				}
-				echo '<span id="anim'.$animindex.'" style="float:';
+				echo '<span id="anim'.$animindex.'" style="';
 				
-				if ($float) {
-					echo 'left';
+				echo 'border:solid 1px;';
+				
+				if ($artisthighlighthomepage){
+					if ($flipcoin)
+					{	echo 'float:right;';
+						$flipcoin=false;
+					}
+					else
+					{
+						echo 'float:right;';
+						
+					$flipcoin=true;
+					}
 				}
-				else{
-				
-					echo 'right';
-				
+				else {
+					echo 'float:left;';
 				}
-				$float=!$float;
-				echo ';border:solid 1px;';
+				
+				
+				
 				if ($displaythatcover){
 					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
 				}
@@ -1359,7 +1451,7 @@ foreach ($content as $item){
 				echo '<script>var anim=\'anim\'</script>';
 
 				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.1+$thisalbumscore/7550);
+				echo displaycover($item['album'], 0.1+$thisalbumscore/$download_albums_magic_number);
 				
 		}
 		
@@ -1689,6 +1781,11 @@ $counter++;
 }//foreach $content
 
 
+
+
+
+
+
 if (!isset ($_GET['album'])&&!isset($_GET['track'])&&!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
 	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.'">Dig older...</a><br/>';
 
@@ -1699,6 +1796,7 @@ if (!$weactuallydisplayedsomething){
 	
 	
 }
+echo '</div>';
 if($material) {
 	
 			

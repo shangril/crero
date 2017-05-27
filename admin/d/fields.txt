@@ -96,5 +96,13 @@ download_cart_album_price.txt
 The price of a full album download, expressed in the currency defined by download_cart_currency
 download_cart_paypal_address.txt
 The email address associated with the paypal account where download cart payments will be routed
+ArtistHighlightHomePage.txt
+If set to 1 the artists while be highlighted on the index page. If set to 0 normal album mosaic will display. To be used alongside highligh_artists_list.txt
+highlight-artist-list.txt
+The list used with ArtistHighlightHomePage to display a menu with artists from your label. Defined by blocks of four line : first line is artist name. Second line is artist styles, separated by spaces. Third line is additional artist info, such as years of activity. Fourth line is reserved and must be blank. Then you can add another 4-line artist block, and so on. 
+streaming_albums_ratio.txt
+The display ratio for streaming only cover arts in mosaic (index page) mode. Default is 0.65
+download_albums_magic_number.txt
+Used to compute, according to album score if stats enablesd, the display ratio for downloadable albs cover arts in mosaic (index page) mode. Default is 7550
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog
