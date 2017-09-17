@@ -284,6 +284,38 @@ $downloadCartPaypalAddress='';
 if (file_exists('./d/download_cart_paypal_address.txt')){
 	$downloadCartPaypalAddress=trim(file_get_contents('./d/download_cart_paypal_address.txt'));
 }
-
+$artisthighlighthomepage=false;
+if (file_exists('./d/ArtistHighlightHomePage.txt')){
+	$artisthighlighthomepage=boolval(trim(file_get_contents('./d/ArtistHighlightHomePage.txt')));
+}
+$streaming_albums_ratio=0.65;
+if (file_exists('./d/streaming_albums_ratio.txt')){
+	$streaming_albums_ratio=floatval(trim(file_get_contents('./d/streaming_albums_ratio.txt')));
+}
+$download_albums_magic_number=7550;
+if (file_exists('./d/download_albums_magic_number.txt')){
+	$download_albums_magic_number=floatval(trim(file_get_contents('./d/download_albums_magic_number.txt')));
+}
+$hlartists=Array();
+//facebook twitter youtube links, things like that
+if (file_exists('./d/highlight-artist-list.txt')){
+	$socdata=trim(file_get_contents('./d/highlight-artist-list.txt'));
+	$soctokens=explode("\n", $socdata);
+	for ($p=0;$p<count($soctokens);$p++){
+		
+		while ($p<count($soctokens)){
+			$socialone=Array();
+			$socialone['name']=$soctokens[$p];
+			$p++;
+			$socialone['styles']=$soctokens[$p];
+			$p++;
+			$socialone['infos']=$soctokens[$p];
+			$p++;
+			$socialone['link']=$soctokens[$p];
+			array_push($hlartists, $socialone);
+			$p++;
+		}
+	}
+}
 
 ?>
