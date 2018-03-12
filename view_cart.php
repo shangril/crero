@@ -86,23 +86,25 @@ if ($isDownloadCartNameYourPrice){ ?>
 echo '<hr/> '.count($_SESSION['cart']['album']).' times '.htmlspecialchars($downloadCartCurrency.' '.$albprice).' (full albums) plus '.count($_SESSION['cart']['track']).' times '.htmlspecialchars($downloadCartCurrency.' '.$trkprice).' (individual tracks)';
 echo '<span style="float:right;"><strong>TOTAL: </strong>';
 
+if (count($_SESSION['cart']['album'])>=0&&count($_SESSION['cart']['track'])>=0) {//we got more than 0 item in the cart, let's go
 
+	if ($isDownloadCartNameYourPrice){
+			echo htmlspecialchars($downloadCartCurrency). ' ';
 
-if ($isDownloadCartNameYourPrice){
-		echo htmlspecialchars($downloadCartCurrency). ' ';
+			echo ' <input id="total" style="text-align:right;" size="7" type="text" value="';
+			echo htmlspecialchars($total);
+			echo '"><br/><span style="float:right;font-size:84%;">Name your price, no minimum</span>';
+		}
+		else{
+			echo htmlspecialchars($downloadCartCurrency). ' ';
 
-		echo ' <input id="total" style="text-align:right;" size="7" type="text" value="';
-		echo htmlspecialchars($total);
-		echo '"><br/><span style="float:right;font-size:84%;">Name your price, no minimum</span>';
-    }
-	else{
-		echo htmlspecialchars($downloadCartCurrency). ' ';
-
-		echo htmlspecialchars($total);
-		
-	    }
-
-
+			echo htmlspecialchars($total);
+			
+			}
+}
+else {//we got 0 item in the cart, display a warning
+	echo '<strong>You got 0 items in your download cart. Please <a href="./">go back and browse the site</a> to select songs or album that you want to download, and try again then. </strong>';
+}
 echo '</span>';
 	
  ?>
