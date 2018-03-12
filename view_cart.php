@@ -85,9 +85,9 @@ if ($isDownloadCartNameYourPrice){ ?>
 
 echo '<hr/> '.count($_SESSION['cart']['album']).' times '.htmlspecialchars($downloadCartCurrency.' '.$albprice).' (full albums) plus '.count($_SESSION['cart']['track']).' times '.htmlspecialchars($downloadCartCurrency.' '.$trkprice).' (individual tracks)';
 echo '<span style="float:right;"><strong>TOTAL: </strong>';
-
+$payment=true;
 if (count($_SESSION['cart']['album'])>0 || count($_SESSION['cart']['track'])>0) {//we got more than 0 item in the cart, let's go
-
+	
 	if ($isDownloadCartNameYourPrice){
 			echo htmlspecialchars($downloadCartCurrency). ' ';
 
@@ -104,9 +104,11 @@ if (count($_SESSION['cart']['album'])>0 || count($_SESSION['cart']['track'])>0) 
 }
 else {//we got 0 item in the cart, display a warning
 	echo '<strong>You got 0 items in your download cart. Please <a href="./">go back and browse the site</a> to select songs or album that you want to download, and try again then. </strong>';
+	$payment=false;
+
 }
 echo '</span>';
-	
+	if ($payment) {
  ?>
  <hr/>
 <button style="float:right;" onClick="compute_total();" type="button">Process to payment</button>
@@ -127,6 +129,8 @@ echo '</span>';
 
 
 <?php 
+}
+
 if ($isDownloadCartNameYourPrice){ ?>
 
 <a id="dl" href="download_page.php"></a>
