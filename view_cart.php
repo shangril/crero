@@ -86,7 +86,7 @@ if ($isDownloadCartNameYourPrice){ ?>
 echo '<hr/> '.count($_SESSION['cart']['album']).' times '.htmlspecialchars($downloadCartCurrency.' '.$albprice).' (full albums) plus '.count($_SESSION['cart']['track']).' times '.htmlspecialchars($downloadCartCurrency.' '.$trkprice).' (individual tracks)';
 echo '<span style="float:right;"><strong>TOTAL: </strong>';
 
-if (count($_SESSION['cart']['album'])>=0&&count($_SESSION['cart']['track'])>=0) {//we got more than 0 item in the cart, let's go
+if (count($_SESSION['cart']['album'])>0 || count($_SESSION['cart']['track'])>0) {//we got more than 0 item in the cart, let's go
 
 	if ($isDownloadCartNameYourPrice){
 			echo htmlspecialchars($downloadCartCurrency). ' ';
