@@ -1232,8 +1232,17 @@ foreach ($contentlocal as $item){
 					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 					 <?php echo  $track_artist; ?></a> - 
 					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
-					 <div style="background-color:#F0F0F0;text-align:right;">Early access download not available for now</div>
+					 <div style="background-color:#F0F0F0;text-align:right;">Early access download not available for now
+					
+					<!--<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>-->
+							</div>
+					<div style="display:none;" id="info<?php echo $trackcounter;?>"></div>
 					<?php
+					
+					
+					
+					
+					
 					generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
 					showsongsheet($track);
 					?>
@@ -1624,7 +1633,9 @@ foreach ($content as $item){
 						 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 						 <?php echo  $track_artist; ?></a> - 
 						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';
-						 
+						?>
+						<div style="display:none;" id="info<?php echo $trackcounter;?>"></div>
+						<?php
 						 if (!$mixed&&!$enableDownloadCart){
 								
 							 ?>

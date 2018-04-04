@@ -78,8 +78,12 @@ else if (isset($_GET['getinfo'])){
 
 	$getID3 = new getID3;
 	$info = $getID3->analyze('audio/'.$file.$format);
+	
+	//echo $file.$format;
+	
+	//echo file_exists('audio/'.$file.$format);
 	getid3_lib::CopyTagsToComments($info); 
-	$artist=$info['comments_html']['comment'][0];
+	$artist=$info['comments_html']['description'][0];
 	echo $artist;
 
 }

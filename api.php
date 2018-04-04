@@ -75,7 +75,19 @@ if (isset($_GET['listformats'])){
 	echo listformats();
 
 }
+else if (isset($_GET['getinfo'])){
 
+	header('Content-Type: text/plain; charset=utf-8');
+		$file=str_replace ('./', '', $_GET['getinfo']);
+	$title='';
+
+	$getID3 = new getID3;
+	$info = $getID3->analyze('z/'.$file.$format);
+	getid3_lib::CopyTagsToComments($info); 
+	$artist=$info['comments_html']['description'][0];
+	echo $artist;
+
+}
 else if (isset($_GET['listalbums'])) {
 header('Content-Type: text/plain; charset=utf-8');
 
