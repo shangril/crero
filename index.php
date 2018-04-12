@@ -1228,7 +1228,7 @@ foreach ($contentlocal as $item){
 				{
 					if (in_array($track_artist, $artists)){
 					?>
-					<a href="#" onClick="play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
+					<a href="#" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
 					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 					 <?php echo  $track_artist; ?></a> - 
 					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
@@ -1629,7 +1629,7 @@ foreach ($content as $item){
 					{
 						if (in_array($track_artist, $artists)){
 						?>
-						<a href="#" onClick="play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
+						<a href="#" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
 						 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 						 <?php echo  $track_artist; ?></a> - 
 						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';
@@ -1666,7 +1666,7 @@ foreach ($content as $item){
 								}
 						if (!$mixed){
 							?>
-							<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>
+							<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">+</a>
 							 </div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);

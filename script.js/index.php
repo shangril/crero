@@ -17,10 +17,10 @@ var currenttarget='';
 var currentclewn;
 function play(target, id, isclewn, isautoplay = false){
 	if (isclewn) {
-			target='<?php echo $clewnaudiourl;?>'+target;
+			target='<?php echo $clewnaudiourl;?>'+encodeURI(target);
 	}
 	else  {
-			target='<?php echo 'http://'.$server.'/z/';?>'+target;
+			target='<?php echo 'http://'.$server.'/z/';?>'+encodeURI(target);
 	}
 	currenttarget=target;
 	currentclewn=isclewn;
