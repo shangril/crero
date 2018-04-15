@@ -123,7 +123,14 @@ function GetLocation(location) {
 <div>
 <?php 
 if ($getloc){
-	echo '<div>Please allow this website to access your location to continue !</div>';
+	echo '<div>Please allow this website to access your location to continue !<hr/>Or enter GPS-style decimal coordinates if the browser location service is unavailable: <br/>
+	<form action="./" method="GET">
+	Lat: <input type="text" name="lat"/>
+	Long: <input type="text" name="long"/>
+	<input type="submit"/>
+	
+	</form>
+	</div>or <a href="./?login=logout">cancel and logout</a>';
 }
 
 if (!isset($_GET['lat'])&&!$getloc){?>
