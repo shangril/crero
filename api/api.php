@@ -83,7 +83,15 @@ else if (isset($_GET['getinfo'])){
 	
 	//echo file_exists('audio/'.$file.$format);
 	getid3_lib::CopyTagsToComments($info); 
-	$artist=$info['comments_html']['description'][0];
+	
+	if (!isset($info['comments_html']['description'][0])) {
+		
+		$artist=$info['comments_html']['comment'][0];
+	
+		}s
+	else {
+		$artist=$info['comments_html']['description'][0];
+	}
 	echo $artist;
 
 }
