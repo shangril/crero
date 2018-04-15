@@ -13,7 +13,7 @@ Radio stream for your catalog ; with Xiph yellowpages registration.
 
 Physical releases means free download, for now.
 
-Chatroom including geolocated chatroom allowing your fan to network with like-minded listeners of their local area. 
+Chatroom including geolocated chatroom allowing your fans to network with like-minded listeners of their local area. 
 
 Sell your online digital music quick instructions: activate download_cart option. Maybe set is_download_cart_name_your_price for either, name your price no minimum, or name your price with minimum. Note that people downloading will get hotlinkable audio file links, with no auth system, and that there is no way to prevent them from passing the links around. 
 
