@@ -88,7 +88,7 @@ else if (isset($_GET['getinfo'])){
 		
 		$artist=$info['comments_html']['comment'][0];
 	
-		}s
+		}
 	else {
 		$artist=$info['comments_html']['description'][0];
 	}
