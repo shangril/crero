@@ -1,13 +1,21 @@
 # CreRo
 CreRo is a CMS for record labels, and was initially written to power Crem Road records. 
+
 Full multi tiers architecture with through a simple setup the possibility to use external services such as Clewn Audio to host your (free download) media files - or host your files on your own server, you choose. 
+
 Paid download is very partially supported (no anti-stealing protection, see below). 
+
 Physical release shop feature. 
+
 Streaming only or online music free download. 
+
 Radio stream for your catalog ; with Xiph yellowpages registration. 
+
 Physical releases means free download, for now.
+
 Chatroom including geolocated chatroom allowing your fan to network with like-minded listeners of their local area. 
-Sell your online digital music quick instructions: activate download_cart option. Maybe set download_cart for either, name your price no minimum, or name your price with minimum. Note that people downloading will get hotlinkable audio file links, with no auth system, and that there is no way to prevent them from passing the links around. 
+
+Sell your online digital music quick instructions: activate download_cart option. Maybe set is_download_cart_name_your_price for either, name your price no minimum, or name your price with minimum. Note that people downloading will get hotlinkable audio file links, with no auth system, and that there is no way to prevent them from passing the links around. 
 
 
 New feature 16.11.30.0033 : create a subdir called "supporters" and put an index.php that you can code as you wish in it if you want to display a hall of fame of your donators. A "Our supporters" link will display then in the donation module.   
