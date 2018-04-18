@@ -710,7 +710,7 @@ foreach ($recents as $recent){
 	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.08, 'mini'.rand(0,1000)).'</a><br/>';
 	echo htmlspecialchars(round((time()-intval($recent['date']))/60));
 	echo ' mn<br/>';
-	echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';
+	//echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';
 	echo '</span>';
 }
 ?>
