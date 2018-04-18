@@ -689,7 +689,16 @@ if ($hasradio){
 </audio>
 <noscript>Your browser does not support Javascript, which is required on this website if you want to stream. Don't panic, we dont include any kind of third party scripts<br/></noscript>
 <div style="text-align:center;"><a href="#" onclick="document.getElementById('recentplay').style.display='block';"></a></div>
-<span id="recentplay" style="display:none;width:100%;text-align:center;">
+<span id="recentplay" style="display:<?php
+if ($recentplay){
+	echo 'block';
+	
+}
+else {
+	echo 'none';
+	
+}
+?>;width:100%;text-align:center;"><hr/>Recently played: <br/>
 <?php
 
 $recents=Array();
@@ -698,14 +707,14 @@ if (file_exists('./d/recent.dat')){
 	
 }
 foreach ($recents as $recent){
-	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.42, 'mini'.rand(0,1000)).'</a><br/>';
+	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.08, 'mini'.rand(0,1000)).'</a><br/>';
 	echo htmlspecialchars(round((time()-intval($recent['date']))/60));
 	echo ' mn<br/>';
 	echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';
 	echo '</span>';
 }
 ?>
-
+<hr/>
 </span>
 <br style="clear:both;"/>
 

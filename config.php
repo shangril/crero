@@ -7,7 +7,7 @@ error_reporting(0);
  * currently, non-ascii video-album and albums will work
  * non-ascii album blacklisting to prevent physical copies availability, too
  * non-ascii songbooks will work
- * all other non-ASCII datas of your media catalog may fail
+ * all other non-ASCII datas of your media catalog may fail <- mostly cured now !
  * 
  **** When refering to 'the audio' thereafter, it will means
  * Three time the same audio track, with the same basename, in .flac, .ogg and.mp3 
@@ -25,7 +25,7 @@ error_reporting(0);
  * Note that configuration (.txt) files expect UNIX-style
  * ("\n") end-of-lines. 
  * Windows/Mac OS user please set this in your text editor
- * 
+ * or use admin panel to modify them
  * 
  * 
  *** Typical deployment is made of 
@@ -77,10 +77,11 @@ error_reporting(0);
  * 
  * if you wish to use the chat feature, you'll have
  * to create two directories named "d" and "e" in the "network"
- * subdir of your install. Don't forget to include a link somewhere on 
- * your page to "./network" for people to find it. 
+ * subdir of your install<- outdated. These dirs are here
+ *  Don't forget to include a link somewhere on 
+ * your page to "./network" for people to find it. <- outdated. Now included automagically
  * and to edit the "./network/site_variables.php" for site name 
- * description and so on for your chat subsite 
+ * description and so on for your chat subsite <- probably outdated but not sure
  *
  ** Video support
  * use video/api.php ; put it at the root of your video server
@@ -94,11 +95,12 @@ error_reporting(0);
  * in the same dir, will be used to categorize your vids
  * you can set a downgraded version of any format, that will be
  * provided instead of the original for streaming purpose, by adding 
- * an extra <whatever-meaningful-digit>.basename.format file 
+ * an extra <whatever-meaningful-digit>.basename.format file <- not working anymore currently
+ * also note that non ASCII will fail.  
  *  
  ** How to sell physical items
  * 
- * Please look at the example "material_*.txt' files
+ * OUDATED - LOOK at the online help in the admin panel ->Please look at the example "material_*.txt' files
  * in the d/ subdir. That's with theses files that you'll define
  * your physical copies product line
  * (remember Windows/Mac users, this is UNIX-style end of lines !)
@@ -109,7 +111,7 @@ error_reporting(0);
  * TODO : the script.js has several server url that are harcoded in it 
  * that you will have to manually replace to reflect your actual 
  * installation. It should move to a dynamic php file sooner or 
- * later. 
+ * later. <- this is **** done for years
  * 
  * 
  * 
@@ -316,6 +318,10 @@ if (file_exists('./d/highlight-artist-list.txt')){
 			$p++;
 		}
 	}
+}
+$recentplay='false';
+if (file_exists('./d/recentplay.txt')){
+	$recentplay=boolval(trim(file_get_contents('./d/recentplay.txt')));
 }
 
 ?>

@@ -104,5 +104,7 @@ streaming_albums_ratio.txt
 The display ratio for streaming only cover arts in mosaic (index page) mode. Default is 0.65
 download_albums_magic_number.txt
 Used to compute, according to album score if stats enablesd, the display ratio for downloadable albs cover arts in mosaic (index page) mode. Default is 7550
+recentplay.txt
+Can be 0 or 1 to not display or to display, either, recently played albums. Please note that used in conjunction with htmlcache, some played albums will be skipped. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog
