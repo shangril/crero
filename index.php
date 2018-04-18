@@ -320,6 +320,10 @@ function loginpanel($activateaccountcreation){
 }
 function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl) {
 	//let's see if there is a video available
+	
+					
+	
+	
 					$videotarget=trim(file_get_contents($videoapiurl.'?artist='.urlencode($track_artist).'&album='.urlencode($album).'&title='.urlencode($track_name).'&gettarget=y'));
 					
 					
@@ -362,7 +366,7 @@ function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videou
 						}
 						echo '<video controls="controls" autoplay="autoplay" style="width:100%;">';
 						foreach($videoformats as $videoformat) {
-							echo '<source src="'.htmlspecialchars($videourl.$videotargetfiles[$videoformat]).'"></source>';
+							echo '<source src="'.htmlspecialchars($videourl.urlencode($videotarget).'.'.urlencode($videoformat)).'" mime-type="'.htmlspecialchars(mime_content_type($videotarget.'.'.$videoformat)).'"></source>';
 							
 							
 						}
