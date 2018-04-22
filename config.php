@@ -138,7 +138,6 @@ $videourl=trim(file_get_contents('./d/videourl.txt'));
 
 $message['show_youtube']='
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/uWvgKIdnvGE?list=UUf8dSxqrjMkzXn8-OtNerkg" frameborder="0" allowfullscreen></iframe>
 
 ';
 //will be displayed for http://yourserver.com/?message=show_youtube
@@ -322,6 +321,18 @@ if (file_exists('./d/highlight-artist-list.txt')){
 $recentplay='false';
 if (file_exists('./d/recentplay.txt')){
 	$recentplay=boolval(trim(file_get_contents('./d/recentplay.txt')));
+}
+//streamingAlbumsInfoNotice
+$streamingAlbumsInfoNotice = Array();
+if (file_exists('./d/streamingAlbumsInfoNotice.txt')){
+	$saindata=trim(file_get_contents('./d/streamingAlbumsInfoNotice.txt'));
+	$sain=explode("\n", $saindata);
+	for ($p=0;$p<count($sain);$p++){
+	
+		$streamingAlbumsInfoNotice[htmlentities($sain[$p])]=$sain[$p+1];
+		$p++;
+	}
+
 }
 
 ?>
