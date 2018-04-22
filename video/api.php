@@ -9,10 +9,8 @@ if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset(
 		foreach ($files as $file) {
 			if (!is_dir($file)){
 				
-				if (mime_content_type('audio/'.$file)==='text/plain'){
-				
-					if (strpos ($file, '.artist.txt')==(strlen($file)-11)){
-					
+				if (mime_content_type('./audio/'.$file)==='text/plain'){
+					if (strpos ($file, '.artist.txt')===(strlen($file)-11)){
 						if (htmlentities(trim(file_get_contents('audio/'.$file)))===$_GET['artist']
 						&& htmlentities(trim(file_get_contents('audio/'.str_replace('.artist.txt', '.album.txt',$file))))===$_GET['album']
 						&& htmlentities(trim(file_get_contents('audio/'.str_replace('.artist.txt', '.title.txt',$file))))===$_GET['title']
@@ -21,11 +19,17 @@ if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset(
 							exit();
 							
 							
+						}/*
+						if ((trim(file_get_contents('./audio/'.$file)))===html_entity_decode($_GET['artist'])){
+						echo 'artist matched';
 						}
-						
-						
-						
-						
+						if ((trim(file_get_contents('./audio/'.str_replace('.artist.txt', '.album.txt',$file))))===html_entity_decode($_GET['album'])){
+						echo 'album matched';
+						}
+						if ((trim(file_get_contents('./audio/'.str_replace('.artist.txt', '.title.txt',$file))))===html_entity_decode($_GET['title'])){
+						echo 'title matched';
+						}	
+						*/
 					}
 					
 					
