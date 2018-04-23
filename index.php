@@ -480,7 +480,15 @@ if ($mosaic&&$artisthighlighthomepage)
 <script src="http://<?php echo $server;?>/script.js">
 </script>
 <script>
-<?php if ($enableDownloadCart) {?>
+<?php 
+
+echo "var target_album='".urlencode(htmlentities($_GET['target_album']))."';
+";
+
+
+
+
+	if ($enableDownloadCart) {?>
 function addFullAlbumToCart(album_cart)
 		{
 		 var xhttpcartalb = new XMLHttpRequest();
@@ -1831,8 +1839,17 @@ $counter++;
 
 
 if (!isset ($_GET['album'])&&!isset($_GET['track'])&&!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
+	
+	if (!isset($_GET['target_album'])){
+	
 	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.'">Dig older...</a><br/>';
-
+	
+	}
+	else {
+	
+	echo '<a id="digolder" style="float:right;" href="./?album='.urlencode(htmlentities($_GET['target_album'])).$arturl.'">Dig more...</a><br/>';
+	
+	}
 }
 if (!$weactuallydisplayedsomething){
 	

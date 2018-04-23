@@ -67,7 +67,13 @@ function playNext() {
 		
 			document.location.href=document.getElementById('digolder').href+'&autoplay=true';//'./?offset='+(offset+1)+'&autoplay=true';
 		}
-		else {
+		else if(target_album!=null){
+			document.location.href='./?album='+target_album+'&autoplay=true';
+		}
+
+		else
+		
+		{
 			document.location.href='./?offset='+(offset+1)+'&autoplay=true';
 		}
 
