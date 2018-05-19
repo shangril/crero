@@ -1840,7 +1840,7 @@ $counter++;
 
 if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
 	$autourl='';
-	if (isset($_GET['autoplay'])&&boolval($_GET['autoplay'])){
+	if (false&&isset($_GET['autoplay'])&&boolval($_GET['autoplay'])){//this case is managed by some other code place
 		$autourl='&autoplay=true';
 	}
 	if (!isset($_GET['target_album'])){
