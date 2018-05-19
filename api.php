@@ -356,5 +356,8 @@ else if (isset($_GET['radio'])) {
 //			$nextbitrate=$result[4];
 
 }
+else {
+	echo "\n";
+}
 die();
 ?>
