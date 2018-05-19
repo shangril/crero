@@ -1838,16 +1838,19 @@ $counter++;
 
 
 
-if (!isset ($_GET['album'])&&!isset($_GET['track'])&&!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
-	
+if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
+	$autourl='';
+	if (isset($_GET['autoplay'])&&boolval($_GET['autoplay'])){
+		$autourl='&autoplay=true';
+	}
 	if (!isset($_GET['target_album'])){
 	
-	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.'">Dig older...</a><br/>';
+	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.$autourl.'">Dig older...</a><br/>';
 	
 	}
 	else {
 	
-	echo '<a id="digolder" style="float:right;" href="./?album='.urlencode(htmlentities($_GET['target_album'])).$arturl.'">Dig more...</a><br/>';
+	echo '<a id="digolder" style="float:right;" href="./?album='.urlencode(htmlentities($_GET['target_album'])).$arturl.$autourl.'">Dig more...</a><br/>';
 	
 	}
 }
