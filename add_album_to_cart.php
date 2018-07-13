@@ -35,7 +35,7 @@ array_push($_SESSION['cart']['album'], $albumtoadd);
 What would you want to do now ? 
 <h2><a href="javascript:void(0);" onclick="document.getElementById('ajax_splash').style.display='none';">Continue picking songs</a></h2>
 or
-<h2><a href="view_cart.php" >Process to download</a></h2>
+<h2><a href="view_cart.php" >Proceed to download</a></h2>
 
 </div>
 

@@ -111,7 +111,7 @@ echo '</span>';
 	if ($payment) {
  ?>
  <hr/>
-<button style="float:right;" onClick="compute_total();" type="button">Process to payment</button>
+<button style="float:right;" onClick="compute_total();" type="button">Proceed to payment</button>
 
 <form id="paypal_form" name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
 <input type="hidden" id="cmd" name="cmd" value="_xclick" />
