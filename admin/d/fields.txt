@@ -108,5 +108,7 @@ recentplay.txt
 Can be 0 or 1 to not display or to display, either, recently played albums. Please note that used in conjunction with htmlcache, some played albums will be skipped. 
 streamingAlbumsInfoNotice.txt
 Can be used for streaming only albums. By default each track will indicate "early access download not available for now". This sentence can be replaced by a free form text/html sentence. Indicate on the first line the name of the album, on the second line the sentence, on the third line the name of another album, on the fourth line the sentence for this fourth album, and so on. 
+albumsForDownloadInfoNotice.txt
+Can be used for downloadable album. This features add a free HTML block at the end of the playlist for a particular album. Syntax : first ligne is the album title. Second line is an associated HTML/text to be displayed. Third line is another album title... And so on. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

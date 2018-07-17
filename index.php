@@ -3,6 +3,7 @@ require_once('./config.php');
 //error_reporting(E_WARNING|E_NOTICE);
 
 require_once('./crero-lib.php');
+//error_reporting(E_WARNING|E_NOTICE|E_ERROR|E_PARSE);
 
 ob_start();
 
@@ -1730,6 +1731,11 @@ foreach ($content as $item){
 			
 			}
 			echo '</span>';
+			 if (isset($albumsForDownloadInfoNotice[$item['album']])){
+							echo '<div style="color:green;background-color:white;border-radius:5px;">';
+							echo $albumsForDownloadInfoNotice[$item['album']];
+							echo '</div>';
+						 }
 			if ($mixed) {
 				?><script>document.getElementById('mixedtracks').innerHTML=document.getElementById('tracklist').innerHTML;
 						  document.getElementById('tracklist').style.display='none';

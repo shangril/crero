@@ -334,5 +334,16 @@ if (file_exists('./d/streamingAlbumsInfoNotice.txt')){
 	}
 
 }
+$albumsForDownloadInfoNotice = Array();
+if (file_exists('./d/albumsForDownloadInfoNotice.txt')){
+	$saindata=trim(file_get_contents('./d/abumsForDownloadInfoNotice.txt'));
+	$sain=explode("\n", $saindata);
+	for ($p=0;$p<count($sain);$p++){
+	
+		$albumsForDownloadInfoNotice[htmlentities($sain[$p])]=$sain[$p+1];
+		$p++;
+	}
+
+}
 
 ?>
