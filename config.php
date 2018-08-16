@@ -336,7 +336,7 @@ if (file_exists('./d/streamingAlbumsInfoNotice.txt')){
 }
 $albumsForDownloadInfoNotice = Array();
 if (file_exists('./d/albumsForDownloadInfoNotice.txt')){
-	$saindata=trim(file_get_contents('./d/abumsForDownloadInfoNotice.txt'));
+	$saindata=trim(file_get_contents('./d/albumsForDownloadInfoNotice.txt'));
 	$sain=explode("\n", $saindata);
 	for ($p=0;$p<count($sain);$p++){
 	
