@@ -125,7 +125,7 @@ else if (isset($_GET['ajaxstatupdate'])){
 			echo 'at '.htmlspecialchars(date(DATE_RSS, round($pageview['time']))).' ';
 			echo 'user '.htmlspecialchars($pageview['userid']).' is browsing the page <br/>';
 			
-			$urlpage=Array();
+			/*$urlpage=Array();
 			
 			if (strstr ($pageview['page'], '?')){
 				$query=explode('?', $pageview['page'])[1];
@@ -142,12 +142,30 @@ else if (isset($_GET['ajaxstatupdate'])){
 				echo htmlspecialchars($urlpage[$key]).' - ';
 				
 			}
+			*/
 			if ($pageview['random']){
-				echo ' in random mode';
+				echo ' Random mode';
 			}
 			echo '<br/>';
 			
-			echo 'coming from '.htmlspecialchars($pageview['referer']);
+			$urlpage=Array();
+			
+			if (strstr ($pageview['referer'], '?')){
+				$query=explode('?', $pageview['referer'])[1];
+				$urlpage=explode('&', $query);
+			}
+			else {
+				$urlpage['/']='Label home page';
+			}
+			
+			$keyz=array_keys($urlpage);
+			
+			foreach ($keyz as $key) {
+				//echo htmlspecialchars($key).' ';
+				echo htmlspecialchars(urldecode($urlpage[$key])).' - ';
+				
+			}
+			
 			echo '</div>';
 			
 		}//foreach pageview

@@ -64,9 +64,10 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 //caching of html page ; almost done. Just cache the output buffer once the page is fully generated. See end of this file
 
 $album_scores=Array();
-if ($activatestats)
+if ($activatestats&&false)
 {
-//we gonna compute the score for each album
+//The scoring system for each album is no longer used due to refactoring of the stats module to make it usable with htmlcache
+
 	$raw_scores=Array();
 	$scoredats=array_diff(scandir ('./admin/d/stats/'), Array ('.', '..', '.htaccess'));
 	foreach ($scoredats as $score_dat){
@@ -118,10 +119,10 @@ if ($activatestats&&isset($_GET['pingstat'])){
 			
 		}
 		
-		$page['data']['agent']=$_GET['reqHTTP_USER_AGENT'];
+		$page['data']['agent']=$_SERVER['HTTP_USER_AGENT'];
 		$variable='agent';
 		
-		if (isset($_SESSION['is_human'])&&!(strstr($page['data'][$variable],'bot')||
+		if (!(strstr($page['data'][$variable],'bot')||
 		strstr($page['data'][$variable],'Yahoo! Slurp')||
 		strstr($page['data'][$variable],'+http://')||
 		strstr($page['data'][$variable],'+https://')||
@@ -129,8 +130,8 @@ if ($activatestats&&isset($_GET['pingstat'])){
 		//may be an human, we store it
 			$figure['userid']=$_SESSION['statid'];
 			$figure['css_color']=$_SESSION['css_color'];
-			$figure['page']=$_GET['reqREQUEST_URI'];
-			$figure['referer']=$_GET['reqHTTP_REFERER'];
+			$figure['page']=$_SERVER['REQUEST_URI'];
+			$figure['referer']=$_SERVER['HTTP_REFERER'];
 			$figure['random']=$_SESSION['random'];
 			file_put_contents('./admin/d/stats/'.microtime(true).'.dat', serialize($figure));
 		}
@@ -141,12 +142,8 @@ if ($activatestats&&isset($_GET['pingstat'])){
 		
 	die();
 }
-if ($activatestats&&isset($_GET['is_human'])){
-		if ($sessionstarted){
-			$_SESSION['is_human']=true;
-		}
 		
-}
+
 
 $mosaic=false;
 if (count($_GET)==0||isset($_GET['message'])){
@@ -525,75 +522,36 @@ function addTrackToCart(track_title, track_album, track_basefile, track_artist)
 
 
 <script>
-var first_human_validated_stats_sent = false;
 	  
+function stats(){
 	  
-function is_human(){
-	  if (!first_human_validated_stats_sent){
-		  first_human_validated_stats_sent=true;
+	  var xhttp = new XMLHttpRequest();
+	  xhttp.open("GET", "./?pingstat=true", true);
+	  xhttp.send();
 
-
-		  var xhttp = new XMLHttpRequest();
-		  xhttp.open("GET", "./?is_human=true");
-		  xhttp.send();
-
-		  
-		  var xhttp = new XMLHttpRequest();
-		  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
-		  
-		  
-		  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
-		  
-		  
-		  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
-		  
-		  
-		  ?>", true);
-		  xhttp.send();
-	}
 }
 </script>
 <?php } else { ?>
 <script>
-	function is_human(){
+	function stats(){
 		return;
 	}
 </script>
 <?php }
 
-if ($activatestats){
-
-?>
-<script>
-
-	function ajaxstats(){
-		if (!first_human_validated_stats_sent){
-		  
-		  var xhttp = new XMLHttpRequest();
-		  xhttp.open("GET", "./?pingstat=true&reqHTTP_REFERER=<?php echo urlencode($_SERVER['HTTP_REFERER']); 
-		  
-		  
-		  ?>&reqHTTP_USER_AGENT=<?php echo urlencode($_SERVER['HTTP_USER_AGENT']); 
-		  
-		  
-		  ?>&reqREQUEST_URI=<?php echo urlencode($_SERVER['REQUEST_URI']); 
-		  
-		  
-		  ?>", true);
-		  xhttp.send();
-		}
-	}
-</script>
-
-<?php
-}
 
 
  ?>
 <style>
 </style>
 </head>
-<body onLoad="is_human();">
+<body 
+
+<?php if ($activatestats){?>
+onLoad="stats();"
+<?php }?>
+
+>
 	
 	<?php
 	if ($enableDownloadCart)
@@ -1161,7 +1119,8 @@ foreach ($contentlocal as $item){
 
 			}
 		else  {
-				if ($activatestats){
+				if ($activatestats&&false){
+					//the album score is no longer used due to refactoring of stats to make them compatible with HTMLcache
 					if (isset($album_scores[$item['album']])){
 						$thisalbumscore=intval($album_scores[$item['album']])+100;
 						
@@ -1446,7 +1405,8 @@ foreach ($content as $item){
 			}
 		else  {
 				$animindex++;
-				if ($activatestats){
+				if ($activatestats&&false){
+					//the album scores are no longer used due to refactoring of stats to make them usable with htmlcache
 					if (isset($album_scores[$item['album']])){
 						$thisalbumscore=intval($album_scores[$item['album']])+100;
 						
@@ -1596,6 +1556,15 @@ foreach ($content as $item){
 		if ($mixed||!isset($_GET['listall'])){
 			if (!$mixed){
 				
+				 if (isset($albumsForDownloadInfoNotice[$item['album']])){
+							echo '<div style="color:green;background-color:white;border-radius:5px;">';
+							echo $albumsForDownloadInfoNotice[$item['album']];
+							echo '</div>';
+						 }
+				
+				
+				
+				
 				if ($enableDownloadCart)
 				{
 					echo '<div id="ajax_splash" style="position:absolute; top:0; left:0;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="javascript:void(0);" style="text-align:right;width:100%;" onclick="document.getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
@@ -1731,11 +1700,7 @@ foreach ($content as $item){
 			
 			}
 			echo '</span>';
-			 if (isset($albumsForDownloadInfoNotice[$item['album']])){
-							echo '<div style="color:green;background-color:white;border-radius:5px;">';
-							echo $albumsForDownloadInfoNotice[$item['album']];
-							echo '</div>';
-						 }
+			
 			if ($mixed) {
 				?><script>document.getElementById('mixedtracks').innerHTML=document.getElementById('tracklist').innerHTML;
 						  document.getElementById('tracklist').style.display='none';
