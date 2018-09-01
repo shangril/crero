@@ -9,6 +9,11 @@ ob_start();
 
 $sessionstarted=session_start();
 
+if (!isset($_SESSION['origin'])){
+	$_SESSION['origin']=$_SERVER['HTTP_REFERER'];
+	
+}
+
 srand();
 
 if (isset($_SESSION['random'])&&$_SESSION['random']){
@@ -133,6 +138,7 @@ if ($activatestats&&isset($_GET['pingstat'])){
 			$figure['page']=$_SERVER['REQUEST_URI'];
 			$figure['referer']=$_SERVER['HTTP_REFERER'];
 			$figure['random']=$_SESSION['random'];
+			$figure['origin']=$_SESSION['origin'];
 			file_put_contents('./admin/d/stats/'.microtime(true).'.dat', serialize($figure));
 		}
 		

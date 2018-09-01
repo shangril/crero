@@ -165,6 +165,7 @@ else if (isset($_GET['ajaxstatupdate'])){
 				echo htmlspecialchars(urldecode($urlpage[$key])).' - ';
 				
 			}
+			echo '<br/>coming from: '.htmlspecialchars($pageview['origin']);
 			
 			echo '</div>';
 			
