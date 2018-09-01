@@ -1,4 +1,7 @@
 # CreRo
+
+*20180817 release : stats rewritten. Please note that the ancient statistics you may have gathered won't now display correctly in the new stats system. If you need them for future reference, please make a backup before upgrade (ie: go to your admin pannel, select, copy, and paste elsewhere)
+
 CreRo is a CMS for record labels, and was initially written to power Crem Road records. 
 
 Full multi tiers architecture with through a simple setup the possibility to use external services such as Clewn Audio to host your (free download) media files - or host your files on your own server, you choose. 
