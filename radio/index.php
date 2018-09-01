@@ -161,8 +161,8 @@ if ($activatestats&&isset($_GET['pingstat'])){
 		//may be an human, we store it
 			$figure['userid']=$_SESSION['statid'];
 			$figure['css_color']=$_SESSION['css_color'];
-			$figure['page']='/radio/'.$_SERVER['REQUEST_URI'];
-			$figure['referer']=$_SERVER['HTTP_REFERER'];
+			$figure['page']='/?radio=radio';
+			$figure['referer']=$_SERVER['HTTP_REFERER'].'/?radio=radio';
 			$figure['random']=$_SESSION['random'];
 			$figure['origin']=$_SESSION['origin'];
 			file_put_contents('../admin/d/stats/'.microtime(true).'.dat', serialize($figure));
