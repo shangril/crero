@@ -165,7 +165,7 @@ if ($activatestats&&isset($_GET['pingstat'])){
 			$figure['referer']=$_SERVER['HTTP_REFERER'];
 			$figure['random']=$_SESSION['random'];
 			$figure['origin']=$_SESSION['origin'];
-			file_put_contents('./admin/d/stats/'.microtime(true).'.dat', serialize($figure));
+			file_put_contents('../admin/d/stats/'.microtime(true).'.dat', serialize($figure));
 		}
 		
 		
