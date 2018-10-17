@@ -286,7 +286,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			
 			$featured=explode("\n", $radiofeatured);
 			shuffle($featured);
-			$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
+			$thisfeatured = $featured[random_int(0, count($featured) - 1)];
 			$featuredbasenamed=explode('/', $thisfeatured);
 			$featuredbasename=array_pop($featuredbasenamed);
 			$apihook=str_replace($featuredbasename, '', $thisfeatured);
@@ -326,7 +326,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			
 			$featured=explode("\n", $radiobase);
 			shuffle($featured);
-			$thisfeatured = $featured[mt_rand(0, count($featured) - 1)];
+			$thisfeatured = $featured[random_int(0, count($featured) - 1)];
 			
 			$featuredbasenamed=explode('/', $thisfeatured);
 			$featuredbasename=array_pop($featuredbasenamed);
