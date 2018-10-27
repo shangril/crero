@@ -68,7 +68,7 @@ td {border:solid 1px;}
 </head>
 <body>
 	<h1><?php echo $title; ?> - Checkout</h1>
-	<h2>Please review your order and, if everything is OK, please click on "Process to payment"</h2>
+	<h2>Please review your order and, if everything is OK, please click on "Proceed to payment"</h2>
 <?php
 
 echo '<table><tr><td>Album</td><td>Product</td><td>Quantity</td><td>Unit price</td><td>Total price</td></tr>';
@@ -161,8 +161,8 @@ echo '</table>';
 echo '<span  style="float:right;"><a href="./">Cancel your order</a> or <form action="tip.php" method="post" style="display:inline;"><input type="hidden" name="item" value="'.htmlspecialchars(serialize($order)).'" />';
 echo '<input type="hidden" name="option" value="'.htmlspecialchars(serialize($options)).'"></input>';
 echo '<input type="hidden" name="shipping" value="'.htmlspecialchars(serialize($_POST['shipping'])).'"></input>';
-echo '<input type="submit" value="Process to payment"></input></form>';
-echo '<br/>Taxes are included';
+echo '<input type="submit" value="Proceed to payment"></input></form>';
+
 
 
 
