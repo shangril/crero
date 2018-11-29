@@ -900,7 +900,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 		if ($albums_file===false){
 			if (!file_exists('./remoteapicache.dat')){
 			
-				echo '<h2><strong>Sorry ! </strong>It seems that Clewn.org, which hosts the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. If you want to help, <a href="http://audio.clewn.org/">visit Clewn and make a donation</a>. Clewn is funded only by this way.';
+				echo '<h2><strong>Sorry ! </strong>It seems that the free albums host, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. ';
 			
 			}
 			else {
