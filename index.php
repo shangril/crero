@@ -1023,7 +1023,7 @@ if ($mosaic&&$artisthighlighthomepage){
 	$nobr=true;
 	echo '<table><tr>';
 	foreach ($hlartists as $hlart){
-		echo '<td><span style="float:left;width:100%;background-color:white;padding:2%;text-align;center;border:solid 3px; border-radius:8px;"><h2 style="display:inline;">';
+		echo '<td><span class="colTranslate" style="float:left;width:100%;background-color:white;padding:2%;text-align;center;border:solid 3px; border-radius:8px;"><h2 style="display:inline;">';
 		echo '<a href="./?artist='.urlencode($hlart['name']).'">'.htmlspecialchars($hlart['name']).'</a><br/>';
 				echo '</h2>';
 		echo '<em>'.htmlspecialchars($hlart['styles']).'</em>';
