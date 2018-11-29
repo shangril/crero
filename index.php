@@ -1147,7 +1147,7 @@ foreach ($contentlocal as $item){
 							$displaythatcover=false;
 					}
 				}
-				echo '<span style="border:solid 1px;';
+				echo '<span class="lineTranslate" style="border:solid 0px;';
 				if ($artisthighlighthomepage){
 					if ($flipcoin)
 					{	echo 'float:right;';
@@ -1164,7 +1164,7 @@ foreach ($contentlocal as $item){
 					echo 'float:left;';
 				}
 				if ($displaythatcover){
-					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
+					echo 'padding:0px;border-radius:0px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
 				}
 				echo '">';
 				
@@ -1435,9 +1435,9 @@ foreach ($content as $item){
 							$displaythatcover=false;
 					}
 				}
-				echo '<span id="anim'.$animindex.'" style="';
+				echo '<span  class="lineTranslate" id="anim'.$animindex.'" style="';
 				
-				echo 'border:solid 1px;';
+				echo 'border:solid 0px;';
 				
 				if ($artisthighlighthomepage){
 					if ($flipcoin)
@@ -1458,7 +1458,7 @@ foreach ($content as $item){
 				
 				
 				if ($displaythatcover){
-					echo 'padding:5px;border-radius:5px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
+					echo 'padding:0px;border-radius:0px;background-color:rgb('.$thisalbumscore.','.$thisalbumscore.','.$thisalbumscore.');';
 				}
 				echo '">';
 				echo '<script>var anim=\'anim\'</script>';
@@ -1867,7 +1867,7 @@ if (!$activatechat===false){
 }
 
 
-if ($mosaic){
+if ($mosaic&&false){//use this only for ugly design fans -> remove &&false and enjoy
 ?>
 <script>
 var animmax=<?php echo $animindex; ?>;
