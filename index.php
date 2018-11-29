@@ -1002,7 +1002,7 @@ if ($_SESSION['random']&&!isset($_GET['artist'])){
 }	
 else if (!isset($_GET['artist'])&&!$material)
 {
-	echo '<a style="clear:both;" href="./?random=true">random play</a>';
+	//echo '<a style="clear:both;" href="./?random=true">random play</a>'; //Regression bug, random not working anymore, has to be disabled
 }
 
 
