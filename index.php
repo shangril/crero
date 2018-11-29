@@ -413,7 +413,7 @@ function displaycover($album, $ratio, $param='cover'){
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
+			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
 		
 			$output.='<script>;
 			var size;
