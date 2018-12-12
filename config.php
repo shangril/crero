@@ -1,6 +1,8 @@
 <?php
 error_reporting(0);
 
+// ! ! ! ! all of the below comments are totally outdated now
+
 /*** Known bugs
  * 
  * The support for non-ASCII artists, albums, tracks etc is still very partial
@@ -322,6 +324,13 @@ $recentplay='false';
 if (file_exists('./d/recentplay.txt')){
 	$recentplay=boolval(trim(file_get_contents('./d/recentplay.txt')));
 }
+
+$pageHeaderContactInfo='false';
+if (file_exists('./d/pageHeaderContactInfo.txt')){
+	$pageHeaderContactInfo=trim(file_get_contents('./d/pageHeaderContactInfo.txt'));
+}
+
+
 //streamingAlbumsInfoNotice
 $streamingAlbumsInfoNotice = Array();
 if (file_exists('./d/streamingAlbumsInfoNotice.txt')){

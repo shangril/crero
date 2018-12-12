@@ -12,11 +12,14 @@
     50%  {background-color: red;}
     100% {background-color: #AFAFAF;}
 }
+
+
 .lineTranslate {
 		position: relative;
 		animation-delay: 12s;
 		animation: AnimTranslate 10s;
 	}
+
 .colTranslate {
 		position: relative;
 		animation-delay: 12s;
@@ -39,6 +42,7 @@ body {
     animation: bodycolor 15s;
     /*background-image: linear-gradient(to right, black, #373737);*/
 }
+
 @media screen and (max-width:800px) {
 	body {
 		padding-left:0%;
