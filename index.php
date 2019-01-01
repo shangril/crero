@@ -1848,6 +1848,8 @@ if($material) {
 if ($mosaic) {
 	echo '<br style="clear:both;"/>';
 }
+
+echo $pageFooterSplash;
 ?>
 
 <a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=document.getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>

@@ -1,6 +1,11 @@
 <?php
 session_start();
-include ('../config.php');
+chdir ('..');
+include ('./config.php');
+chdir ('./network');
+if (!$activatechat){
+	exit(0);
+}
 if (isset($_GET['login'])){
 	$_SESSION['logged']=true;
 	

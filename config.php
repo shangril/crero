@@ -330,6 +330,10 @@ if (file_exists('./d/pageHeaderContactInfo.txt')){
 	$pageHeaderContactInfo=trim(file_get_contents('./d/pageHeaderContactInfo.txt'));
 }
 
+$pageFooterSplash='';
+if (file_exists('./d/pageFooterSplash.txt')){
+	$pageFooterSplash=trim(file_get_contents('./d/pageFooterSplash.txt'));
+}
 
 //streamingAlbumsInfoNotice
 $streamingAlbumsInfoNotice = Array();

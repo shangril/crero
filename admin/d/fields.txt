@@ -112,5 +112,7 @@ albumsForDownloadInfoNotice.txt
 Can be used for downloadable album. This features add a free HTML block at the end of the playlist for a particular album. Syntax : first ligne is the album title. Second line is an associated HTML/text to be displayed. Third line is another album title... And so on. 
 pageHeaderContactInfo.txt
 NOT IMPLEMENTED - reserved for future usage - - -A free form text, html accepted, that will display at the top of the page when clicking on the "add mail" icon. Useful to state maybe one thing or two and to provide an email address. 
+pageFooterSplash.txt
+A free form HTML code or plain text that will be displayed as is at the bottom of each page of the main sections of the site (album, artist, track, index pages etc). Useful for as an example partnership cross-promotion or any other useful use. Contrary to the regular page footer, which requires a clic to be displayed, this footer will be visible immediately
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog
