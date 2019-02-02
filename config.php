@@ -347,6 +347,21 @@ if (file_exists('./d/streamingAlbumsInfoNotice.txt')){
 	}
 
 }
+
+$streamingAlbumsInfoHeader = Array();
+if (file_exists('./d/streamingAlbumsInfoHeader.txt')){
+	$saindata=trim(file_get_contents('./d/streamingAlbumsInfoHeader.txt'));
+	$sain=explode("\n", $saindata);
+	for ($p=0;$p<count($sain);$p++){
+	
+		$streamingAlbumsInfoHeader[htmlentities($sain[$p])]=$sain[$p+1];
+		$p++;
+	}
+
+}
+
+
+
 $albumsForDownloadInfoNotice = Array();
 if (file_exists('./d/albumsForDownloadInfoNotice.txt')){
 	$saindata=trim(file_get_contents('./d/albumsForDownloadInfoNotice.txt'));

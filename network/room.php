@@ -1,6 +1,11 @@
 <?php  if(!isset($_SESSION)){session_start();}
 include('site_variables.php');
-
+chdir ('..');
+include ('./config.php');
+chdir ('./network');
+if (!$activatechat){
+	exit(0);
+}
 include ('header_functs.php');
 ?>
 <html>

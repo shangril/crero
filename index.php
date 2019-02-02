@@ -1185,6 +1185,13 @@ foreach ($contentlocal as $item){
 		
 		if ($mixed||!isset($_GET['listall'])){
 			if (!$mixed){
+		
+				 if (isset($streamingAlbumsInfoHeader[$item['album']])){
+					echo '<div style="color:green;background-color:white;border-radius:5px;">';
+					echo $streamingAlbumsInfoHeader[$item['album']];
+					echo '</div>';
+				 }
+				
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&!isset($_GET['track'])){

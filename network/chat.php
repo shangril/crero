@@ -1,5 +1,10 @@
 <?php 
-
+chdir ('..');
+include ('./config.php');
+chdir ('./network');
+if (!$activatechat){
+	exit(0);
+}
 if (isset($_GET['logout'])){
 	session_unset();
 	$mysession['logout']=true;
