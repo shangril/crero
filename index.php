@@ -558,7 +558,14 @@ onLoad="stats();"
 <?php }?>
 
 >
-	
+<!-- volume controler code -->
+<span style="position: fixed; left:0px; top:0px; font-size:140%; border:solid 1px; border-radius:5px">
+<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="document.getElementById('player').volume=document.getElementById('player').volume-0.1;">-</a>
+<span style="font-size:108%;background-color:black;">🔈</span>
+<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;;background-color:#18FF18;" onClick="document.getElementById('player').volume=document.getElementById('player').volume+0.1;">+</a>
+<!--end volume controler code -->
+
+</span>	
 	<?php
 	if ($enableDownloadCart)
 	{
