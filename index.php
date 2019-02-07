@@ -1202,7 +1202,7 @@ foreach ($contentlocal as $item){
 				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&!isset($_GET['track'])){
-					echo 'style="display:none;"';
+					echo 'style="display:inline;"';
 				}
 				echo '>';
 			}
