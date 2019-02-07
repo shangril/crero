@@ -1,30 +1,4 @@
-@keyframes AnimTranslate {
-		from {top: 100px;}
-		to   {top: 0px;}
-	}
-@keyframes AnimColTranslate {
-		from {right: 400px;}
-		to   {right: 0px;}
-	}
-@keyframes bodycolor {
-    0%   {background-color: green;}
-    25%  {background-color: yellow;}
-    50%  {background-color: red;}
-    100% {background-color: #AFAFAF;}
-}
 
-
-.lineTranslate {
-		position: relative;
-		animation-delay: 12s;
-		animation: AnimTranslate 10s;
-	}
-
-.colTranslate {
-		position: relative;
-		animation-delay: 12s;
-		animation: AnimColTranslate 10s;
-	}
 
 .videosplash{
 		width:360px;
@@ -39,7 +13,6 @@ body {
     color:#004014;
     background-color: #AFAFAF;
     font-family: Arial,sans-serif;
-    animation: bodycolor 15s;
     /*background-image: linear-gradient(to right, black, #373737);*/
 }
 
