@@ -5,6 +5,14 @@ require_once('./config.php');
 require_once('./crero-lib.php');
 //error_reporting(E_WARNING|E_NOTICE|E_ERROR|E_PARSE);
 
+function checkOverload ($apiResponse) {
+	if ($apiResponse===false){
+	echo '<br/>Oooops... We are currently over capacity. Please try again later<br/></body></html>';
+	die();
+	}
+	
+}
+
 ob_start();
 
 $sessionstarted=session_start();
