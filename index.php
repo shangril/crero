@@ -294,7 +294,7 @@ function loginpanel($activateaccountcreation){
 */ else if (!isset ($_POST['validateemail'])){
 
 
-		echo '<form id="orderform" style="display:inline;" method="POST" action="./"><a href="#" onclick="document.getElementById(\'friends\').style.display=\'inline\';">Let\'s make friends ! </a><span id="friends" style="display:none;"><input type="text" name="validateemail" value="your email address" onfocus="if (this.value==\'your email address\'){this.value=\'\';}"/><input type="submit"/></span></form>';
+		echo '<form id="orderform" style="display:inline;" method="POST" action="./"><a href="javascript:void(0);" onclick="document.getElementById(\'friends\').style.display=\'inline\';">Let\'s make friends ! </a><span id="friends" style="display:none;"><input type="text" name="validateemail" value="your email address" onfocus="if (this.value==\'your email address\'){this.value=\'\';}"/><input type="submit"/></span></form>';
 		 	
 	}
 	else if (isset($_GET['createaccount'])) {
@@ -676,7 +676,7 @@ if ($hasradio){
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio>
 <noscript>Your browser does not support Javascript, which is required on this website if you want to stream. Don't panic, we dont include any kind of third party scripts<br/></noscript>
-<div style="text-align:center;"><a href="#" onclick="document.getElementById('recentplay').style.display='block';"></a></div>
+<div style="text-align:center;"><a href="javascript:void(0);" onclick="document.getElementById('recentplay').style.display='block';"></a></div>
 <span id="recentplay" style="display:<?php
 if ($recentplay){
 	echo 'block';
@@ -1207,7 +1207,7 @@ foreach ($contentlocal as $item){
 					echo '</div>';
 				 }
 				
-				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
+				echo '<div><a href="javascript:void(0);" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&!isset($_GET['track'])){
 					echo 'style="display:inline;"';
@@ -1237,7 +1237,7 @@ foreach ($contentlocal as $item){
 				{
 					if (in_array($track_artist, $artists)){
 					?>
-					<a href="#" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
+					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
 					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 					 <?php echo  $track_artist; ?></a> - 
 					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
@@ -1596,7 +1596,7 @@ foreach ($content as $item){
 				if ($enableDownloadCart)
 				{
 					echo '<div id="ajax_splash" style="position:absolute; top:0; left:0;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="javascript:void(0);" style="text-align:right;width:100%;" onclick="document.getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
-					echo '<a href="#" onclick="addFullAlbumToCart(\''.str_replace("'", "\\'", urlencode($item['album'])).'\');">Add full album to download cart</a><br/>';	
+					echo '<a href="javascript:void(0);" onclick="addFullAlbumToCart(\''.str_replace("'", "\\'", urlencode($item['album'])).'\');">Add full album to download cart</a><br/>';	
 					
 				}
 					
@@ -1608,7 +1608,7 @@ foreach ($content as $item){
 				
 				
 				
-				echo '<div><a href="#" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
+				echo '<div><a href="javascript:void(0);" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&isset($_GET['track'])){
 					echo 'style="display:none;"';
@@ -1664,7 +1664,7 @@ foreach ($content as $item){
 					{
 						if (in_array($track_artist, $artists)){
 						?>
-						<a href="#" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
+						<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
 						 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 						 <?php echo  $track_artist; ?></a> - 
 						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';
@@ -1691,7 +1691,7 @@ foreach ($content as $item){
 							}
 						else if (!$mixed&&$enableDownloadCart){
 								?>
-							 <div style="background-color:#F0F0F0;text-align:left;"><a href="#" onclick="addTrackToCart('<?php 
+							 <div style="background-color:#F0F0F0;text-align:left;"><a href="javascript:void(0);" onclick="addTrackToCart('<?php 
 							 echo str_replace("'", "\\'", urlencode($track_name));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode($item['album']));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode(htmlentities($track)));?>', '<?php 
