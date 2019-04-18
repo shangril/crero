@@ -29,6 +29,9 @@ if (isset($_SESSION['random'])&&$_SESSION['random']){
 	
 }
 
+
+
+
 $willhavetocache=false;
 
 $cachingkey='key:';
@@ -39,6 +42,39 @@ foreach ($get_keys as $get_key){
 	$cachingkey.=$get_key.':'.$_GET[$get_key];
 	
 }
+$myhtmlcache=new creroHtmlCache($htmlcacheexpires);
+
+if (isset($_POST['page_purge'])&&$activatehtmlcache){
+	$pseudoget=unserialize(base64_decode($_POST['page_purge']));
+	
+	$cachingkey='key:';
+
+	$get_keys=array_keys($pseudoget);
+
+	foreach ($get_keys as $get_key){
+		$cachingkey.=$get_key.':'.$pseudoget[$get_key];
+	
+	}
+
+	echo $cachingkey;
+	
+	$myhtmlcache->purgePage($cachingkey);
+	echo '<html><head><title>Cache page purging</title></head><body>The page was purged from the cache.<br/>
+	
+	
+	<a href="./?';
+	$get_keys=array_keys($pseudoget);
+	foreach ($get_keys as $get_key){
+		echo urlencode($get_key).'='.urlencode($pseudoget[$get_key]).'&';
+	
+	}
+	
+	echo '">Continue</a></body></html>';
+	exit();
+
+}
+
+
 
 $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 if (isset($_GET['purge'])){
@@ -566,6 +602,29 @@ onLoad="stats();"
 <?php }?>
 
 >
+<!--overcapacity splash-->
+<div id="overload_splash" style="z-index:128;position:absolute; top:0; left:0;width:100%;height:100%;margin-bottom:100%;display:none;background-color:white;">
+	<span id="overload_splash_message"></span>
+	<h1 style="text-align:center;">Sorry, something went wrong</h1>
+	<span style="text-align:center;">
+	It seems that this version of this page as stored in the site's cache has been generated while the media storage tier was suffering an overload.<br/>As a consequence, the tracklisting for this page is empty. 
+	<br/>
+	You can try to clear the cache for this particular page and see if it can solve this error. 
+	<form id="overload_form" method="POST">
+	<input type="hidden" name="page_purge" value="<?php echo base64_encode(serialize($_GET));?>"/>
+	<span id="overload_button">
+	</span>
+	</form>
+	</span>
+	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="document.getElementById('overload_splash').style.display='none';">X Close</a>
+</div>
+
+<script>
+var overload_track_counter=0;
+</script>
+
+
+
 <!-- volume controler code -->
 <span style="position: fixed; left:0px; top:0px; font-size:140%; border:solid 1px; border-radius:5px">
 <a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="document.getElementById('player').volume=document.getElementById('player').volume-0.1;">-</a>
@@ -926,7 +985,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 				}
 				else {
 					
-					echo '<h2><strong>Deeply sorry ! </strong>It seems that Clewn.org, which hosts the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. If you want to help, <a href="http://audio.clewn.org/">visit Clewn and make a donation</a>. Clewn is funded only by this way.';
+					echo '<h2><strong>Deeply sorry ! </strong>It seems that the host of the free albums, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display.';
 			
 				}
 			
@@ -1190,7 +1249,7 @@ foreach ($contentlocal as $item){
 				}
 				else {
 				
-					echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
+					echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
 				}
 				
 				echo displaycover($item['album'], $streaming_albums_ratio);
@@ -1237,6 +1296,9 @@ foreach ($contentlocal as $item){
 				{
 					if (in_array($track_artist, $artists)){
 					?>
+					<script>
+					overload_track_counter++;
+					</script>
 					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
 					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 					 <?php echo  $track_artist; ?></a> - 
@@ -1485,7 +1547,7 @@ foreach ($content as $item){
 				echo '">';
 				echo '<script>var anim=\'anim\'</script>';
 
-				echo '<a href="./?album='.urlencode($item['album']).'&autoplay=true" title="'.$item['album'].'">';
+				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
 				echo displaycover($item['album'], 0.1+$thisalbumscore/$download_albums_magic_number);
 				
 		}
@@ -1664,6 +1726,9 @@ foreach ($content as $item){
 					{
 						if (in_array($track_artist, $artists)){
 						?>
+						<script>
+						overload_track_counter++;
+						</script>
 						<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
 						 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
 						 <?php echo  $track_artist; ?></a> - 
@@ -1879,9 +1944,35 @@ echo $pageFooterSplash;
 
 <?php
 echo $footerhtmlcode;
-
+if (!isset($_GET['album'])&&!isset($_GET['artist'])&&!isset($_GET['track'])&&$activatehtmlcache){
 ?>
+<script> overload_track_counter++;</script>
+<?php
+
+}
+?>
+
 </div>
+<?php 
+
+if ($activatehtmlcache){
+?>
+
+<script>
+if (overload_track_counter==0){
+	document.getElementById('overload_splash').style.display='block';
+	document.getElementById('overload_form').action='./';
+	document.getElementById('overload_button').innerHTML='<input type="submit" value="Clear the cache for this page"></input>';
+}
+
+
+</script>
+
+<?php
+
+}
+?>
+
 <hr style="clear:both;">
 <?php
 if (!$activatechat===false){

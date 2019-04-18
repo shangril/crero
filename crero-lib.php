@@ -82,6 +82,12 @@ class creroHtmlCache {
 		unlink ('./htmlcache/cached.dat');
 		
 	}
+	public function purgePage($key){
+		$page=$this::$cachedat[$key];
+		unlink (file_get_contents('./htmlcache/cached/'.$page['expires'].'.html'));
+		unset($this::$cachedat[$key]);
+		return $this->saveCacheDatToDisk();
+	}	
 }
 
 ?>
