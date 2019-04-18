@@ -56,7 +56,6 @@ if (isset($_POST['page_purge'])&&$activatehtmlcache){
 	
 	}
 
-	echo $cachingkey;
 	
 	$myhtmlcache->purgePage($cachingkey);
 	echo '<html><head><title>Cache page purging</title></head><body>The page was purged from the cache.<br/>
