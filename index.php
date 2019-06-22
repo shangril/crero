@@ -38,7 +38,7 @@ $cachingkey='key:';
 
 $get_keys=array_keys($_GET);
 
-$whitelist= array ('artist', 'album', 'track', 'offset', 'listall', 'autoplay', 'twist');
+$whitelist= array ('artist', 'album', 'track', 'offset', 'listall', 'autoplay', 'vid', 'twist');
 
 foreach ($get_keys as $get_key){
 	if (in_array($get_key, $whitelist)){
