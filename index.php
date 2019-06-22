@@ -38,9 +38,12 @@ $cachingkey='key:';
 
 $get_keys=array_keys($_GET);
 
+$whitelist= array ('artist', 'album', 'track', 'offset', 'listall', 'autoplay', 'twist');
+
 foreach ($get_keys as $get_key){
-	$cachingkey.=$get_key.':'.$_GET[$get_key];
-	
+	if (in_array($get_key, $whitelist)){
+		$cachingkey.=$get_key.':'.$_GET[$get_key];
+		}
 }
 $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 
