@@ -450,7 +450,7 @@ function displaycover($album, $ratio, $param='cover'){
 		$i=0;
 		$url=null;
 		while ($i<count($coverslines)){
-			if (htmlentities($coverslines[$i])===$album){
+			if ($coverslines[$i]===html_entity_decode($album)){
 				$url=$coverslines[$i+1];
 				
 			}
