@@ -16,7 +16,7 @@ if ($autobuildradiobase){
 	$a2='';
 	
 	foreach ($linez as $line){
-		$a2.=$clewnaudiourl.$line."\n";
+		$a2.=$clewnaudiourl.rawurlencode($line)."\n";
 	}
 	file_put_contents('../../d/radioBase.txt',$a2);
 }
