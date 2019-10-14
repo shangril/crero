@@ -326,7 +326,10 @@ function refreshCover(){
 window.setInterval(refreshBlock, 2000);
 window.setInterval(refreshCover, 30000);
 setTimeout (refreshCover, 3000);
+
+<?php if ($IsRadioResyncing) { ?>
 window.setInterval(resync, 15800);
+<?php   } ?>
 </script>
 Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
 
