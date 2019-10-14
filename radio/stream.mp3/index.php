@@ -1,5 +1,20 @@
 <?php
+
 error_reporting(0);
+
+session_start();
+
+
+if (isset($_SESSION ['streamhit'])&&!$_SESSION ['streamhit']<file_get_contents('../d/expire.txt')) {
+
+				$_SESSION ['streamhit'] = microtime(true);
+
+			}
+else if (!isset($_SESSION ['streamhit']))
+{
+			$_SESSION ['streamhit'] = microtime(true);
+
+}
 chdir('../..');
 require_once('./config.php');
 chdir('./radio/stream.mp3');
@@ -268,6 +283,11 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 		if (!$isthislistenercounted){
 			file_put_contents('../d/listeners/'.microtime(true), $statid);
 		}
+		
+		unset($_SESSION ['streamhit']);
+		
+		
+		
 		$dice=rand(1,10);
 		if ($dice==1){
 			$featuredapi=true;

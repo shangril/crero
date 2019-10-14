@@ -263,7 +263,7 @@ function loginpanel($activateaccountcreation){
 	<span style=""><img style="float:left;width:3%;" src="/favicon.png"/></span>
 		
 	<h1 id="title" style="display:inline;"><?php echo $radioname; ?></h1>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($radiodescription);?></em> <br/><a href="http://<?php echo $server;?>">Home</a></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($radiodescription);?></em> <br/><a href="../">Home</a></h2>
 </div>
 <!--<div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($radioname);?></a></div>-->
 
@@ -276,6 +276,25 @@ function loginpanel($activateaccountcreation){
 <script>
 	
 var cover='';
+var start;
+
+function resync() {
+			if (document.getElementById('player').playing){
+			  var d = new Date();
+			  var start = d.getTime()/1000;
+				
+			  var xhttp = new XMLHttpRequest();
+			  xhttp.onreadystatechange = function(){
+				  if (xhttp.readyState==4 && xhttp.status==200) {
+						var stop = d.getTime()/1000;
+						document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
+					}
+				  
+				  };
+			  xhttp.open("GET", "./currentplaytime.php?current="+encodeURI(document.getElementById('player').currentTime), true);
+			  xhttp.send();
+			}
+		}
 
 function refreshBlock() {
 
@@ -307,6 +326,7 @@ function refreshCover(){
 window.setInterval(refreshBlock, 2000);
 window.setInterval(refreshCover, 30000);
 setTimeout (refreshCover, 3000);
+window.setInterval(resync, 15800);
 </script>
 Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
 
@@ -352,7 +372,7 @@ function skipsong() {
 ?>
 
 </script>
-<div style="text-align:left;"><audio id="player" src="" controls="controls" 
+<div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
  onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();" 
  onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
  
