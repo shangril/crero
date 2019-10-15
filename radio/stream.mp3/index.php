@@ -2,24 +2,29 @@
 
 error_reporting(0);
 
-session_start();
-
-
-if (isset($_SESSION ['streamhit'])&&!$_SESSION ['streamhit']<file_get_contents('../d/expire.txt')) {
-
-				$_SESSION ['streamhit'] = microtime(true);
-
-			}
-else if (!isset($_SESSION ['streamhit']))
-{
-			$_SESSION ['streamhit'] = microtime(true);
-
-}
 chdir('../..');
 require_once('./config.php');
 chdir('./radio/stream.mp3');
 srand();
 $statid=mt_rand(0, 1000000);
+
+
+
+if ($IsRadioResyncing){
+	session_start();
+
+
+	if (isset($_SESSION ['streamhit'])&&!$_SESSION ['streamhit']<file_get_contents('../d/expire.txt')) {
+
+					$_SESSION ['streamhit'] = microtime(true);
+
+				}
+	else if (!isset($_SESSION ['streamhit']))
+	{
+				$_SESSION ['streamhit'] = microtime(true);
+
+	}
+}
 
 if (!$hasradio){
 	die();
