@@ -374,7 +374,7 @@ if (file_exists('./d/albumsForDownloadInfoNotice.txt')){
 
 }
 
-$IsRadioResyncing='false';
+$IsRadioResyncing=false;
 if (file_exists('./d/IsRadioResyncing.txt')){
 	$IsRadioResyncing=boolval(trim(file_get_contents('./d/IsRadioResyncing.txt')));
 }
