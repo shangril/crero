@@ -386,7 +386,7 @@ function skipsong() {
 <?php
 if (!$activatechat===false){
 ?>
-		<a href="javascript:void(0);" id="skip" onclick="skipsong();"/>Fork the radio!</a> (other listeners may become angry)
+		<a href="javascript:void(0);" id="skip" onclick="skipsong();">Fork the radio!</a> (other listeners may become angry)
 <?php
 }
 ?>
