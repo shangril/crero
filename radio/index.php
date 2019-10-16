@@ -289,10 +289,14 @@ function resync() {
 				
 			  var xhttp = new XMLHttpRequest();
 			  xhttp.onreadystatechange = function(){
-				  if (xhttp.readyState==4 && xhttp.status==200) {
-						var stop = d.getTime()/1000;
-						document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
+				  if (xhttp.readyState==4) {
 						syncLock=false;
+						
+						if (xhttp.status==200) {
+							
+							var stop = d.getTime()/1000;
+							document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
+							}
 					}
 				  
 				  };
