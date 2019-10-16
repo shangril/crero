@@ -278,8 +278,12 @@ function loginpanel($activateaccountcreation){
 var cover='';
 var start;
 
+var syncLock=false;
+
 function resync() {
-			if (document.getElementById('player').playing){
+			if (document.getElementById('player').playing&&!syncLock){
+			  syncLock=true;
+			  
 			  var d = new Date();
 			  var start = d.getTime()/1000;
 				
@@ -288,6 +292,7 @@ function resync() {
 				  if (xhttp.readyState==4 && xhttp.status==200) {
 						var stop = d.getTime()/1000;
 						document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
+						syncLock=false;
 					}
 				  
 				  };
