@@ -293,7 +293,7 @@ function resync() {
 						syncLock=false;
 						
 						if (xhttp.status==200) {
-							
+							var d = new Date ();
 							var stop = d.getTime()/1000;
 							document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
 							}
