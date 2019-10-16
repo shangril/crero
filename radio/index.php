@@ -357,11 +357,14 @@ function skipsong() {
 	
 	var xhttp = new XMLHttpRequest();
 	  xhttp.onreadystatechange = function(){
-		  if (xhttp.readyState==4 && xhttp.status==200) {
-
-				document.getElementById('skip').InnerHTML= 'Skip this song';
-				location.reload();
-
+		  if (xhttp.readyState==4) {
+				if (xhttp.status==200){
+					document.getElementById('skip').InnerHTML= 'Skip this song';
+					location.reload();
+				}
+				else {
+					skipsong();
+				}
 			}
 
 		  
