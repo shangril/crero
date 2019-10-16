@@ -344,7 +344,7 @@ if (!$activatechat===false){
 ?>
 
 function skipsong() {
-	document.getElementById('skip').InnerHTML= 'Skipping song...';
+	document.getElementById('skip').innerHTML= 'Skipping song...';
 				<?php
 				if (!isset($_SESSION['nick'])){
 					?>
@@ -359,7 +359,7 @@ function skipsong() {
 	  xhttp.onreadystatechange = function(){
 		  if (xhttp.readyState==4) {
 				if (xhttp.status==200){
-					document.getElementById('skip').InnerHTML= 'Skip this song';
+					document.getElementById('skip').innerHTML= 'Skip this song';
 					location.reload();
 				}
 				else {
