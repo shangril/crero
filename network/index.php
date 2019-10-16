@@ -10,8 +10,14 @@ if (isset($_GET['login'])){
 	$_SESSION['logged']=true;
 	
 }
-
-
+if (isset($_GET['ajaxx'])){
+	
+		echo '
+	
+<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.count(array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'))).' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form>
+		';
+		die();
+}// ajaxx
 if (!isset($_SESSION['logged'])){
 
 	$files=scandir('./'.$seedroot.'/e');
@@ -23,9 +29,74 @@ if (!isset($_SESSION['logged'])){
 			unlink('./'.$seedroot.'/e/'.$fil);
 			}
 	}
+	
+	
+	
+	echo '
+	
+	
+	
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<!--<meta http-equiv="refresh" content="20">-->
+			<link rel="stylesheet" href="/style.css" type="text/css" media="screen" />
+		<script>
+var syncLock=false;	
+//var attempt=0;
+	
+function resync() {
+			//attempt++;
+			//document.getElementById("content").innerHTML+="<br/>Attempt: "+attempt;
+			if (!syncLock){
+			  syncLock=true;
+			  
+			  var xhttp = new XMLHttpRequest();
+			  xhttp.onreadystatechange = function(){
+				  if (xhttp.readyState==4) {
+						syncLock=false;
+						
+						if (xhttp.status==200) {
+							
+							document.getElementById("content").innerHTML= xhttp.responseText;
+							}
+					}
+				  
+				  };
+			  xhttp.open("GET", "?ajaxx=true", true);
+			  xhttp.send();
+			}
+		}
 
 
-	echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="20"><link rel="stylesheet" href="/style.css" type="text/css" media="screen" /></head><body><h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.count(array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'))).' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form></body></html>';
+window.setInterval(resync, 3000);
+
+
+</script>
+
+		
+		
+		
+		
+		
+		
+		
+		</head>
+		
+		<body>
+		<span id="content">Loading fan network...</span>
+		
+		
+		
+		
+		</body>
+		
+		</html>';
+	
+	
+	
+	
+	
 	die();
 }
 
@@ -143,8 +214,8 @@ if (!isset($_GET['lat'])&&!$getloc){?>
 <?php } 
 
 else if (!$getloc) {
-	$mysession['lat']=$_GET['lat'];
-	$mysession['long']=$_GET['long'];
+	$mysession['lat']=floatval($_GET['lat']);
+	$mysession['long']=floatval($_GET['long']);
 	$mysession['norange']=false;
 	echo '<form style="display:inline;" method="POST" action="./">Enter a nickname <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'" /><input type="submit"/></form>';
 	

@@ -7,19 +7,62 @@ if (!$activatechat){
 	exit(0);
 }
 include ('header_functs.php');
+if (!isset($_GET['ajaxx'])){
 ?>
 <html>
 <head>
-<meta http-equiv="refresh" content="3">
+<!--<meta http-equiv="refresh" content="3">-->
 <style>a link 
 {
 color:black;
 text-decoration:none;
 }</style>
+<script>
+var syncLock=false;	
+//var attempt=0;
+	
+function resync() {
+			//attempt++;
+			//document.getElementById('content').innerHTML+="<br/>Attempt: "+attempt;
+			if (!syncLock){
+			  syncLock=true;
+			  
+			  var xhttp = new XMLHttpRequest();
+			  xhttp.onreadystatechange = function(){
+				  if (xhttp.readyState==4) {
+						syncLock=false;
+						
+						if (xhttp.status==200) {
+							
+							document.getElementById('content').innerHTML= xhttp.responseText;
+							x = 0;  
+							y = document.getElementById('bod').scrollHeight; 
+							window.scroll(x,y);
+
+							}
+					}
+				  
+				  };
+			  xhttp.open("GET", "?ajaxx=true", true);
+			  xhttp.send();
+			}
+		}
+
+
+window.setInterval(resync, 3000);
+
+
+</script>
 
 </head>
 <body id="bod">
+	<span id="content">Loading...</span>
 <?php
+
+}//not ajaxxx
+if (isset($_GET['ajaxx'])){
+
+
 	$data['long']=$mysession['long'];
 	$data['lat']=$mysession['lat'];
 	$data['nick']=$mysession['nick'];
@@ -151,7 +194,14 @@ x = 0;
 y = document.getElementById('bod').scrollHeight; 
 window.scroll(x,y);
 </script>
+<?php
+} // ajaxx 
+
+if (!isset($_GET['ajaxx'])){
+
+?>
 </body>
 
 
 </html>
+<?php } //not ajaxx ?>

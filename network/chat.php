@@ -80,7 +80,7 @@ $mysession['seen_private'][$_GET['private_nick']][$_GET['private_sid']]=microtim
 
 if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['private_sid'])){
 			?>
-			<form method="GET" action="./" id="formrange" style="display:inline;">You are seeing and being seen by people within <select onchange="document.getElementById('formrange').submit();" name="range">
+			<form method="GET" action="./" id="formrange" style="display:inline;"><!--You are seeing and being seen by people within <select onchange="document.getElementById('formrange').submit();" name="range">
 		<?php
 		foreach ($ranges as $range) {
 			echo '<option value="'.$range.'" ';
@@ -95,7 +95,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 		?>
 
 
-		</select> kms</form>
+		</select> kms</form>-->
 
 	
 	<?php
@@ -129,9 +129,9 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 ?>" method="post">Enter your chat message here : <input type="text" name="message" size="38"></input><input type="submit" value="Send"></input></form>
 <?php
 if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['private_sid'])) {
-	echo ' Add your real world location to access geolocated chatrooms : <form style="display:inline;" method="GET" action=""><input type="hidden" name="norange" value="true"/><input type="submit" value="Add my location"/></form>';
+	//echo ' Add your real world location to access geolocated chatrooms : <form style="display:inline;" method="GET" action=""><input type="hidden" name="norange" value="true"/><input type="submit" value="Add my location"/></form>';
 }
-echo ' <form action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change !" type="submit"/></form>';
+echo ' <form action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
 echo '<a style="clear:both;float:right;" href="./?logout=true">Logout</a><br/><span style="float:right;">';
 echo generate_footer($site_footer);
 echo '</span>';
