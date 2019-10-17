@@ -381,7 +381,7 @@ if (file_exists('./d/IsRadioResyncing.txt')){
 
 $RadioResyncInterval=16800;
 if (file_exists('./d/RadioResyncInterval.txt')){
-	$RadioResyncInterval=intval(trim(file_get_contents('./d/IsRadioResyncInterval.txt')));
+	$RadioResyncInterval=intval(trim(file_get_contents('./d/RadioResyncInterval.txt')));
 }
 
 
