@@ -295,7 +295,14 @@ function resync() {
 						if (xhttp.status==200) {
 							var d = new Date ();
 							var stop = d.getTime()/1000;
-							document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
+							
+							if (abs(document.getElementById('player').currentTime-(parsefloat(xhttp.responseText) + (stop-start)))<10) {
+								//this if statement is to avoid the restart of a track from the beginning when sync replied just after a track change
+							
+										document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
+										}
+								}
+							
 							}
 					}
 				  
@@ -353,7 +360,7 @@ if (!$activatechat===false){
 ?>
 
 function skipsong() {
-	document.getElementById('skip').innerHTML= 'Skipping song...';
+	document.getElementById('skip').innerHTML= 'Skipping song, please be patient...';
 				<?php
 				if (!isset($_SESSION['nick'])){
 					?>
