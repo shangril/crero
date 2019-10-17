@@ -2032,7 +2032,7 @@ setInterval(function (){
 <?php  
 }
 ?>
-<div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels">CreRo, the CMS for record labels</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
+<div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels and webradios">CreRo, the CMS for record labels and webradios</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
 </body>
 </html><?php
 if ($activatehtmlcache){
