@@ -300,7 +300,7 @@ function resync() {
 					}
 				  
 				  };
-			  xhttp.open("GET", "./currentplaytime.php?current="+encodeURI(document.getElementById('player').currentTime), true);
+			  xhttp.open("GET", "./currentplaytime.php?current="+encodeURI(document.getElementById('player').currentTime)+"&start="+encodeURI(start), true);
 			  xhttp.send();
 			}
 		}

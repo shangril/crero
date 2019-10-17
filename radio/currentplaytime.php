@@ -1,8 +1,11 @@
 <?php
 session_start();
-$starttime =float(trim(file_get_contents('./d/starttime.txt'))
-$duration = float(trim(file_get_contents('./d/nowplayingduration.txt')));
-echo  microtime(true)-$startime-($duration-(microtime(true)-$startime)+floatval($_GET['current']))+($starttime-$_SESSION ['streamhit']);
+
+$offset=microtime(true)-floatval($_GET['start']);
+
+$starttime = floatval(trim(file_get_contents('./d/starttime.txt')));
+$duration = floatval(trim(file_get_contents('./d/nowplayingduration.txt')));
+echo  microtime(true)-$starttime-($duration-(microtime(true)-$starttime)+floatval($_GET['current']))+($starttime-$_SESSION ['streamhit'])+$offset;
 exit(0);
 
 ?>
