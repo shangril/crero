@@ -284,7 +284,7 @@ var allowGentleResync=true;
 function resync() {
 			if (document.getElementById('player').playing&&!syncLock<?php
 			
-			if ($RadioHasGentleResync&&!!$IsRadioResyncing){
+			if ($RadioHasGentleResync&&!$IsRadioResyncing){
 			
 				echo ('&&allowGentleResync');
 			}
@@ -310,7 +310,7 @@ function resync() {
 										
 								}
 							<?php
-							if ($RadioHasGentleResync&&!!$IsRadioResyncing){
+							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo 'else {syncLock=false;resync();}';
 									
 							}
@@ -415,7 +415,7 @@ function skipsong() {
  onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();alloGentleResync=true;" 
  onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
  <?php
-							if ($RadioHasGentleResync&&!!$IsRadioResyncing){
+							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo ' onPlay="resync();allowGentleResync=false;" ';
 									
 							}
