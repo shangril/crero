@@ -10,9 +10,9 @@ $duration = floatval(trim(file_get_contents('./d/nowplayingduration.txt')));
 +($starttime-floatval($_SESSION ['streamhit']))
 +$offset;
 */
-echo ($duration-(microtime(true)-$starttime)-($starttime-floatval($_SESSION ['streamhit'])-floatval($_GET['current'])-$offset))-(microtime(true)-$starttime);
+//echo ($duration-(microtime(true)-$starttime)-($starttime-floatval($_SESSION ['streamhit'])-floatval($_GET['current'])-$offset))-(microtime(true)-$starttime);
 
-
+echo (microtime(true)-$starttime))-($starttime-floatval($_SESSION ['streamhit']))-floatval($_GET['current'])+$offset;
 exit(0);
 
 ?>
