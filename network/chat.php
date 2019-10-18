@@ -131,8 +131,6 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['private_sid'])) {
 	//echo ' Add your real world location to access geolocated chatrooms : <form style="display:inline;" method="GET" action=""><input type="hidden" name="norange" value="true"/><input type="submit" value="Add my location"/></form>';
 }
-echo ' <form action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
-echo '<a style="clear:both;float:right;" href="./?logout=true">Logout</a><br/><span style="float:right;">';
-echo generate_footer($site_footer);
-echo '</span>';
+echo ' <form style="display:inline;" action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
+echo '<a style="float:right;" href="./?logout=true">Logout</a>';
 ?>
