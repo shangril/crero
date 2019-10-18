@@ -119,7 +119,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 
 ?>"></iframe>
 <span style="clear:both;"></span>
-<form style="display:inline;" action="./<?php 
+<form style="display:block;" action="./<?php 
 
 	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
 		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
