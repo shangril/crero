@@ -307,12 +307,12 @@ function resync() {
 								//this if statement is to avoid the restart of a track from the beginning when sync replied just after a track change
 							
 										document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
-										
+										document.getElementById('resync').innerHTML="R: "+(document.getElementById('player').currentTimecurrentTime-parseFloat (xhttp.responseText) + (stop-start)) ;
 								}
 							<?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo 'else {syncLock=false;resync();}';
-									
+	)								
 							}
 							
 							
@@ -420,7 +420,7 @@ function skipsong() {
 									
 							}
  ?>
- ></audio></div>	
+ ></audio><span id="resync" style="float:right;"></span></div>	
 <?php
 if (!$activatechat===false){
 ?>
