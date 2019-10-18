@@ -307,7 +307,7 @@ function resync() {
 								//this if statement is to avoid the restart of a track from the beginning when sync replied just after a track change
 							
 										document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
-										document.getElementById('resync').innerHTML="R: "+(document.getElementById('player').currentTimecurrentTime-parseFloat (xhttp.responseText) + (stop-start)) ;
+										document.getElementById('resync').innerHTML="R: "+(document.getElementById('player').currentTime-parseFloat (xhttp.responseText) + (stop-start)) ;
 								}
 							<?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
