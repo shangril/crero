@@ -312,7 +312,7 @@ function resync() {
 							<?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo 'else {syncLock=false;resync();}';
-	)								
+									
 							}
 							
 							
