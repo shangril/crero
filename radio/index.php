@@ -282,7 +282,7 @@ var syncLock=false;
 var allowGentleResync=true;
 
 function resync() {
-			if (!document.getElementById('player').paused&&!syncLock<?php
+			if (document.getElementById('player').currentTime>=1&&!syncLock<?php
 			
 			if ($RadioHasGentleResync&&!$IsRadioResyncing){
 			
