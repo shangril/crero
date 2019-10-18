@@ -307,7 +307,7 @@ function resync() {
 								//this if statement was to avoid the restart of a track from the beginning when sync replied just after a track change
 							
 										document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
-										document.getElementById('resync').innerHTML="R: "+(document.getElementById('player').currentTime-parseFloat (xhttp.responseText) + (stop-start)) ;
+										document.getElementById('resync').innerHTML="R: "+(document.getElementById('player').currentTime-(parseFloat (xhttp.responseText) + (stop-start))) ;
 								}
 						
 							}
