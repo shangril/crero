@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$offset=microtime(true)-floatval($_GET['start']);
+$offset=0;
 
 $starttime = floatval(trim(file_get_contents('./d/starttime.txt')));
 $duration = floatval(trim(file_get_contents('./d/nowplayingduration.txt')));
