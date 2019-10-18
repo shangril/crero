@@ -412,7 +412,7 @@ function skipsong() {
 
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();alloGentleResync=true;" 
+ onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();allowGentleResync=true;" 
  onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
  <?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
