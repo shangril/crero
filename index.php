@@ -1979,7 +1979,7 @@ if (overload_track_counter==0){
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"/><object data="./network" style="width:100%;height:480px;" width="100%" height="480"></object>
+		<a name="social"/><object data="./network" style="width:100%;height:495px;" width="100%" height="495"></object>
 <?php
 }
 

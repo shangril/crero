@@ -120,5 +120,7 @@ IsRadioResyncing.txt
 If set to 1, active. If set to 0, inactive. If active the radio will try to resync on every few seconds in order to be very exactly on time with other clients. Dangerous, high network and server load. 
 RadioResyncInterval.txt
 The interval, expressed in milliseconds, between two resync attempt. Default is 16800. See IsRadioResync. 
+RadioHasGentleResync.txt
+Another way, not to be used in conjonction with IsRadioResyncing, to sync the various radio clients, less precise but also less demanding to the server. 1 for enable, 0 for disable, default being 0. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

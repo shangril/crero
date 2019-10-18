@@ -119,7 +119,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 
 ?>"></iframe>
 <span style="clear:both;"></span>
-<form style="display:block;" action="./<?php 
+<form style="display:block;margin-top:0px;margin-bottom:0px;padding:0px;" action="./<?php 
 
 	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
 		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
@@ -131,7 +131,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['private_sid'])) {
 	//echo ' Add your real world location to access geolocated chatrooms : <form style="display:inline;" method="GET" action=""><input type="hidden" name="norange" value="true"/><input type="submit" value="Add my location"/></form>';
 }
-echo ' <form style="display:inline;" action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
-echo '<a style="float:right;" href="./?logout=true">Logout</a>';
+echo ' <form style="display:inline;margin-bottom:0px;padding-bottom:0px;margin-top:0px;padding-top:0px;" action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
+echo '<a style="float:right;margin-bottom:0px;padding-bottom:0px;margin-top:0px;padding-top:0px;" href="./?logout=true">Logout</a>';
 ?>
 </body></html>

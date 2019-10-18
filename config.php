@@ -384,6 +384,9 @@ if (file_exists('./d/RadioResyncInterval.txt')){
 	$RadioResyncInterval=intval(trim(file_get_contents('./d/RadioResyncInterval.txt')));
 }
 
-
+$RadioHasGentleResync=false;
+if (file_exists('./d/RadioHasGentleResync.txt')){
+	$RadioHasGentleResync=boolval(trim(file_get_contents('./d/RadioHasGentleResync.txt')));
+}
 
 ?>

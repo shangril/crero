@@ -279,9 +279,16 @@ var cover='';
 var start;
 
 var syncLock=false;
+var allowGentleResync=true;
 
 function resync() {
-			if (document.getElementById('player').playing&&!syncLock){
+			if (document.getElementById('player').playing&&!syncLock<?php
+			
+			if ($RadioHasGentleResync&&!!$IsRadioResyncing){
+			
+				echo ('&&allowGentleResync');
+			}
+			?>){
 			  syncLock=true;
 			  
 			  var d = new Date();
@@ -302,7 +309,17 @@ function resync() {
 										document.getElementById('player').currentTime = parseFloat (xhttp.responseText) + (stop-start) ;
 										
 								}
+							<?php
+							if ($RadioHasGentleResync&&!!$IsRadioResyncing){
+									echo 'else {syncLock=false;resync();}';
+									
+							}
 							
+							
+							
+							
+							
+							?>
 							}
 					}
 				  
@@ -395,9 +412,14 @@ function skipsong() {
 
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();" 
+ onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();alloGentleResync=true;" 
  onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
- 
+ <?php
+							if ($RadioHasGentleResync&&!!$IsRadioResyncing){
+									echo ' onPlay="resync();allowGentleResync=false;" ';
+									
+							}
+ ?>
  ></audio></div>	
 <?php
 if (!$activatechat===false){
@@ -419,7 +441,7 @@ document.getElementById('player').play();
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"/><object id="social" data="../network" style="	width:100%;height:480px;" width="100%" height="480"></object>
+		<a name="social"/><object id="social" data="../network" style="	width:100%;height:495px;" width="100%" height="495"></object>
 <?php
 }
 
