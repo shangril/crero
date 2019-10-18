@@ -59,9 +59,9 @@ if (isset($_GET['range'])&&($_GET['range']==='Any distance'||is_numeric($_GET['r
 
 
 ?>
-<em><?php 
+<span style="margin-top:0px;margin-bottom:0px;"><em><?php 
 if (strstr($sitename, '.')&&!strstr($sitename, ' ')){
-	echo '<a target="top" href="http://'.htmlspecialchars($sitename).'">';
+	echo '<a target="top" href="http://'.htmlspecialchars($server).'">';
 }
 echo '<h2 style="display:inline;">'.htmlspecialchars($sitename).'</h2>';
 
@@ -69,7 +69,7 @@ if (strstr($sitename, '.')&&!strstr($sitename, ' ')){
 	echo '</a>';
 	
 }
-?></em> &gt; <?php
+?></em> &gt; </span><?php
 if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])) {
 echo '<a href="./">General chat</a> &gt; Conversation with <span style="'.htmlspecialchars($_GET['private_sid']).'">'.htmlspecialchars($_GET['private_nick']).'</span><br/>';	
 
