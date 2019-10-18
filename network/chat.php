@@ -134,3 +134,4 @@ if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 echo ' <form style="display:inline;" action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
 echo '<a style="float:right;" href="./?logout=true">Logout</a>';
 ?>
+</body></html>
