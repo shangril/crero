@@ -285,7 +285,7 @@ function resync() {
 			  syncLock=true;
 			  
 			  var d = new Date();
-			  var start = d.getTime()/1000;
+			  start = d.getTime()/1000;
 				
 			  var xhttp = new XMLHttpRequest();
 			  xhttp.onreadystatechange = function(){
