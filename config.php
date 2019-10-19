@@ -378,15 +378,17 @@ $IsRadioResyncing=false;
 if (file_exists('./d/IsRadioResyncing.txt')){
 	$IsRadioResyncing=boolval(trim(file_get_contents('./d/IsRadioResyncing.txt')));
 }
+$IsRadioResyncing=false;
 
 $RadioResyncInterval=16800;
 if (file_exists('./d/RadioResyncInterval.txt')){
 	$RadioResyncInterval=intval(trim(file_get_contents('./d/RadioResyncInterval.txt')));
 }
 
+
 $RadioHasGentleResync=false;
 if (file_exists('./d/RadioHasGentleResync.txt')){
 	$RadioHasGentleResync=boolval(trim(file_get_contents('./d/RadioHasGentleResync.txt')));
 }
-
+$RadioHasGentleResync=false;
 ?>
