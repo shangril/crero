@@ -117,11 +117,12 @@ NOT IMPLEMENTED - reserved for future usage - - -A free form text, html accepted
 pageFooterSplash.txt
 A free form HTML code or plain text that will be displayed as is at the bottom of each page of the main sections of the site (album, artist, track, index pages etc). Useful for as an example partnership cross-promotion or any other useful use. Contrary to the regular page footer, which requires a clic to be displayed, this footer will be visible immediately
 IsRadioResyncing.txt
-** This option is currently DISABLED, awaiting for further developments ** 
-If set to 1, active. If set to 0, inactive. If active the radio will try to resync on every few seconds in order to be very exactly on time with other clients. Dangerous, high network and server load. 
+** This option is currently DISABLED, awaiting for further developments ** If set to 1, active. If set to 0, inactive. If active the radio will try to resync on every few seconds in order to be very exactly on time with other clients. Dangerous, high network and server load. 
 RadioResyncInterval.txt
 ** This option is currently DISABLED, awaiting for further developments ** The interval, expressed in milliseconds, between two resync attempt. Default is 16800. See IsRadioResync. 
 RadioHasGentleResync.txt
 Another way, not to be used in conjonction with IsRadioResyncing, to sync the various radio clients, less precise but also less demanding to the server. 1 for enable, 0 for disable, default being 0. 
+RadioBanner.txt
+A banner of html/text to be display just above the radio player
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

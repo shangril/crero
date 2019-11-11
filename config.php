@@ -335,6 +335,14 @@ if (file_exists('./d/pageFooterSplash.txt')){
 	$pageFooterSplash=trim(file_get_contents('./d/pageFooterSplash.txt'));
 }
 
+$radioBanner='';
+if (file_exists('./d/RadioBanner.txt')){
+	$radioBanner=trim(file_get_contents('./d/RadioBanner.txt'));
+}
+
+
+
+
 //streamingAlbumsInfoNotice
 $streamingAlbumsInfoNotice = Array();
 if (file_exists('./d/streamingAlbumsInfoNotice.txt')){

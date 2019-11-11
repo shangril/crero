@@ -369,6 +369,7 @@ setTimeout (refreshCover, 3000);
 window.setInterval(resync, <?php echo $RadioResyncInterval; ?>);
 <?php   } ?>
 </script>
+<?php echo $radioBanner; ?>
 Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
 
 <img style="float:left;width:25%;" id="cover"/>
