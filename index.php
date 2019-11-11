@@ -1898,10 +1898,10 @@ if ($ran) {
 $counter++;
 }//foreach $content
 
+if (!isset($_GET['listall'])&&isset($_GET['album'])&&file_exists('./album_sleeve.php')){
+	require_once ('./album_sleeve.php');
 
-
-
-
+}
 
 
 if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall'])){
