@@ -39,6 +39,7 @@ if (!isset($_SESSION['whitelist'])){
 		$ip = file_get_contents ('../e/'.$timestamp);
 		if ($ip==$_SERVER['REMOTE_ADDR']){
 			unset($_SESSION['whitelist']);
+			die('you are reconnecting too fast');
 			}
 
 	}
@@ -51,7 +52,7 @@ if (!isset($_SESSION['whitelist'])){
 
 
 if ($IsRadioResyncing){
-	session_start();
+	//session_start();
 
 
 	if (isset($_SESSION ['streamhit'])&&!$_SESSION ['streamhit']<file_get_contents('../d/expire.txt')) {
