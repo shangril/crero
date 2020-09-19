@@ -2,12 +2,52 @@
 
 error_reporting(0);
 
+header('Accept-Ranges: none');
+
+session_start();
 chdir('../..');
 require_once('./config.php');
 chdir('./radio/stream.mp3');
 srand();
 $statid=mt_rand(0, 1000000);
+$dontdoit=false;
 
+//ANTI DOS PROTECTION
+
+if (!isset($_SESSION['whitelist'])){
+	$_SESSION['whitelist']=true;
+	
+
+	//first we delete old records that we no longer need
+
+	$timestamps = array_diff(scandir ('../e'), Array('..', '.'));
+	$dos=false;
+	foreach ($timestamps as $timestamp){
+		if (microtime(true)-floatval($timestamp)>3){
+			unlink('../e/'.$timestamp);
+			
+		}
+		
+		
+	}
+	
+	
+	//second, we check each record to see if the current IP has already connected 
+	//within less than 16 seconds
+
+	foreach ($timestamps as $stimestamp){
+		$ip = file_get_contents ('../e/'.$timestamp);
+		if ($ip==$_SERVER['REMOTE_ADDR']){
+			unset($_SESSION['whitelist']);
+			}
+
+	}
+	//finally we create a record for the current client
+
+	file_put_contents ('../e/'.microtime(true), $_SERVER['REMOTE_ADDR']);
+}
+
+//done for anti DOS*/
 
 
 if ($IsRadioResyncing){
@@ -475,7 +515,7 @@ else {
 	$starttime=intval(file_get_contents('../d/starttime.txt'));
 
  
-
+ 
 $filepath='';
 if (strstr( $nowplayingurl, 'clewn.org')){
 	$filepath=str_replace('http://audio.clewn.org/audio', '../../../audio/clewn/opt/hop/audio', $nowplayingurl);
@@ -588,7 +628,7 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	}
 	$isinitial=false;
 	if (!isset($_GET['web'])){
-		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
+		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit);
 	}
 	else {
 		ob_flush();
@@ -597,6 +637,6 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 }
 $bytessent=0;
 $isinitial=true;
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial);
+play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit);
 
 ?>

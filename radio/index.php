@@ -279,9 +279,10 @@ var cover='';
 var start;
 
 var syncLock=false;
-var allowGentleResync=true;
+var allowGentleResync=false;
 
 function resync() {
+	
 			if (!syncLock<?php
 			
 			if ($RadioHasGentleResync&&!$IsRadioResyncing){
@@ -417,7 +418,7 @@ function skipsong() {
 ?>
 
 </script>
-<div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
+<div style="text-align:left;"><audio id="player" src="" preload="auto" controls="controls" 
  onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();allowGentleResync=true;" 
  onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
  <?php
