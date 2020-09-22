@@ -4,7 +4,7 @@ error_reporting(0);
 
 header('Accept-Ranges: none');
 
-session_start();
+//session_start();
 chdir('../..');
 require_once('./config.php');
 chdir('./radio/stream.mp3');
@@ -14,8 +14,8 @@ $dontdoit=false;
 
 //ANTI DOS PROTECTION
 
-if (!isset($_SESSION['whitelist'])){
-	$_SESSION['whitelist']=true;
+if (true||!isset($_SESSION['whitelist'])){
+	//$_SESSION['whitelist']=true;
 	
 
 	//first we delete old records that we no longer need
@@ -38,7 +38,7 @@ if (!isset($_SESSION['whitelist'])){
 	foreach ($timestamps as $stimestamp){
 		$ip = file_get_contents ('../e/'.$timestamp);
 		if ($ip==$_SERVER['REMOTE_ADDR']){
-			unset($_SESSION['whitelist']);
+			//unset($_SESSION['whitelist']);
 			die('you are reconnecting too fast');
 			}
 
@@ -51,7 +51,7 @@ if (!isset($_SESSION['whitelist'])){
 //done for anti DOS*/
 
 
-if ($IsRadioResyncing){
+if (false&&$IsRadioResyncing){
 	//session_start();
 
 
