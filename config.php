@@ -399,4 +399,13 @@ if (file_exists('./d/RadioHasGentleResync.txt')){
 	$RadioHasGentleResync=boolval(trim(file_get_contents('./d/RadioHasGentleResync.txt')));
 }
 $RadioHasGentleResync=false;
+
+$AlbumsToBeHighlighted=0;
+if (file_exists('./d/AlbumsToBeHighlighted.txt')){
+	$AlbumsToBeHighlighted=intval(trim(file_get_contents('./d/AlbumsToBeHighlighted.txt')));
+}
+$RadioHasGentleResync=false;
+
+
+
 ?>

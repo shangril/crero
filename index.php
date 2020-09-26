@@ -442,8 +442,20 @@ function showsongsheet($track) {
 	}
 	
 }
-function displaycover($album, $ratio, $param='cover'){
+function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted, $highlightcounter){
 	if (file_exists('./d/covers.txt')){
+		
+		if ($highlightcounter<$AlbumsToBeHighlighted){
+			
+			$ratio=$ratio*2;
+			
+			
+			
+		}
+		
+		
+		
+		
 		$coversfile=trim(file_get_contents('./d/covers.txt'));
 		$coverslines=explode("\n", $coversfile); 
 		
@@ -1128,6 +1140,9 @@ if ($mosaic&&$artisthighlighthomepage){
 
 ///
 
+$highlightcounter=0;
+
+
 //local *****
 
 foreach ($contentlocal as $item){
@@ -1225,7 +1240,7 @@ foreach ($contentlocal as $item){
 				}
 				echo '<span class="lineTranslate" style="border:solid 0px;';
 				if ($artisthighlighthomepage){
-					if ($flipcoin)
+					if (false)
 					{	echo 'float:right;';
 						$flipcoin=false;
 					}
@@ -1254,7 +1269,8 @@ foreach ($contentlocal as $item){
 					echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
 				}
 				
-				echo displaycover($item['album'], $streaming_albums_ratio);
+				echo displaycover($item['album'], $streaming_albums_ratio, 'cover', $AlbumsToBeHighlighted, $highlightcounter);
+				$highlightcounter++;
 
 		}
 
@@ -1526,7 +1542,7 @@ foreach ($content as $item){
 				echo 'border:solid 0px;';
 				
 				if ($artisthighlighthomepage){
-					if ($flipcoin)
+					if (false)
 					{	echo 'float:right;';
 						$flipcoin=false;
 					}
@@ -1550,8 +1566,9 @@ foreach ($content as $item){
 				echo '<script>var anim=\'anim\'</script>';
 
 				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
-				echo displaycover($item['album'], 0.1+$thisalbumscore/$download_albums_magic_number);
-				
+				echo displaycover($item['album'], 0.1, 'cover', $AlbumsToBeHighlighted, $highlightcounter);
+				$highlightcounter++;
+
 		}
 		
 		//material order form
