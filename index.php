@@ -718,7 +718,7 @@ if ($acceptdonations){
 	
 
 if ($hasradio){
-	echo '<div style="width:100%;text-align:right">Now on the radio : <a href="./radio">';
+	echo '<div style="width:100%;text-align:right;padding:3px;"><span style=""><a href="./radio"><h1 style="padding:4px;font-size:417%;display:inline;color:red;background-color:black;border-radius:5px;">▸</h1></a><span style="float:right;"><span style="text-align: center;">Now on the radio: </span><hr/><a href="./radio">';
 	
 	echo file_get_contents('./radio/d/nowplayingartist.txt');
 	
@@ -726,7 +726,7 @@ if ($hasradio){
 	
 	echo file_get_contents('./radio/d/nowplayingalbum.txt');
 	
-	echo '</a>';
+	echo '</a><hr/></span></span>';
 	
 	
 	echo '</div>';
