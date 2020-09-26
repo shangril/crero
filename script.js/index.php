@@ -20,7 +20,7 @@ function play(target, id, isclewn, isautoplay = false){
 			target='<?php echo $clewnaudiourl;?>'+encodeURI(target);
 	}
 	else  {
-			target='<?php echo 'http://'.$server.'/z/';?>'+encodeURI(target);
+			target='<?php echo '//'.$server.'/z/';?>'+encodeURI(target);
 	}
 	currenttarget=target;
 	currentclewn=isclewn;
