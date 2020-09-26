@@ -40,7 +40,7 @@ if (!isset($_SESSION['logged'])){
 	<html>
 		<head>
 			<!--<meta http-equiv="refresh" content="20">-->
-			<link rel="stylesheet" href="/style.css" type="text/css" media="screen" />
+			<link rel="stylesheet" href="//style.css" type="text/css" media="screen" />
 		<script>
 var syncLock=false;	
 //var attempt=0;
