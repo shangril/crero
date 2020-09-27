@@ -419,8 +419,8 @@ function skipsong() {
 
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="auto" controls="controls" 
- onEnded="this.src='./stream.mp3?web=web&'+Math.random();this.load();this.play();allowGentleResync=true;" 
- onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
+ onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.load();this.play();allowGentleResync=true;" 
+ onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').load();document.getElementById('player').play();}, 500);" 
  <?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo ' onPlay="resync();allowGentleResync=false;" ';
@@ -439,16 +439,16 @@ if (!$activatechat===false){
 
 <hr style="float:none;clear:both;">
 <script>
-document.getElementById('player').src='./stream.mp3?web=web&'+Math.random();
+document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
 document.getElementById('player').load();
-document.getElementById('player').autoplay='autoplay';
-document.getElementById('player').play();
+//document.getElementById('player').autoplay='autoplay';
+//document.getElementById('player').play();
 
 </script>
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"/><object id="social" data="../network" style="	width:100%;height:495px;" width="100%" height="495"></object>
+		<a name="social"/><object id="social" data="../network/index.php" style="	width:100%;height:495px;" width="100%" height="495"></object>
 <?php
 }
 

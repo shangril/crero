@@ -228,7 +228,7 @@ else if (isset($_GET['artist'])||isset($_GET['listall'])){
 error_reporting(E_ERROR | E_PARSE);
 
 if (isset($_GET['artist'])) {
-	$favicon='http://'.$server.'/favicon.png';
+	$favicon='//'.$server.'/favicon.png';
 	$arturl='&artist='.urlencode($_GET['artist']);
 	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A '.htmlspecialchars($sitename).' artist';
 	$artists_file=trim(file_get_contents('./d/artists.txt')); 
@@ -539,7 +539,7 @@ if ($mosaic&&$artisthighlighthomepage)
 	</style>
 	
 <?php }?> 
-<script src="http://<?php echo $server;?>/script.js">
+<script src="//<?php echo $server;?>/script.js/index.php">
 </script>
 <script>
 <?php 
@@ -786,7 +786,7 @@ if (isset ($_GET['track'])) {
 }
 
 else if (isset ($_GET['artist'])) {
-	echo '<a href="http://'.$server.'/">../</a><br/>';
+	echo '<a href="//'.$server.'/">../</a><br/>';
 }
 
 ?>
@@ -801,7 +801,7 @@ else if (isset ($_GET['artist'])) {
 		
 	}
 	?>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="http://<?php echo $server;?>">Home</a></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="//<?php echo $server;?>">Home</a></h2>
 
 	<?php
 	//artist list
@@ -826,7 +826,7 @@ else if (isset ($_GET['artist'])) {
 		echo '<span style="margin-top:4px;marging-bottom:4px;"><a style="float:left;padding:2px;" href="./">Artists : </a> ';
 
 		foreach ($artists as $artist) {
-			echo '<a style="float:left;border:solid 1px;background-color:#A0A0A0;padding:2px;" href="http://'.$server.'/?artist='.urlencode($artist).'"> '.htmlspecialchars($artist).' </a> ';
+			echo '<a style="float:left;border:solid 1px;background-color:#A0A0A0;padding:2px;" href="//'.$server.'/?artist='.urlencode($artist).'"> '.htmlspecialchars($artist).' </a> ';
 			
 			
 		}
@@ -1658,7 +1658,7 @@ foreach ($content as $item){
 
 			
 		if (in_array($item['artist'], $material_artists)&&!in_array($item['album'], $material_blacklist)&&!$material&&!$mosaic){
-			echo 'available on material support at our <a href="http://'.$server.'/?listall=material">physical releases shop</a><br/>';
+			echo 'available on material support at our <a href="//'.$server.'/?listall=material">physical releases shop</a><br/>';
 			
 		}
 		
@@ -1835,7 +1835,7 @@ foreach ($content as $item){
 				<input type="hidden" name="shipping" value="0" />
 				<input type="hidden" name="cancel_return" value="http://<?php echo htmlspecialchars($server);?>" />
 				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>" />
-				<input type="submit" name="submit" value="Buy now !" /> or <a href="http://<?php echo $server?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>">get it for free</a></span>
+				<input type="submit" name="submit" value="Buy now !" /> or <a href="//<?php echo $server?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>">get it for free</a></span>
 								<?php
 				
 				
@@ -1996,7 +1996,7 @@ if (overload_track_counter==0){
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"/><object data="./network" style="width:100%;height:495px;" width="100%" height="495"></object>
+		<a name="social"/><object data="./network/index.php" style="width:100%;height:495px;" width="100%" height="495"></object>
 <?php
 }
 
