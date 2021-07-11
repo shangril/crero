@@ -20,7 +20,7 @@ if (true||!isset($_SESSION['whitelist'])){
 
 	//first we delete old records that we no longer need
 
-	$timestamps = array_diff(scandir ('../e'), Array('..', '.'));
+	$timestamps = array_diff(scandir ('../e'), Array('..', '.', '.htaccess'));
 	$dos=false;
 	foreach ($timestamps as $timestamp){
 		if (microtime(true)-floatval($timestamp)>3){
