@@ -2,7 +2,7 @@
 
 Currently require PHP>=7.0
 
-* 20220605-1 Security patch. Any version affected or almost any back to earlier ones. An unused feature in ./api.php and ./api/api.php could allow a remote attacker to access any file located in the public www directory. Please update ./api.php in your front-end. If you use the "free download" feature, please replace api.php in your free media tier by ./api/api.php provided in this FIX. 
+* 20220605-1 Security patch. Any version affected or almost any back to earlier ones. An unused feature in ./api.php and ./api/api.php could allow a remote attacker to access (read) any file located in the public www directory. Please update ./api.php in your front-end. If you use the "free download" feature, please replace api.php in your free media tier by ./api/api.php provided in this FIX. 
 
 
 * 20220605 Security patch. All versions newer than 20190418 with htmlcache option enabled must upgrade for CRITICAL issue allowing Remote Code Execution (RCE). ./index.php modified. 
