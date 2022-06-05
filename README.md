@@ -2,7 +2,10 @@
 
 Currently require PHP>=7.0
 
-* 20220605 Security patch. All versions newer than 20190418 with htmlcache option enabled must upgrade for CRITICAL issue allowing Remote Code Execution (RCE). 
+* 20220605-1 Security patch. Any version affected or almost any back to earlier ones. An unused feature in ./api.php and ./api/api.php could allow a remote attacker to access any file located in the public www directory. Please update ./api.php in your front-end. If you use the "free download" feature, please replace api.php in your free media tier by ./api/api.php provided in this FIX. 
+
+
+* 20220605 Security patch. All versions newer than 20190418 with htmlcache option enabled must upgrade for CRITICAL issue allowing Remote Code Execution (RCE). ./index.php modified. 
 
 * 20210711 Security patch. All versions newer than 20200919 must upgrade to fix a security issue that affected .htaccess in /radio/e/, causing exposition of the IPs of the listeners of the radio. Upgrade and make sure you have .htaccess in /radio/e/ still present and working. 
 
