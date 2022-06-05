@@ -48,7 +48,7 @@ foreach ($get_keys as $get_key){
 $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 
 if (isset($_POST['page_purge'])&&$activatehtmlcache){
-	$pseudoget=unserialize(base64_decode($_POST['page_purge']));
+	$pseudoget=json_decode(base64_decode($_POST['page_purge']), true);
 	
 	$cachingkey='key:';
 
@@ -625,7 +625,7 @@ onLoad="stats();"
 	<br/>
 	You can try to clear the cache for this particular page and see if it can solve this error. 
 	<form id="overload_form" method="POST">
-	<input type="hidden" name="page_purge" value="<?php echo base64_encode(serialize($_GET));?>"/>
+	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode($_GET));?>"/>
 	<span id="overload_button">
 	</span>
 	</form>
