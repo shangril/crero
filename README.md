@@ -2,7 +2,9 @@
 
 Currently require PHP>=7.0
 
-* 20210711 Security patch. All version newer than 20200919 must upgrade to fix a security issue that affected .htaccess in /radio/e/, causing exposition of the IPs of the listeners of the radio. Upgrade and make sure you have .htaccess in /radio/e/ still present and working. 
+* 20220605 Security patch. All versions newer than 20190418 with htmlcache option enabled must upgrade for CRITICAL issue allowing Remote Code Execution (RCE). 
+
+* 20210711 Security patch. All versions newer than 20200919 must upgrade to fix a security issue that affected .htaccess in /radio/e/, causing exposition of the IPs of the listeners of the radio. Upgrade and make sure you have .htaccess in /radio/e/ still present and working. 
 
 * 20180817 release : stats rewritten. Please note that the ancient statistics you may have gathered won't now display correctly in the new stats system. If you need them for future reference, please make a backup before upgrade (ie: go to your admin pannel, select, copy, and paste elsewhere)
 
