@@ -401,7 +401,7 @@ else if (isset($_GET['getcover'])) {
 	
 header('Content-Type: text/plain; charset=utf-8');
 
-
+	die ('feature not implemented');
 	//get the cover for a specified album 
 	$album=$_GET['gettracks'];
 	$files=scandir('./covers/'.str_replace('./', '', $album));
