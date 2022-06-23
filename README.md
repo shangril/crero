@@ -2,6 +2,9 @@
 
 Currently require PHP>=7.0
 
+* 20220623 release : Support for embed. Example : You got a label at cremroad.com . You got an artist, say Me In The Bath. You want to set up meinthebath.com ; somewhere in your html in meinthebath.com add an iframe with its src attribute set to the http url of your label domain, in our case cremroad.com followed by the following path : /?artist=Me+In+The+Bath&embed=Me+In+The+Bath and you are done. Make sure to escape whitespaces as + and any special caracter not allowed in a URL scheme by the %XX number needed (search for "escaping characters in HTTP GET parameters)".
+ Radio block redesign for something less cumbersome, also. 
+
 * 20220605-1 Security patch. Any version affected or almost any back to earlier ones. An unused feature in ./api.php and ./api/api.php could allow a remote attacker to access (read) any file located in the public www directory. Please update ./api.php in your front-end. If you use the "free download" feature, please replace api.php in your free media tier by ./api/api.php provided in this FIX. 
 
 
