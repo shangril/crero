@@ -546,9 +546,16 @@ if ($mosaic&&$artisthighlighthomepage)
 
 echo "var target_album='".urlencode(htmlentities($_GET['target_album']))."';
 ";
-
-
-
+//if we are here to generate a page to be embeded, we will set a JS var to allow script.js to trigger continous play
+if (isset($_GET['embed']))
+	{echo "var embed=true;
+		";
+	 } 
+	else
+	{echo "var embed=false;
+		";
+	 } 
+//done for embed		
 
 	if ($enableDownloadCart) {?>
 function addFullAlbumToCart(album_cart)
