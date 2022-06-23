@@ -13,6 +13,12 @@ function checkOverload ($apiResponse) {
 	
 }
 
+
+if (isset($_GET['embed'])){
+	$embed=$_GET['embed'];
+}else{$embed=false;}
+
+
 ob_start();
 
 $sessionstarted=session_start();
@@ -38,7 +44,7 @@ $cachingkey='key:';
 
 $get_keys=array_keys($_GET);
 
-$whitelist= array ('artist', 'album', 'track', 'offset', 'listall', 'autoplay', 'vid', 'twist');
+$whitelist= array ('artist', 'album', 'track', 'offset', 'listall', 'autoplay', 'vid', 'twist', 'embed');
 
 foreach ($get_keys as $get_key){
 	if (in_array($get_key, $whitelist)){
@@ -48,7 +54,7 @@ foreach ($get_keys as $get_key){
 $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 
 if (isset($_POST['page_purge'])&&$activatehtmlcache){
-	$pseudoget=json_decode(base64_decode($_POST['page_purge']), true);
+	$pseudoget=json_decode(base64_decode($_POST['page_purge']),true);
 	
 	$cachingkey='key:';
 
@@ -557,6 +563,9 @@ if (isset($_GET['embed']))
 	 } 
 //done for embed		
 
+
+
+
 	if ($enableDownloadCart) {?>
 function addFullAlbumToCart(album_cart)
 		{
@@ -694,9 +703,13 @@ var overload_track_counter=0;
 
  ?>
 	
+<audio id="player" onEnded="playNext();">
+	Your browser is very old ; sorry but streaming will not be enabled<br/>
+</audio>
+<noscript>Your browser does not support Javascript, which is required on this website if you want to stream. Don't panic, we dont include any kind of third party scripts<br/></noscript>
 	
 	
-	
+<?php if (!$embed) { //IF NOT EMBED ********************* STARTS?>	
 	
 <?php
 
@@ -737,7 +750,7 @@ if ($acceptdonations){
 	
 
 if ($hasradio){
-	echo '<div style="width:100%;text-align:right;padding:3px;"><span style=""><a href="./radio/index.php"><h1 style="padding:4px;font-size:417%;display:inline;color:red;background-color:black;border-radius:5px;">▸</h1></a><span style="float:right;"><span style="text-align: center;">Now on the radio: </span><hr/><a href="./radio/index.php">';
+	echo '<div style="width:98%;text-align:right;float:right;">Now on the radio: <br/><a href="./radio/index.php">';
 	
 	echo file_get_contents('./radio/d/nowplayingartist.txt');
 	
@@ -745,17 +758,13 @@ if ($hasradio){
 	
 	echo file_get_contents('./radio/d/nowplayingalbum.txt');
 	
-	echo '</a><hr/></span></span>';
+	echo '</a>';
 	
 	
 	echo '</div>';
 	
 }
 ?>
-<audio id="player" onEnded="playNext();">
-	Your browser is very old ; sorry but streaming will not be enabled<br/>
-</audio>
-<noscript>Your browser does not support Javascript, which is required on this website if you want to stream. Don't panic, we dont include any kind of third party scripts<br/></noscript>
 <div style="text-align:center;"><a href="javascript:void(0);" onclick="document.getElementById('recentplay').style.display='block';"></a></div>
 <span id="recentplay" style="display:<?php
 if ($recentplay){
@@ -916,6 +925,10 @@ if((isset($_GET['listall'])&&($_GET['listall']==='material'||($_GET['listall']==
 		}
 	echo '<form method="POST" action="processorder.php">';
 }
+
+}//************************************************IF NOT EMBED ENDS
+
+
 $weactuallydisplayedsomething=false;
 
 //here we are, let's query  apis to fill the content arrays
@@ -1072,10 +1085,14 @@ if ($_SESSION['random']){
 //here we go, let's output the content
 if (isset($_GET['offset'])&&is_numeric($_GET['offset'])) {
 	$offset=intval($_GET['offset']);
+	$embedurl='';
+	if ($embed) {
+		$embedurl='&embed='.urlencode($embed);
+	}
 	
 	if ($offset!==0&&!$_SESSION['random']&&!isset($_GET['listall'])){
 	
-		echo '<a href="./?offset='.($offset-1).$arturl.'">Dig newer</a><br/>';
+		echo '<a href="./?offset='.($offset-1).$arturl.$embedurl.'">Dig newer</a><br/>';
 	
 	}
 
@@ -1324,10 +1341,28 @@ foreach ($contentlocal as $item){
 					<script>
 					overload_track_counter++;
 					</script>
-					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>">▶</a>
+					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>"><span style="size:475%;">▶</span></a>
+					 
+					 <?php if (!$embed){ ?>
+					 
+					 
 					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
-					 <?php echo  $track_artist; ?></a> - 
-					 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>'; ?>
+					 
+					 <?php } ?>
+					 <?php echo  $track_artist; ?>
+					 
+					 
+					 <?php if (!$embed){?></a> - <?php } ?>
+					 <?php 
+					 if (!$embed){
+					 echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">';
+					 }
+					 echo $track_name;
+					 if (!$embed) {
+					 echo '</a>'; 
+					 
+					}
+					 ?>
 					 <div style="background-color:#F0F0F0;text-align:right;">
 						 <?php
 						 if (isset($streamingAlbumsInfoNotice[$item['album']])){
@@ -1756,9 +1791,25 @@ foreach ($content as $item){
 						overload_track_counter++;
 						</script>
 						<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
-						 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
-						 <?php echo  $track_artist; ?></a> - 
-						 <?php echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">'.$track_name.'</a>';
+						 <?php if (!$embed) {?>
+							 
+							 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
+						 <?php echo  $track_artist; ?></a> - <?php } ?>
+						 <?php 
+						 if (!$embed){
+						 
+						 echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">';
+						}
+						 
+						 echo $track_name;
+						 
+						 if (!$embed){
+						 
+						 echo '</a>';
+						
+						}
+						
+						
 						?>
 						<div style="display:none;" id="info<?php echo $trackcounter;?>"></div>
 						<?php
@@ -1770,7 +1821,7 @@ foreach ($content as $item){
 							 <?php
 							 foreach ($supported_formats_remote as $mat){
 							 ?>
-							 <a href="<?php 
+							 <a download="download" href="<?php 
 							 echo $clewnaudiourl.urlencode ($track).'.'.$mat.'">'.htmlspecialchars($mat); 
 							 ?></a> 
 							 <?php
@@ -1935,7 +1986,13 @@ if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall']
 	}
 	if (!isset($_GET['target_album'])){
 	
-	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.$autourl.'">Dig older...</a><br/>';
+	$embedurl='';
+	
+	if ($embed) {
+		$embedurl='&embed='.urlencode($embed);
+	}
+	
+	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.$autourl.$embedurl.'">Dig older...</a><br/>';
 	
 	}
 	else {
@@ -1961,7 +2018,7 @@ if($material) {
 if ($mosaic) {
 	echo '<br style="clear:both;"/>';
 }
-
+if (!$embed){// IF NOT EMBED STARTS **************************************************
 echo $pageFooterSplash;
 ?>
 
@@ -1971,8 +2028,13 @@ echo $pageFooterSplash;
 <?php
 echo $footerhtmlcode;
 if (!isset($_GET['album'])&&!isset($_GET['artist'])&&!isset($_GET['track'])&&$activatehtmlcache){
+
+
+echo '<script> overload_track_counter++;</script>';
+}// IF NOT EMBED ENDS ** ** *  * ** * ** * * *** * *
+
 ?>
-<script> overload_track_counter++;</script>
+
 <?php
 
 }
@@ -1997,6 +2059,8 @@ if (overload_track_counter==0){
 <?php
 
 }
+
+if (!$embed){ //IF NOT EMBED STARTS ******************************************
 ?>
 
 <hr style="clear:both;">
@@ -2057,6 +2121,10 @@ setInterval(function (){
 }
 ?>
 <div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels and webradios">CreRo, the CMS for record labels and webradios</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
+
+
+<?php } //IF NOT EMBED ENDS * * ** * * * * ** * * * * ** * * * * ** * * ?>
+
 </body>
 </html><?php
 if ($activatehtmlcache){
