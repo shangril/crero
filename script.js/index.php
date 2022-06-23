@@ -63,9 +63,9 @@ function playNext() {
 		
 	}
 	else {
-		if (document.getElementById('digolder')!=null){
+		if (document.getElementById('digolder')!=null&&embed){
 		
-			//document.location.href=document.getElementById('digolder').href+'&autoplay=true';//'./?offset='+(offset+1)+'&autoplay=true';
+			document.location.href=document.getElementById('digolder').href+'&autoplay=true';//'./?offset='+(offset+1)+'&autoplay=true';
 		}
 		else if(target_album!=null){
 			//document.location.href='./?album='+target_album+'&autoplay=true';
