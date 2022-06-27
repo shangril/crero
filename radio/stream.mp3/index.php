@@ -181,7 +181,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		);
 
 		$context = stream_context_create($opts);
-		$handler=fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
+		$handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
 		
 		$meta_data = stream_get_meta_data($handler);
 		$ttl=0;
