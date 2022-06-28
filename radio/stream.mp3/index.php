@@ -181,28 +181,30 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		);
 
 		$context = stream_context_create($opts);
-		$handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
-		
-		$meta_data = stream_get_meta_data($handler);
-		$ttl=0;
-		$save=false;
-		$sid='';
-		foreach ($meta_data['wrapper_data'] as $response) {
+		//BUGFIX 20220628: support for non-responding yp
+		$save = false;
+		if ($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
+			
+			$meta_data = stream_get_meta_data($handler);
+			$ttl=0;
+			$sid='';
+			foreach ($meta_data['wrapper_data'] as $response) {
 
 
-			if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-				$save = boolval(substr($response, 12));
-			}
-			if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
-				$ttl = floatval(substr($response, 11));
-			}
-			if (strtolower(substr($response, 0, 5)) == 'sid: ') {
-				$sid=substr($response, 5);
-			}
+				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+					$save = boolval(substr($response, 12));
+				}
+				if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
+					$ttl = floatval(substr($response, 11));
+				}
+				if (strtolower(substr($response, 0, 5)) == 'sid: ') {
+					$sid=substr($response, 5);
+				}
 
-		}
-		fclose ($handler);
-		
+			}
+			fclose ($handler);
+		}	
+		//END BUGFIX 20220628
 		if($save) {
 			
 			file_put_contents('../d/ypexpires.txt', microtime(true)+$ttl);
@@ -233,19 +235,30 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			);
 
 			$context = stream_context_create($opts);
-			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
-			
-			$meta_data = stream_get_meta_data($handler);
-			$ttl=0;
-			$save=false;
-			foreach ($meta_data['wrapper_data'] as $response) {
+			//BUGFIX 20220628: support for non-responding yp
+			$save = false;
+			if ($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
+				
+				$meta_data = stream_get_meta_data($handler);
+				$ttl=0;
+				$sid='';
+				foreach ($meta_data['wrapper_data'] as $response) {
 
-				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-					$save = boolval(substr($response, 12));
+
+					if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+						$save = boolval(substr($response, 12));
+					}
+					if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
+						$ttl = floatval(substr($response, 11));
+					}
+					if (strtolower(substr($response, 0, 5)) == 'sid: ') {
+						$sid=substr($response, 5);
+					}
+
 				}
-
-			}
-			fclose($handler);
+				fclose ($handler);
+			}	
+			//END BUGFIX 20220628
 			if ($save){
 				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
 			}
@@ -479,22 +492,25 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 			);
 
 			$context = stream_context_create($opts);
-			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
-			
-			$meta_data = stream_get_meta_data($handler);
-			$ttl=0;
-			$save=false;
-			foreach ($meta_data['wrapper_data'] as $response) {
+			//BUGFIX 20220628 support for non-responding dir.xiph.org
+			$save=false;				
+			if ($handler = fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
+						
+				$meta_data = stream_get_meta_data($handler);
+				$ttl=0;
+				foreach ($meta_data['wrapper_data'] as $response) {
 
-				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-					$save = boolval(substr($response, 12));
+					if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+						$save = boolval(substr($response, 12));
+					}
+
 				}
-
+				fclose($handler);
+				if ($save){
+					file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
+				}
 			}
-			fclose($handler);
-			if ($save){
-				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
-			}
+			//END BUGFIX 20220628
 		}
 
 if ($featuredapi){
