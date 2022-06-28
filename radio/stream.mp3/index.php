@@ -211,8 +211,10 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			file_put_contents('../d/ypttl.txt', $ttl);
 			file_put_contents('../d/ypsid.txt', $sid);
 		}
-		if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+		if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
+			$ttl=file_get_contents('../d/ypttl.txt');
+			
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
 			$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
@@ -237,11 +239,8 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			$context = stream_context_create($opts);
 			//BUGFIX 20220628: support for non-responding yp
 			$save = false;
-			if ($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
+			if ($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)&&$meta_data = stream_get_meta_data($handler)){
 				
-				$meta_data = stream_get_meta_data($handler);
-				$ttl=0;
-				$sid='';
 				foreach ($meta_data['wrapper_data'] as $response) {
 
 
@@ -260,7 +259,9 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			}	
 			//END BUGFIX 20220628
 			if ($save){
+				file_put_contents('../d/ypttl.txt', $ttl);
 				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
+				file_put_contents('../d/ypsid.txt', $sid);
 			}
 		}
 		
@@ -468,7 +469,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 			
 			}*/
 //	else{
-	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+	if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
@@ -497,17 +498,26 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 			if ($handler = fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
 						
 				$meta_data = stream_get_meta_data($handler);
-				$ttl=0;
+				$ttl=file_get_contents('../d/ypttl.txt');
 				foreach ($meta_data['wrapper_data'] as $response) {
 
 					if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
 						$save = boolval(substr($response, 12));
+						if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
+							$ttl = floatval(substr($response, 11));
+						}
+						if (strtolower(substr($response, 0, 5)) == 'sid: ') {
+							$sid=substr($response, 5);
+						}
 					}
 
 				}
 				fclose($handler);
 				if ($save){
+					file_put_contents('../d/ypttl.txt',$ttl);
 					file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
+					file_put_contents('../d/ypsid.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
+
 				}
 			}
 			//END BUGFIX 20220628
@@ -533,13 +543,13 @@ else {
 
  
  
-$filepath='';
+/*$filepath='';
 if (strstr( $nowplayingurl, 'clewn.org')){
 	$filepath=str_replace('http://audio.clewn.org/audio', '../../../audio/clewn/opt/hop/audio', $nowplayingurl);
 }
 if (strstr( $nowplayingurl, 'cremroad.com'	)){
 	$filepath=str_replace('http://cremroad.com/z', '../../z', $nowplayingurl);
-}
+}*/
 
 $alpha=microtime(true);
 
@@ -578,10 +588,10 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$bursttimer=microtime(true);
 	$bursthassleeped=false;
 
-		while (!feof($handle)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+		while (!feof($handle)&&$nowplayingurl===trim(file_get_contents('../d/nowplayingurl.txt'))){
 			
 			$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
-
+			
 			$secondtimer=microtime(true);
 			$bytestoread=$bytestosend+intval($bytetosend*(microtime(true)-$thirdtimer));
 			
