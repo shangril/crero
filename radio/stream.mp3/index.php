@@ -119,11 +119,11 @@ if (!file_exists('../d/listeners')){
 	
 }
 
-function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $duration){
+function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $duration, $initial){
 	$inittime=microtime(true);
 	
 	if(file_exists('../d/ypexpires.txt')&&microtime(true)>floatval(file_get_contents(('../d/ypexpires.txt')))){
-		unlink('../d/ypsid.txt');
+		file_put_contents('../d/ypexpires.txt','0');
 	}
 	
 	
@@ -157,7 +157,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 	}
 
 
-	if ($radiohasyp&&!file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+	if ($radiohasyp&&$initial&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 		$genres='';
 		foreach ($labelgenres as $labelgenre){
 			$genres.=$labelgenre.' ';
@@ -190,11 +190,12 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		);
 
 		$context = stream_context_create($opts);
+		$save=false;
 			if ($handler=fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
 			
 			$meta_data = stream_get_meta_data($handler);
 			$ttl=0;
-			$save=false;
+			
 			$sid='';
 			foreach ($meta_data['wrapper_data'] as $response) {
 
@@ -219,6 +220,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 				file_put_contents('../d/ypsid.txt', $sid);
 			}
 		}
+		$save=false;
 		if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
@@ -242,12 +244,13 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 				)
 			);
 
+
 			$context = stream_context_create($opts);
 			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
 			
 			$meta_data = stream_get_meta_data($handler);
 			$ttl=0;
-			$save=false;
+			
 			foreach ($meta_data['wrapper_data'] as $response) {
 
 				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
@@ -574,7 +577,7 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 
 		while (!feof($handle)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
 			
-			$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
+			$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true), $isinitial);
 
 			$secondtimer=microtime(true);
 			$bytestoread=$bytestosend+intval($bytetosend*(microtime(true)-$thirdtimer));
