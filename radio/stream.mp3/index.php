@@ -9,7 +9,7 @@ chdir('../..');
 require_once('./config.php');
 chdir('./radio/stream.mp3');
 srand();
-$statid=mt_rand(0, 1000000);
+$statid=mt_rand(0, 1000000).microtime(true);
 $dontdoit=false;
 
 //ANTI DOS PROTECTION
@@ -121,9 +121,13 @@ if (!file_exists('../d/listeners')){
 
 function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $duration){
 	$inittime=microtime(true);
+	
+	if($radiohasyp&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+		unlink('../d/ypsis.txt');
+	}
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
-		if (floatval(file_get_contents('../d/listeners/'.$listener))===$statid){
+		if ((file_get_contents('../d/listeners/'.$listener))==$statid){
 				unlink('../d/listeners/'.$listener);
 			
 		}
@@ -209,7 +213,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			file_put_contents('../d/ypttl.txt', $ttl);
 			file_put_contents('../d/ypsid.txt', $sid);
 		}
-		if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+		if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))>microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
@@ -455,7 +459,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 			
 			}*/
 //	else{
-	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+	if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
