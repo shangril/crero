@@ -121,6 +121,13 @@ if (!file_exists('../d/listeners')){
 
 function dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $duration){
 	$inittime=microtime(true);
+	
+	if(file_exists('../d/ypexpires.txt')&&microtime(true)>floatval(file_get_contents(('../d/ypexpires.txt')))){
+		unlink('../d/ypsid.txt');
+	}
+	
+	
+	
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
 		if (floatval(file_get_contents('../d/listeners/'.$listener))===$statid){
@@ -150,7 +157,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 	}
 
 
-	if ($radiohasyp&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+	if ($radiohasyp&&!file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 		$genres='';
 		foreach ($labelgenres as $labelgenre){
 			$genres.=$labelgenre.' ';
@@ -183,33 +190,34 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		);
 
 		$context = stream_context_create($opts);
-		$handler=fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
-		
-		$meta_data = stream_get_meta_data($handler);
-		$ttl=0;
-		$save=false;
-		$sid='';
-		foreach ($meta_data['wrapper_data'] as $response) {
-
-
-			if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-				$save = boolval(substr($response, 12));
-			}
-			if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
-				$ttl = floatval(substr($response, 11));
-			}
-			if (strtolower(substr($response, 0, 5)) == 'sid: ') {
-				$sid=substr($response, 5);
-			}
-
-		}
-		fclose ($handler);
-		
-		if($save) {
+			if ($handler=fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
 			
-			file_put_contents('../d/ypexpires.txt', microtime(true)+$ttl);
-			file_put_contents('../d/ypttl.txt', $ttl);
-			file_put_contents('../d/ypsid.txt', $sid);
+			$meta_data = stream_get_meta_data($handler);
+			$ttl=0;
+			$save=false;
+			$sid='';
+			foreach ($meta_data['wrapper_data'] as $response) {
+
+
+				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+					$save = boolval(substr($response, 12));
+				}
+				if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
+					$ttl = floatval(substr($response, 11));
+				}
+				if (strtolower(substr($response, 0, 5)) == 'sid: ') {
+					$sid=substr($response, 5);
+				}
+
+			}
+			fclose ($handler);
+			
+			if($save) {
+				
+				file_put_contents('../d/ypexpires.txt', microtime(true)+$ttl);
+				file_put_contents('../d/ypttl.txt', $ttl);
+				file_put_contents('../d/ypsid.txt', $sid);
+			}
 		}
 		if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
