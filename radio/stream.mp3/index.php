@@ -123,12 +123,14 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 	$inittime=microtime(true);
 	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
 	foreach ($listeners as $listener){
-		if (intval(file_get_contents('../d/listeners/'.$listener))===$statid){
+		if (floatval(file_get_contents('../d/listeners/'.$listener))===$statid){
 				unlink('../d/listeners/'.$listener);
 			
 		}
 	}
-	file_put_contents('../d/listeners/'.microtime(true), $statid);
+	$listeners=array_diff(scandir('../d/listeners'), Array('..', '.'));
+	
+	
 	if (!file_exists('../d/maxlisteners.txt')){
 		file_put_contents('../d/maxlisteners.txt', '0');
 	}
@@ -181,40 +183,36 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 		);
 
 		$context = stream_context_create($opts);
-		//BUGFIX 20220628: support for non-responding yp
-		$save = false;
-		if ($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
-			
-			$meta_data = stream_get_meta_data($handler);
-			$ttl=0;
-			$sid='';
-			foreach ($meta_data['wrapper_data'] as $response) {
+		$handler=fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
+		
+		$meta_data = stream_get_meta_data($handler);
+		$ttl=0;
+		$save=false;
+		$sid='';
+		foreach ($meta_data['wrapper_data'] as $response) {
 
 
-				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-					$save = boolval(substr($response, 12));
-				}
-				if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
-					$ttl = floatval(substr($response, 11));
-				}
-				if (strtolower(substr($response, 0, 5)) == 'sid: ') {
-					$sid=substr($response, 5);
-				}
-
+			if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+				$save = boolval(substr($response, 12));
 			}
-			fclose ($handler);
-		}	
-		//END BUGFIX 20220628
+			if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
+				$ttl = floatval(substr($response, 11));
+			}
+			if (strtolower(substr($response, 0, 5)) == 'sid: ') {
+				$sid=substr($response, 5);
+			}
+
+		}
+		fclose ($handler);
+		
 		if($save) {
 			
 			file_put_contents('../d/ypexpires.txt', microtime(true)+$ttl);
 			file_put_contents('../d/ypttl.txt', $ttl);
 			file_put_contents('../d/ypsid.txt', $sid);
 		}
-		if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+		if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
-			$ttl=file_get_contents('../d/ypttl.txt');
-			
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
 			$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
@@ -237,31 +235,21 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 			);
 
 			$context = stream_context_create($opts);
-			//BUGFIX 20220628: support for non-responding yp
-			$save = false;
-			if ($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)&&$meta_data = stream_get_meta_data($handler)){
-				
-				foreach ($meta_data['wrapper_data'] as $response) {
+			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
+			
+			$meta_data = stream_get_meta_data($handler);
+			$ttl=0;
+			$save=false;
+			foreach ($meta_data['wrapper_data'] as $response) {
 
-
-					if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-						$save = boolval(substr($response, 12));
-					}
-					if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
-						$ttl = floatval(substr($response, 11));
-					}
-					if (strtolower(substr($response, 0, 5)) == 'sid: ') {
-						$sid=substr($response, 5);
-					}
-
+				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+					$save = boolval(substr($response, 12));
 				}
-				fclose ($handler);
-			}	
-			//END BUGFIX 20220628
+
+			}
+			fclose($handler);
 			if ($save){
-				file_put_contents('../d/ypttl.txt', $ttl);
 				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
-				file_put_contents('../d/ypsid.txt', $sid);
 			}
 		}
 		
@@ -469,7 +457,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 			
 			}*/
 //	else{
-	if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+	if (file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
@@ -493,34 +481,22 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 			);
 
 			$context = stream_context_create($opts);
-			//BUGFIX 20220628 support for non-responding dir.xiph.org
-			$save=false;				
-			if ($handler = fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
-						
-				$meta_data = stream_get_meta_data($handler);
-				$ttl=file_get_contents('../d/ypttl.txt');
-				foreach ($meta_data['wrapper_data'] as $response) {
+			$handler = fopen('http://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context);
+			
+			$meta_data = stream_get_meta_data($handler);
+			$ttl=0;
+			$save=false;
+			foreach ($meta_data['wrapper_data'] as $response) {
 
-					if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
-						$save = boolval(substr($response, 12));
-						if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
-							$ttl = floatval(substr($response, 11));
-						}
-						if (strtolower(substr($response, 0, 5)) == 'sid: ') {
-							$sid=substr($response, 5);
-						}
-					}
-
+				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
+					$save = boolval(substr($response, 12));
 				}
-				fclose($handler);
-				if ($save){
-					file_put_contents('../d/ypttl.txt',$ttl);
-					file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
-					file_put_contents('../d/ypsid.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
 
-				}
 			}
-			//END BUGFIX 20220628
+			fclose($handler);
+			if ($save){
+				file_put_contents('../d/ypexpires.txt', microtime(true)+floatval(file_get_contents('../d/ypttl.txt')));
+			}
 		}
 
 if ($featuredapi){
@@ -543,8 +519,8 @@ else {
 
  
  
-/*$filepath='';
-if (strstr( $nowplayingurl, 'clewn.org')){
+$filepath='';
+/*if (strstr( $nowplayingurl, 'clewn.org')){
 	$filepath=str_replace('http://audio.clewn.org/audio', '../../../audio/clewn/opt/hop/audio', $nowplayingurl);
 }
 if (strstr( $nowplayingurl, 'cremroad.com'	)){
@@ -588,10 +564,10 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$bursttimer=microtime(true);
 	$bursthassleeped=false;
 
-		while (!feof($handle)&&$nowplayingurl===trim(file_get_contents('../d/nowplayingurl.txt'))){
+		while (!feof($handle)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
 			
 			$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
-			
+
 			$secondtimer=microtime(true);
 			$bytestoread=$bytestosend+intval($bytetosend*(microtime(true)-$thirdtimer));
 			
