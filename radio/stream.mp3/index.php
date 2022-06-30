@@ -361,7 +361,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		unlink('../d/ypsid.txt');
 	}
 
-	if ($radiohasyp&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
+	if ($radiohasyp){//&&floatval(trim(file_get_contents('../d/ypexpires.txt')))<microtime(true)){
 		$genres='';
 		foreach ($labelgenres as $labelgenre){
 			$genres.=$labelgenre.' ';
@@ -432,7 +432,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 	
 	if ($radiohasyp&&file_exists('../d/ypsid.txt')){
 		$sid=trim(file_get_contents('../d/ypsid.txt'));
-		$ttl=floatval(file_get_contents('../d/ypttl.txt'));
+		$ttl=0;//floatval(file_get_contents('../d/ypttl.txt'));
 		$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 		
 		$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
