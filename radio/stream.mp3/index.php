@@ -426,7 +426,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		}
 		if ($radiohasyp&&file_exists('../d/ypsid.txt')&&floatval(trim(file_get_contents('../d/ypexpires.txt')))>microtime(true)){
 			$sid=file_get_contents('../d/ypsid.txt');
-			$ttl=0;
+			$ttl=floatval(file_get_contents('../d/ypttl.txt'));
 			$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 			
 			$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
@@ -474,7 +474,12 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
 					$save = boolval(substr($response, 12));
 				}
-
+				if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
+					$ttl = floatval(substr($response, 11));
+				}
+				if (strtolower(substr($response, 0, 5)) == 'sid: ') {
+					$sid=substr($response, 5);
+				}
 			}
 			fclose($handler);
 			if ($save){
