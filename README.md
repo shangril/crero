@@ -1,9 +1,13 @@
 # CreRo
 
 Currently requires PHP>=7.0 - Untested with PHP>=8.0
+
 GD php extension strongly recommended if you need cover art
+
 GetID3 -formerly known as php-getID3- required if you host your audio on your own server. Refer to the "crash courses" below. 
+
 .htaccess support required in your webserver (in Apache >= 2.4 it is not enabled by default and you need to set AllowOveride to All in your Apache host configuration)
+
 
 * 20220623 release : Support for embed. Example : You got a label at cremroad.com . You got an artist, say Me In The Bath. You want to set up meinthebath.com ; somewhere in your html in meinthebath.com add an iframe with its src attribute set to the http url of your label domain, in our case cremroad.com followed by the following path : /?artist=Me+In+The+Bath&embed=Me+In+The+Bath and you are done. Make sure to escape whitespaces as + and any special caracter not allowed in a URL scheme by the %XX number needed (search for "escaping characters in HTTP GET parameters)".
  Radio block redesign for something less cumbersome, also. Support for continuous (album after album) playback for embed artist sites. 
