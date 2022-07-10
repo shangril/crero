@@ -56,7 +56,9 @@ New Feature 17.03 there is now support for mp3 only catalogs (if you wish to hos
 
 3. Deploy to your web server
 
-4. Check yourserver.tld/admin/d . If you don't get a HTTP 403 Forbidden, this means that .htaccess directives are not applied by your web server, and you'll need an alternate way to secure any sensitive data storage dir (especillay network/d/ e/ and f/ if you enable geolocated chats for your visitors)
+4. Check yourserver.tld/admin/d . If you don't get a HTTP 403 Forbidden, this means that .htaccess directives are not applied by your web server, and you'll need an alternate way to secure any sensitive data storage dir (especillay admin/d for the shadow password, and the email address that will receive mailing list subscription if the mailing list subscribtion is enabled, radio/d if you use YP announcement and dont want someone to steal your YP sid, and network/d/ and network/e/ to protect your visitors chat privacy. network/f/ used to be used for geolocated chatrooms, which are now no longer supported)
+
+If you get and HTTP 500 Internal Server Error, your install is probably safe, but check nevertheless if yourserver.tld/admin/d/fields.txt just to make sure that you still get an HTTP 500 (because a good web server locks the whole dir and its subdirs when it cannot parse .htaccess)
 
 5. Go to yourserver.tld/admin/ and log in
 
@@ -103,7 +105,7 @@ Apply previous steps 1-5
 
 ## Fan network's chatrooms, label radio, and so on
 
-1. refer to online help. Note that a bug in FF48 prevent your user to indicate their HTML5 geoloc currently (august 2016)
+1. refer to online help. 
 
 # Understanding the system architecure
 
@@ -224,6 +226,4 @@ option, leave a blank line. Line 5 : the name of the second product, line 5 : th
 * A free html block to insert whatever you want in a banner on top of the material relase list, like a set of external links to other online shops where your products can be found, or special custom subsection of the shop you may have created. 
 
   `materialmenu.txt`
-
-* Not sure it is used. For information about vid integration refer to `<install root>/config.php`.
-  `featured_vids.txt`
+`
