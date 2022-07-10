@@ -404,7 +404,10 @@ $AlbumsToBeHighlighted=0;
 if (file_exists('./d/AlbumsToBeHighlighted.txt')){
 	$AlbumsToBeHighlighted=intval(trim(file_get_contents('./d/AlbumsToBeHighlighted.txt')));
 }
-$RadioHasGentleResync=false;
+$IsRadioStreamHTTPS=false;
+if (file_exists('./d/IsRadioStreamHTTPS.txt')){
+	$IsRadioStreamHTTPS=boolval(trim(file_get_contents('./d/IsRadioStreamHTTPS.txt')));
+}
 
 
 
