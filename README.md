@@ -31,11 +31,11 @@ Physical release shop feature.
 
 Streaming only or online music free download. 
 
-Radio stream for your catalog ; with Xiph yellowpages registration. 
+Radio stream for your catalog ; with Xiph yellowpages registration. If chat network is enabled, possibility for listeners to trigger the skipping of a particular song currently aired.  
 
 Physical releases means free download, for now.
 
-Chatroom including geolocated chatroom allowing your fans to network with like-minded listeners of their local area. 
+Chatroom allowing your fans to network with like-minded listeners. 
 
 Sell your online digital music quick instructions: activate download_cart option. Maybe set is_download_cart_name_your_price for either, name your price no minimum, or name your price with minimum. Note that people downloading will get hotlinkable audio file links, with no auth system, and that there is no way to prevent them from passing the links around. 
 
@@ -43,6 +43,8 @@ Sell your online digital music quick instructions: activate download_cart option
 New feature 16.11.30.0033 : create a subdir called "supporters" and put an index.php that you can code as you wish in it if you want to display a hall of fame of your donators. A "Our supporters" link will display then in the donation module.   
 
 New Feature 17.03 there is now support for mp3 only catalogs (if you wish to host your audio on your own). Previously flac mp3 and ogg were all three mandatory. 
+
+An old undocumented feature : you can code a splash.php free-form HTML/php file and it will be displayed at the top of every page of the main site (not the radio). 
 
 # Installation steps
 
@@ -70,7 +72,7 @@ If you get and HTTP 500 Internal Server Error, your install is probably safe, bu
 
 9. use Cover Art section to upload your cover arts. Indicate each file's corresponding album in configuration options -> covers
 
-10. upload your audio files (same basename flac ogg mp3 with correctly set artist, album, title, comment tags) to audio.clewn.org
+10. upload your audio files to audio.clewn.org (same basename flac ogg mp3 with correctly set artist, album, title, comment tags. Year is also useful, since used to sort albums on the site. Albums from a same year will be sorted by file freshness on the media tier) 
 
 
 ##  Hosting free download album on your own
