@@ -11,11 +11,18 @@ if (!$hasradio){
 if (isset($_GET['m3u'])){
 	
 	header('Content-type: application/x-mpegurl');
-	echo 'http://'.$server.'/radio/stream.mp3';
-	exit();
 	
+	if ($IsRadioStreamHTTPS){
+		echo 'https://'.$server.'/radio/stream.mp3';
+		exit();
+	}
+	else
+	{
+		echo 'http://'.$server.'/radio/stream.mp3';
+		exit();
+	
+	}
 }
-
 
 if (isset($_GET['ajax'])){
 	if ($_GET['ajax']==='block'){
