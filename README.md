@@ -2,7 +2,7 @@
 
 Currently requires PHP>=7.0 - Untested with PHP>=8.0
 
-GD php extension strongly recommended if you need cover art
+GD php extension required if you need cover art
 
 GetID3 -formerly known as php-getID3- required if you host your audio on your own server. Refer to the "crash courses" below. 
 
