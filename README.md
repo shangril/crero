@@ -117,9 +117,9 @@ CreRo can be used as well with Clewn wich hosts its free albums as with your own
 
 In both cases, the url of the api backend goes to clewnapiurl config option.
 
-It is possible to restrict the acces to albums to streaming-only. 
+It is possible to restrict the access to albums to streaming-only. 
 Please note that your audios could be *easily* stolen. 
-Be sure to add a blank i	ndex.php file in `<install root>/z/` to prevent public directory listing and put your streaming-only albums audio in this directory. 
+Be sure to add a blank index.php file in `<install root>/z/` to prevent public directory listing and put your streaming-only albums audio in this directory. 
 
 Remember that piracy actually increases sales :)
 
@@ -129,7 +129,7 @@ Concerning the free download audio, if you run a local media tier for free album
 
 To host free audio by yourself or to host streaming only albums, you must download and install php-getID3, which is GPLed software primarily avaiable from SourceForge.net. Extract the php-getid3 archive directory at the root of your CreRo install.
 
-# The configuration options most commonly update - refer to admin panel for a more up-to-date liste with online help
+# Quite OLD ! The configuration options most commonly used - refer to admin panel for a more up-to-date list, with online help
 
 * The server name or path to your Crero install. Examples : "(myserver.com)", ("crero.myserver.com)" or "myserver.com/path/to/crero".
 
@@ -186,7 +186,7 @@ Clewn.org for free audio hosting, it will be (http://audio.clewn.org/api.php).
   `videoapiurl.txt`
 
 * If you got a video tier installed on your server, indicate here its media file directory basepath url, like 
-(http://myserver.tld/video/audio).
+(http://myserver.tld/video/audio/).
 
   `videourl.txt`
 
