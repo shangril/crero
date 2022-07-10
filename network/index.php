@@ -1,17 +1,13 @@
 <?php
-session_start();
 chdir ('..');
 include ('./config.php');
 chdir ('./network');
 if (!$activatechat){
 	exit(0);
 }
-if (isset($_GET['login'])){
-	$_SESSION['logged']=true;
-	
-}
-if (isset($_GET['ajaxx'])){
-	//count()
+if (isset($_GET['ajaxx'])&&(session_status()===PHP_SESSION_NONE||session_status()===PHP_SESSION_DISABLED)){
+		
+		//count()
 		$files=array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'));
 		sort($files);
 		
@@ -20,10 +16,12 @@ if (isset($_GET['ajaxx'])){
 		$onlinepeople=0;
 		foreach ($files as $fil)
 		{	
-			$onlinepeople=1;
-			$this_record=unserialize(file_get_contents('./e/'.$fil));
-			$nicklist[$this_record['nick'].$this_record['color']]=1;
 			
+			$this_record=unserialize(file_get_contents('./e/'.$fil));
+			
+			if (isset($this_record['nick'])){
+				$nicklist[$this_record['nick'].$this_record['color']]=1;
+			}
 			
 			
 		}
@@ -36,15 +34,38 @@ if (isset($_GET['ajaxx'])){
 	
 <h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form>
 		';
+		
+		$files=scandir('./e');
+		sort($files);
+		foreach ($files as $fil)
+		{	
+			if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<(microtime(true)-6))
+			{
+				unlink('./e/'.$fil);
+				}
+		}
+		
+		
 		die();
 }// ajaxx
+
+session_start();
+
+
+
+
+if (isset($_GET['login'])){
+	$_SESSION['logged']=true;
+	
+}
+
 if (!isset($_SESSION['logged'])){
 
 	$files=scandir('./'.$seedroot.'/e');
 	sort($files);
 	foreach ($files as $fil)
-	{
-		if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<microtime(true)-6)
+	{	
+		if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<(microtime(true)-6))
 		{
 			unlink('./'.$seedroot.'/e/'.$fil);
 			}
