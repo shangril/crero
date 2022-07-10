@@ -126,5 +126,7 @@ RadioBanner.txt
 A banner of html/text to be display just above the radio player
 AlbumsToBeHighlighted.txt
 Defines the number of albums for which the cover will be bigger on the front page. Default is 0. 
+IsRadioStreamHTTPS.txt
+Indicates if the host serving the radio stream (if enabled) is able to provide an HTTPS (SSL) stream. Used for register the stream as HTTPS if possible to YP directory (if enabled) and to generate .m3u playlist with an HTTPS stream (if possible) when a user uses the m3u link in the radio page. Can be 0 if the stream cannot support HTTPS (default) or 1 if the host is HTTPS capable. It is highly recommended to set it to 1 for HTTPS-capable hosts, since testing with some player softwares, on some HTTPS hosts, shows that the player is not able to playback correctly if the host is HTTPS capable but the provided URL is plain HTTP. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog
