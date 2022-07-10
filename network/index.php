@@ -11,10 +11,30 @@ if (isset($_GET['login'])){
 	
 }
 if (isset($_GET['ajaxx'])){
+	//count()
+		$files=array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'));
+		sort($files);
+		
+		$nicklist=Array();
 	
+		$onlinepeople=0;
+		foreach ($files as $fil)
+		{	
+			$onlinepeople=1;
+			$this_record=unserialize(file_get_contents('./e/'.$fil));
+			$nicklist[$this_record['nick'].$this_record['color']]=1;
+			
+			
+			
+		}
+		$onlinepeople=count($nicklist);
+		
+		
+		
+		
 		echo '
 	
-<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.count(array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'))).' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form>
+<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form>
 		';
 		die();
 }// ajaxx
