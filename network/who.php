@@ -80,7 +80,8 @@ if (isset($_GET['ajaxx'])){
 	$nicklist=Array();
 
 
-	$files=scandir('./'.$seedroot.'/e');
+//20220710 UPDATE
+	$files=array_diff(scandir('./'.$seedroot.'/e'), Array('.', '..', '.htaccess'));
 	sort($files);
 	$keys=array();
 	foreach ($files as $fil)
