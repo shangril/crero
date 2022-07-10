@@ -127,8 +127,8 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 				unlink('../d/listeners/'.$listener);
 			
 		}
-		if(floatval($listener)*60*90<(microtime(true))){
-				//ghost listener since more than one hour and a half, maybe ?
+		if(floatval($listener)+30>(microtime(true))){
+				//ghost listener since more than 30 seconds, maybe ?
 				//let's delete it
 				unlink('../d/listeners/'.$listener);
 		}
