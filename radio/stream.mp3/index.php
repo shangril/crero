@@ -158,7 +158,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 }
 
 
-function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial){
+function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS){
 
 if (file_exists('../d/lock.txt')&&(microtime(true)-floatval(file_get_contents('../d/lock.txt'))>120)){
 	unlink('../d/lock.txt');
@@ -368,6 +368,13 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		}
 		$genres=trim($genres);
 		
+		
+		$streamProtocol='http';
+		
+		if ($IsRadioStreamHTTPS){
+			$streamProtocol='https';
+		}
+		
 		$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 		
 		$listenerscount=count(array_diff(scandir('./d/listeners'), Array ('.', '..')));
@@ -379,9 +386,9 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 				'type' => 'audio/mpeg', 
 				'genre' => $genres, 
 				'b' => file_get_contents('../d/nowplayingbitrate.txt'), 
-				'listenurl' => 'http://'.$server.'/radio/stream.mp3', 
+				'listenurl' => $streamProtocol.'://'.$server.'/radio/stream.mp3', 
 				'desc' => $radiodescription, 
-				'url' => 'http://'.$server.'/radio'
+				'url' => $streamProtocol.'://'.$server.'/radio'
 			)
 		);
 
@@ -696,7 +703,7 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	}
 	$isinitial=false;
 	if (!isset($_GET['web'])){
-		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit);
+		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS);
 	}
 	else {
 		ob_flush();
@@ -705,6 +712,6 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 }
 $bytessent=0;
 $isinitial=true;
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit);
+play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS);
 
 ?>
