@@ -123,7 +123,7 @@ Be sure to add a blank index.php file in `<install root>/z/` to prevent public d
 
 Remember that piracy actually increases sales :)
 
-The general requirement for audio is that same basename files have to be there in flac, ogg and mp3 format, and that metadata tags should be set, especially "artist", "album", "title", "year" and "coment". 
+The general requirement for audio is that same basename files have to be there in flac, ogg and mp3 format, and that metadata tags should be set, especially "artist", "album", "title", "year" and "comment". 
 
 Concerning the free download audio, if you run a local media tier for free album storage, they have to be uploaded in `<install root>/api/audio` directory.
 
