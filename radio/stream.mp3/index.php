@@ -654,6 +654,18 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 				}
 				else{
 				$bytesread=ftell($handle)-$position;
+				if(isset($_GET['web'])&&!$isfirstpass)
+					{
+						echo $content;
+						
+						ob_flush();
+						flush();
+						
+						fclose($handle);
+						exit();
+						
+						
+					}
 				}
 			}
 
@@ -686,6 +698,8 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 			}
 			$thirdtimer=microtime(true);
 		}
+		ob_flush();
+		flush();
 		fclose ($handle);
 		//and now let's resync just in case eof was reached befor the station clock says next song
 		while (microtime(true)<floatval($expire)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
@@ -703,15 +717,20 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	}
 	$isinitial=false;
 	if (!isset($_GET['web'])){
-		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS);
+		$isfirstpass=false;
+		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass);
 	}
 	else {
+		$isfirstpass=false;
+		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass);
 		ob_flush();
+		flush();
 		exit();
 	}
 }
+$isfirstpass=true;
 $bytessent=0;
 $isinitial=true;
-play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS);
+play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass);
 
 ?>
