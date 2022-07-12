@@ -158,7 +158,7 @@ function dothelistenerscount($radioname, $server, $radiodescription, $labelgenre
 }
 
 
-function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS){
+function play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass){
 
 if (file_exists('../d/lock.txt')&&(microtime(true)-floatval(file_get_contents('../d/lock.txt'))>120)){
 	unlink('../d/lock.txt');
@@ -590,14 +590,6 @@ else {
 
  
  
-/*$filepath='';
-if (strstr( $nowplayingurl, 'clewn.org')){
-	$filepath=str_replace('http://audio.clewn.org/audio', '../../../audio/clewn/opt/hop/audio', $nowplayingurl);
-}
-if (strstr( $nowplayingurl, 'cremroad.com'	)){
-	$filepath=str_replace('http://cremroad.com/z', '../../z', $nowplayingurl);
-}*/
-
 $alpha=microtime(true);
 
 
