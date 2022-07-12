@@ -714,7 +714,7 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	}
 	else {
 		$isfirstpass=false;
-		play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass);
+		//play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass);
 		ob_flush();
 		flush();
 		exit();
