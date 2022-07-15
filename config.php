@@ -408,6 +408,18 @@ $IsRadioStreamHTTPS=false;
 if (file_exists('./d/IsRadioStreamHTTPS.txt')){
 	$IsRadioStreamHTTPS=boolval(trim(file_get_contents('./d/IsRadioStreamHTTPS.txt')));
 }
+$ArtistSites=Array();
+	
+	
+	if (file_exists('./d/ArtistSites.txt')&&!is_dir('./d/ArtistSites.txt')){
+		$covers=trim(file_get_contents('./d/ArtistSites.txt'));
+		$coverlines=explode("\n", $covers);
+		for ($i=0;$i<count($coverlines);$i++){
+			$ArtistSites[$coverlines[$i]]=$coverlines[$i+1];
+			$i++;
+		}
+	}
+
 
 
 
