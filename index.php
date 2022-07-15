@@ -374,6 +374,21 @@ function loginpanel($activateaccountcreation){
 	}
 	
 }
+
+function outputArtistSiteLink($artistHTML, $albumHTML, $ArtistSites){
+		$returnLink='';
+	
+		if (is_array($ArtistSites)&&count($ArtistSites)>0&&array_key_exists(html_entity_decode($artistHTML), $ArtistSites)){
+			$returnlink='Also available on <a target="new" href="'.$ArtistSites[html_entity_decode($artistHTML)].'?album='.urlencode(html_entity_decode($albumHTML)).'">'.$artistHTML.'</a> site';
+		
+			
+		}
+	
+		return $returnlink;
+}
+
+
+
 function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl) {
 	//let's see if there is a video available
 	
@@ -1326,6 +1341,7 @@ foreach ($contentlocal as $item){
 			$tracks=explode("\n", $tracks_file);
 			$trackcounter=0;
 			$hasntautoplayed=true;
+			$track_artist='';
 			foreach ($tracks as $track) {
 			if ($track!==''){
 			
@@ -1407,6 +1423,22 @@ foreach ($contentlocal as $item){
 			}
 		}
 			echo '</span>';
+			?>
+			<!--Artist site external url should go here **************************************************************-->
+			<?php
+			if (!$mixed&&!$embed&&!$material&&!$mosaic){
+				
+				echo outputArtistSiteLink($track_artist, $item['album'], $ArtistSites);
+				
+				
+			}
+			
+			
+			
+			
+			?>			
+			<!--End of artist external url-->
+			<?php
 			if ($mixed) {
 				
 				}
@@ -1759,6 +1791,7 @@ foreach ($content as $item){
 			$tracks=explode("\n", $tracks_file);
 			$trackcounter=0;
 			$hasntautoplayed=true;
+			$track_artist='';
 			foreach ($tracks as $track) {
 				if ($track!==''){
 					//we want its name and the artist name as well
@@ -1870,6 +1903,22 @@ foreach ($content as $item){
 			
 			}
 			echo '</span>';
+			?>
+			<!--Artist site external url should go here **************************************************************-->
+			<?php
+			if (!$mixed&&!$embed&&!$material&&!$mosaic){
+				
+				echo outputArtistSiteLink($track_artist, $item['album'], $ArtistSites);
+				
+				
+			}
+			
+			
+			
+			
+			?>			
+			<!--End of artist external url-->
+			<?php
 			
 			if ($mixed) {
 				?><script>document.getElementById('mixedtracks').innerHTML=document.getElementById('tracklist').innerHTML;
