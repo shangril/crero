@@ -253,6 +253,29 @@ function loginpanel($activateaccountcreation){
 <title><?php echo strip_tags($radioname); ?></title>
 <meta name="description" content="<?php echo htmlspecialchars($radiodescription); ?>" />
 <style>
+	
+	@media screen and (max-width:800px) {
+
+	
+		.damnMobilesWhoUsedToSupportControlsFromTheBeginningOfAudioThenSomeStoppedSupportingForEIGHTYearsBeforeReintroducingThem {
+			
+				display:block;
+				font-size:72%;
+		}
+	
+	}
+	@media screen and (min-width:801px) {
+
+	
+		.damnMobilesWhoUsedToSupportControlsFromTheBeginningOfAudioThenSomeStoppedSupportingForEIGHTYearsBeforeReintroducingThem {
+			
+				display:none;
+		}
+	
+	}
+	
+
+
 </style>
 </head>
 <body>
@@ -434,7 +457,36 @@ function skipsong() {
 									
 							}
  ?>
- ></audio><span id="resync" style="float:right;"></span></div>	
+ ></audio>
+
+
+ 
+ <!--Here comes The SPECIALS-->
+ <div class="damnMobilesWhoUsedToSupportControlsFromTheBeginningOfAudioThenSomeStoppedSupportingForEIGHTYearsBeforeReintroducingThem">
+							<script>
+							
+							function togglePlay(){
+								
+								var audio=document.getElementById('player');
+								if (!audio.paused){
+									
+									audio.pause();
+									return;
+								}
+								if(audio.networkState==0){audio.load();}
+								audio.play();
+								audio.autoplay=true;	 
+								
+								
+							}
+							</script>
+						If you don't see Controls, update your mobile browser app if you can. In the meanwhile you can <a href="javacript:void(0);" onClick="togglePlay();">tap here</a> to start or pause sound. 
+</div>
+<!--SPECIAL 2014->2021-->
+ 
+
+
+<span id="resync" style="float:right;"></span></div>	
 <?php
 if (!$activatechat===false){
 ?>
