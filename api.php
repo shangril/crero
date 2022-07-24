@@ -240,48 +240,122 @@ header('Content-Type: text/plain; charset=utf-8');
 
 }
 
-else if (isset($_GET['listallalbums'])) {
+else if (isset($_GET['listallalbums'])||isset($_GET['l'])) {
 header('Content-Type: application/x-httpd-php; charset=utf-8');
-
-
 	//returns a serialized array of all albums for a specified array of artists
 	//keys are mtime of the albums
 	//values are ['album'] : album title
-	$artists=$_GET['listallalbums'];
-	$files=scandir('./z');
-	$albumlist=Array();
-	
-	foreach ($files as $file){
-	
+	if (isset($_GET['l'])){
+		$_GET['listallalbums']=$_GET['l'];
+	}
+	if (isset($_POST['l'])){
+		$_GET['listallalbums']=$_POST['l'];
+	}
 
-		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			
-				$getID3 = new getID3;
-				$info = $getID3->analyze('z/'.$file);
-				getid3_lib::CopyTagsToComments($info); 
-				if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
-						
-						
-						
-						$albumlist[filemtime('z/'.$file)]=$info['comments_html']['album'][0];
-						
-						$year=$info['comments_html']['date'][0];
-						
-						$year=array_reverse(explode('-', $year))[0];
-						
-						$content[$year.'.'.filemtime('z/'.$file)]['album']=$info['comments_html']['album'][0];
-						
-						
-						
-				
-				
-				}
-			
-		}
+//basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./z
+	$id='';
+	$artists=$_GET['listallalbums'];
+	sort($sartists);
+	foreach ($artists as $artist) {
+		$id.=$artist."\n";
+	}
+	$numberoffiles=file_get_contents('./numberoffile.dat');
+	$currentfreshness=file_get_contents('./storedfreshness.dat');
+
+	
+	$cachedoutput=Array();
+
+	if (file_exists('./apicache.php')){
+		rename('./apicache.php', 'apicache.dat');
+	}
+
+
+	if (file_exists('./apicache.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+		$cachedfreshness=intval($cachedoutput[$id]['freshness']);
 		
 	}
-	echo serialize($content);
-	
+	else
+	{
+		$cachedfreshness=0;
+		
+	}
+	if ($numberoffile!==count(scandir('./z')))
+	{
+		$files=scandir('./z');
+		$albums=Array();
+		foreach ($files as $file){
+			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				$albums[filemtime('./z/'.$file)]=filemtime('./z/'.$file);
+		
+			}
+		}
+		krsort($albums);
+
+		$currentfreshness=intval(array_keys($albums)[0]);
+		file_put_contents('./numberoffiles.dat', count(scandir('./z')));
+		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	if ($cachedfreshness>=$currentfreshness){
+		echo $cachedoutput[$id]['data'];
+		
+	}
+	else {
+		
+			//outdated cache
+
+
+
+
+		$artists=$_GET['listallalbums'];
+		$files=scandir('./z');
+		$albumlist=Array();
+		
+		foreach ($files as $file){
+		
+
+			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				
+					$getID3 = new getID3;
+					$info = $getID3->analyze('z/'.$file);
+					getid3_lib::CopyTagsToComments($info); 
+					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
+							
+							
+							
+							$albumlist[filemtime('z/'.$file)]=$info['comments_html']['album'][0];
+							
+							$year=$info['comments_html']['date'][0];
+							
+							$year=array_reverse(explode('-', $year))[0];
+							
+							$content[$year.'.'.filemtime('z/'.$file)]['album']=$info['comments_html']['album'][0];
+							$content[$year.'.'.filemtime('z/'.$file)]['artist']=$info['comments_html']['artist'][0];
+							
+							
+							//bogus; do not use !
+							if (!isset($content[$year.'.'.filemtime('z/'.$file)]['artists'])){
+								$content[$year.'.'.filemtime('z/'.$file)]['artists']=Array();
+							}
+							//end of bogus
+							
+							array_push($content[$year.'.'.filemtime('z/'.$file)]['artists'],$info['comments_html']['artist'][0]);
+							
+					
+					
+					}
+				
+			}
+			
+		}
+		echo serialize($content);
+		//storing the cache
+		$cachedoutput[$id]['freshness']=time();
+		$cachedoutput[$id]['data']=serialize($content);
+		file_put_contents('./apicache.dat', serialize($cachedoutput));
+
+	}
 }
 else if (isset($_GET['getcover'])) {
 	//BUG NOT WORKING still safe but not working
