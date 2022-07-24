@@ -309,8 +309,14 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 
 	
 	$cachedoutput=Array();
+
 	if (file_exists('./apicache.php')){
-		$cachedoutput=unserialize(file_get_contents('./apicache.php'));
+		rename('./apicache.php', 'apicache.dat');
+	}
+
+
+	if (file_exists('./apicache.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
 		$cachedfreshness=intval($cachedoutput[$id]['freshness']);
 		
 	}
@@ -392,7 +398,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		//storing the cache
 		$cachedoutput[$id]['freshness']=time();
 		$cachedoutput[$id]['data']=serialize($content);
-		file_put_contents('./apicache.php', serialize($cachedoutput));
+		file_put_contents('./apicache.dat', serialize($cachedoutput));
 
 	}
 }
