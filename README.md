@@ -144,7 +144,7 @@ To host free audio by yourself or to host streaming only albums, you must downlo
   `title.txt`
 
 * A description of about 120/140 characters used by link sharer, search engines... To sumarize your site's content. Example : 
-"The Raw Sound for the banks of the Titicaca Lake. Unlimited streaming and short run vynils and tapes".
+"The Raw Sound for the banks of the Titicaca Lake. Unlimited streaming and short run vinyls and tapes".
 
   `description.txt`
 
