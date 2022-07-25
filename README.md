@@ -113,7 +113,7 @@ Apply previous steps 1-5
 
 When we coded a _real_ site for Crem Road records, we already had our material available from [Clewn.org](http://clewn.org/), a free download hosting we run. Then we created a Clewn API for CremRoad (and then CreRo) to query Clewn and pull audio media files from there. 
 
-CreRo can be used as well with Clewn wich hosts its free albums as with your own free albums media tiers running on your own server. 
+CreRo can be used as well with Clewn which hosts its free albums as with your own free albums media tiers running on your own server. 
 
 In both cases, the url of the api backend goes to clewnapiurl config option.
 
