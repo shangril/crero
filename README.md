@@ -166,9 +166,10 @@ etc.
 
   `activateaccountcreation.txt`
 
-* Can be 0 or 1. If set to 0, no online chat provided. If set to 1, a chatroom with geolocation features will be available for visitors. 
-  * Make sure that the ./htaccess denial directive of the ./network/*/ subdirectories are working : Sensitive data such as geolocation may be exposed if the .htaccess directives are not working ! 
+* Can be 0 or 1. If set to 0, no online chat provided. If set to 1, a chatroom will be available for visitors. 
+  * Make sure that the ./htaccess denial directive of the ./network/*/ subdirectories are working : Sensitive data such as chat between your visitors may be exposed if the .htaccess directives are not working ! 
   * Make sure it works with your setup before actvating the chat. 
+  * Note: all the geolocation stuff has been now removed, and geolocated chatroom ("chat with people nearby") are now no longer available, since all the instances of CreRo known, to date, never had enough visitor using the chat to have made geolocation useful, and when the Chat feature has been rewritten to use AJAX instead of HTTP-Refresh of iframes, it has not been considered useful to do the work required for geolocated rooms to work with the new Chat. 
 
   `activatechat.txt`
 
