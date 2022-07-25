@@ -173,12 +173,12 @@ etc.
 
   `activatechat.txt`
 
-* The http url of a the media server tier used to provide free download albums. If this tier is local to your install it would be probably (http://yourserver.tld/api/api.php). If your server is somewhere else on the internet, as example if you use 
-Clewn.org for free audio hosting, it will be (http://audio.clewn.org/api.php).
+* The http url of a the media server tier used to provide free download albums. If this tier is local to your install it would be probably (http://yourserver.tld/api/api.php). If your server is somewhere else on the internet, you already know what to indicateas example if you use 
+Clewn.org for free audio hosting, it will be the one indicated in the online help.
 
   `clewnapiurl.txt`
 
-* The basepath of the directory containing audio files on the free album media server tier. Like http://yourserver/api/audio if you run your own, or http://audio.clewn.org/audio for an install using Clewn.org for free hosting.
+* The basepath of the directory containing audio files on the free album media server tier. Like http://yourserver/api/audio/ (mind the trailing slash) if you run your own, or the one indicated in the online help for an install using Clewn.org for free hosting.
 
   `clewnaudiourl.txt`
 
@@ -226,7 +226,7 @@ option, leave a blank line. Line 5 : the name of the second product, line 5 : th
 
   `materialreleasessalesagreement.txt`
 
-* A free html block to insert whatever you want in a banner on top of the material relase list, like a set of external links to other online shops where your products can be found, or special custom subsection of the shop you may have created. 
+* A free html block to insert whatever you want in a banner on top of the material release list, like a set of external links to other online shops where your products can be found, or special custom subsection of the shop you may have created. 
 
   `materialmenu.txt`
 `
