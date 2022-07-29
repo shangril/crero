@@ -103,12 +103,16 @@ if (isset($_GET['getinfo'])){
 //If the RecentPlay option has been desired
 //And the session started, just to keep many bots
 //Out of the log
-if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarted) {
+//And polite bots are not wished as well
+//thanks to them for being polite
+if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarted&&!strstr('+', $_SERVER['HTTP_USER_AGENT'])&&!strstr('bot ', $_SERVER['HTTP_USER_AGENT'])) {
 	$recent=Array();
 	$recent['album']=$_GET['album'];
-	$recent['date']=time();
+	$recent['date']=microtime(true); 
 	$recent['who']['color']=$_SESSION['color'];
 	$recent['who']['nick']=$_SESSION['nick'];
+	$recent['jailed']=true;
+	$_SESSION['jailtime']=$recent['date'];
 	if (file_exists('./d/recent.dat')){
 		$recents=unserialize(file_get_contents('./d/recent.dat'));
 		
@@ -116,9 +120,9 @@ if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarte
 	else
 	{ $recents= Array(); }  
 	
-	if (count($recents)>=10){
+	if (count($recents)>=100){//hey guys, let's store 10 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 10% of our list that is valid visitors. 
 		
-		$recents=array_slice($recents, 1, 9);
+		$recents=array_slice($recents, 1, 99);
 		
 	}
 	array_push($recents, $recent);
@@ -845,6 +849,12 @@ else {
 
 
 <script>
+var xhttpingprecalb = new XMLHttpRequest();
+xhttpingprecalb.open("GET", "ping_recently_played.php", true);
+xhttpingprecalb.send();
+		
+	
+	
 function displayRecentlyPlayed(){
 	var xhttprecalb = new XMLHttpRequest();
 		  xhttprecalb.onreadystatechange = function() {
