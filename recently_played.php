@@ -72,10 +72,17 @@ if (file_exists('./d/recently_generated_albums.dat')){
 	$allowedAlbums=unserialize(file_get_contents('./d/recently_generated_albums.dat'));
 	
 }
+$counter=0;
+$recentsr=array_reverse($recents);
 
-foreach ($recents as $recent){
-	if(in_array($recent['album'], $allowedAlbums)){
-		
+foreach ($recentsr as $recent){
+	if (!isset($recent['jailed'])){
+		$recent['jailed']=false;
+	}
+	
+	
+	if(in_array($recent['album'], $allowedAlbums)&&!$recent['jailed']&&$counter<10){
+		$counter++;
 		echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'">'.displaycover($recent['album'], 10, 'mini'.rand(0,1000)).'</a><br/>';
 		echo htmlspecialchars(round((time()-intval($recent['date']))/60));
 		echo ' mn<br/>';
