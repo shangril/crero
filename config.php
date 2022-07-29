@@ -420,6 +420,11 @@ $ArtistSites=Array();
 		}
 	}
 
+$recentplay=false;
+
+if (file_exists('./d/RecentlyPlayed.txt')){
+	$recentplay=boolval(trim(file_get_contents('./d/RecentlyPlayed.txt')));
+}
 
 
 
