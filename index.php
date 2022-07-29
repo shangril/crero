@@ -500,7 +500,7 @@ function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videou
 						echo '<br/>';
 						echo 'Download : ';
 						foreach ($videoformats as $videoformat) {
-							echo '<a href="'.$videourl.urlencode($videotarget).'.'.urlencode($videoformat).'">'.htmlspecialchars($videoformat).'</a> ';
+							echo '<a download href="'.$videourl.urlencode($videotarget).'.'.urlencode($videoformat).'">'.htmlspecialchars($videoformat).'</a> ';
 							
 						}
 						echo '<br/>';
@@ -575,8 +575,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 		return '';
 	}	
 }
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html>
 <head>
 <link rel="shortcut icon" href="<?php echo $favicon;?>" />
@@ -584,6 +583,8 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
+<meta charset="UTF-8"/>
+
 <title><?php echo strip_tags($title); 
 
 if (isset($_GET['artist'])){
@@ -1883,11 +1884,14 @@ foreach ($content as $item){
 							 
 							 <?php
 							 foreach ($supported_formats_remote as $mat){
-							 ?>
-							 <a download="download" href="<?php 
-							 echo $clewnaudiourl.urlencode ($track).'.'.$mat.'">'.htmlspecialchars($mat); 
-							 ?></a> 
-							 <?php
+								if (trim($mat)!==''){
+							 
+								 ?>
+								  [<a download="<?php echo htmlspecialchars($track.'.'.$mat);?>" target="_blank" href="<?php 
+								 echo $clewnaudiourl.urlencode ($track).'.'.$mat.'">'.htmlspecialchars($mat); 
+								 ?></a>]  
+								 <?php
+									}
 							 }
 							 ?>
 							 
@@ -1906,7 +1910,7 @@ foreach ($content as $item){
 								}
 						if (!$mixed){
 							?>
-							<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">+</a>
+							 -<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">|info+|</a>
 							 </div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
@@ -1961,7 +1965,7 @@ foreach ($content as $item){
 				echo '<div style="float:none;clear:both;"></div>';
 				?>
 								<h3></h3>Tip download :</h3> 
-				<em>Name your price and get instant download access to <strong><?php echo $item['album'];?></strong> in Flac, Ogg and Mp3 formats</em><span style="font-size:84%;">
+				<em>Name your price and get instant download access to <strong><?php echo $item['album'];?></strong> in available formats</em><span style="font-size:84%;">
 				
 				<form  name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
 				<input type="hidden" name="cmd" value="_xclick" />
