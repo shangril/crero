@@ -67,7 +67,7 @@ if (isset($_POST['page_purge'])&&$activatehtmlcache){
 
 	
 	$myhtmlcache->purgePage($cachingkey);
-	echo '<html><head><title>Cache page purging</title></head><body>The page was purged from the cache.<br/>
+	echo '<html><head><title>Cache page purging</title></head><body style="font-size:700%;">The page was purged from the cache.<br/>
 	
 	
 	<a href="./?';
@@ -97,7 +97,58 @@ if (isset($_GET['getinfo'])){
 	echo file_get_contents($clewnapiurl.'?getinfo='.urlencode($_GET['getinfo']));
 	exit();
 }
+//A last pre-caching thing
+//We want to store in the recent.dat
+//The album currenlty played (if any)
+//If the RecentPlay option has been desired
+//And the session started, just to keep many bots
+//Out of the log
+if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarted) {
+	$recent=Array();
+	$recent['album']=$_GET['album'];
+	$recent['date']=time();
+	$recent['who']['color']=$_SESSION['color'];
+	$recent['who']['nick']=$_SESSION['nick'];
+	if (file_exists('./d/recent.dat')){
+		$recents=unserialize(file_get_contents('./d/recent.dat'));
+		
+	}
+	else
+	{ $recents= Array(); }  
+	
+	if (count($recents)>=10){
+		
+		$recents=array_slice($recents, 1, 9);
+		
+	}
+	array_push($recents, $recent);
+	$dat=serialize($recents);
+	file_put_contents('./d/recent.dat', $dat);
+	
+	
+	/*  OUTDATED. We no longer want to display in the chatroom
+	 * who played an album
+	 * note that
+	 * if it is needed to reintroduce
+	 * the feature
+	 * in the meanwhile
+	 * the data will have been moved
+	 * to a .dat file
+	 * 
+		$data['long']=$_SESSION['long'];
+		$data['lat']=$_SESSION['lat'];
+		$data['nick']=$_SESSION['nick'];
+		$data['range']=$_SESSION['range'];
+		$data['message']=' is playing '.html_entity_decode($item['album']).' *';
+		$data['color']=$_SESSION['color'];
+		$dat=serialize($data);
+		file_put_contents('./network/d/'.microtime(true).'.php', $dat);
 
+	*/
+	
+	
+	
+}
 
 
 //* caching of htmlpage ; here we are
@@ -463,7 +514,7 @@ function showsongsheet($track) {
 	}
 	
 }
-function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted, $highlightcounter){
+function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0, $highlightcounter = 0){
 	if (file_exists('./d/covers.txt')){
 		
 		if ($highlightcounter<$AlbumsToBeHighlighted){
@@ -494,7 +545,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted, $h
 			$output='';
 			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
 		
-			$output.='<script>;
+			$output.='<script>
 			var size;
 			if (document.documentElement.clientWidth>=document.documentElement.clientHeight){
 				size=document.documentElement.clientHeight;
@@ -780,7 +831,7 @@ if ($hasradio){
 	
 }
 ?>
-<div style="text-align:center;"><a href="javascript:void(0);" onclick="document.getElementById('recentplay').style.display='block';"></a></div>
+<div/>
 <span id="recentplay" style="display:<?php
 if ($recentplay){
 	echo 'block';
@@ -790,25 +841,29 @@ else {
 	echo 'none';
 	
 }
-?>;width:100%;text-align:center;"><hr/>Recently played: <br/>
-<?php
+?>;"><hr/>
 
-$recents=Array();
-if (file_exists('./d/recent.dat')){
-	$recents=unserialize(file_get_contents('./d/recent.dat'));
+
+<script>
+function displayRecentlyPlayed(){
+	var xhttprecalb = new XMLHttpRequest();
+		  xhttprecalb.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			 document.getElementById("recently_played").innerHTML = this.responseText;
+			}
+		  };
+		  xhttprecalb.open("GET", "recently_played.php", true);
+		  xhttprecalb.send();
 	
 }
-foreach ($recents as $recent){
-	echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'&autoplay=true">'.displaycover($recent['album'], 0.08, 'mini'.rand(0,1000)).'</a><br/>';
-	echo htmlspecialchars(round((time()-intval($recent['date']))/60));
-	echo ' mn<br/>';
-	//echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';
-	echo '</span>';
-}
-?>
-<hr/>
+
+</script>
+
+<span id="recently_played"><a href="javascript:void(0);" onClick="displayRecentlyPlayed();">Recently played?</a><br/>
+
+<hr style="float:none;clear:both;"/>
 </span>
-<br style="clear:both;"/>
+<br style="float:none;clear:both;"/>
 
 
 <?php
@@ -1204,42 +1259,7 @@ foreach ($contentlocal as $item){
 
 		if (!isset($_GET['listall'])&&!$mosaic&&isset($_SESSION['nick'])){
 			echo '<h1>Album : ';
-			if (!$material) {
-				$recent=Array();
-				$recent['album']=$item['album'];
-				$recent['date']=time();
-				$recent['who']['color']=$_SESSION['color'];
-				$recent['who']['nick']=$_SESSION['nick'];
-				if (file_exists('./d/recent.dat')){
-					$recents=unserialize(file_get_contents('./d/recent.dat'));
-					
-				}
-				else
-				{ $recents= Array(); }  
-				
-				if (count($recents)>=10){
-					
-					$recents=array_slice($recents, 1, 9);
-					
-				}
-				array_push($recents, $recent);
-				$dat=serialize($recents);
-				file_put_contents('./d/recent.dat', $dat);
-				
-					$data['long']=$_SESSION['long'];
-					$data['lat']=$_SESSION['lat'];
-					$data['nick']=$_SESSION['nick'];
-					$data['range']=$_SESSION['range'];
-					$data['message']=' is playing '.html_entity_decode($item['album']).' *';
-					$data['color']=$_SESSION['color'];
-					$dat=serialize($data);
-					file_put_contents('./network/d/'.microtime(true).'.php', $dat);
-
-				
-				
-				
-				
-			}
+			
 		}
 		else if (!$mosaic){
 			echo '<h1>';
@@ -2176,6 +2196,25 @@ setInterval(function (){
 
 </body>
 </html><?php
+//oh, did we generate an album page (caching enabled or not) ?
+//and was it a valid album which displayed a tracklist ?
+//if so, let's store it in the list of currently valid albums
+//providing we want a RecentPlay feature
+	
+if (isset($_GET['album'])&&$weactuallydisplayedsomething&&$recentplay){	
+	$recentalbums= Array();  
+
+	if (file_exists('./d/recently_generated_albums.dat')){
+		$recentalbums=unserialize(file_get_contents('./d/recently_generated_albums.dat'));
+		
+	}
+	$recentalbumsbkp=$recentalbums;
+	$recentalbums[$_GET['album']]=$_GET['album'];
+	if(!in_array($_GET['album'], $recentalbumsbkp)){//only useful to write to disk if the array has changed
+		file_put_contents('./d/recently_generated_albums.dat', serialize($recentalbums));
+	}
+}
+
 if ($activatehtmlcache){
 
 
