@@ -2239,10 +2239,10 @@ if (file_exists('./d/recent.dat')){
 }
 $recentsfinal=Array();
 foreach ($recentsjailed as $recent){
-	if($recent['jailed']&&floatval($recent['jailtime'])+90<=floatval(microtime(true))){
+	if(!$recent['jailed']||($recent['jailed']&&floatval($recent['jailtime'])+90<=floatval(microtime(true)))){
 		array_push($recentsfinal, $recent);
 		
-	}//if jailed && jailtime < 90 secondes
+	}//if jailed && jailtime < 90 secondes OR not jailed
 }
 file_put_contents('./d/recent.dat', serialize($recentsfinal));
 
