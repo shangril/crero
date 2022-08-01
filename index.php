@@ -120,9 +120,9 @@ if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarte
 	else
 	{ $recents= Array(); }  
 	
-	if (count($recents)>=100){//hey guys, let's store 10 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 10% of our list that is valid visitors. 
+	if (count($recents)>=1000){//hey guys, let's store 100 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 10% of our list that is valid visitors. 
 		
-		$recents=array_slice($recents, 1, 99);
+		$recents=array_slice($recents, 1, 999);
 		
 	}
 	array_push($recents, $recent);
@@ -2228,6 +2228,25 @@ if (isset($_GET['album'])&&$weactuallydisplayedsomething&&$recentplay){
 		file_put_contents('./d/recently_generated_albums.dat', serialize($recentalbums));
 	}
 }
+//by the way, it's time to delete jailed album in recently played
+//that haven't been validated within a minute and a half
+//just by keeping those jailed
+//since less than this period
+$recentsjailed=Array();
+if (file_exists('./d/recent.dat')){
+	$recentsjailed=unserialize(file_get_contents('./d/recent.dat'));
+	
+}
+$recentsfinal=Array();
+foreach ($recentsjailed as $recent){
+	if($recent['jailed']&&floatval($recent['jailtime'])+90<=floatval(microtime(true))){
+		array_push($recentsfinal, $recent);
+		
+	}//if jailed && jailtime < 90 secondes
+}
+file_put_contents('./d/recent.dat', serialize($recentsfinal));
+
+
 
 if ($activatehtmlcache){
 
