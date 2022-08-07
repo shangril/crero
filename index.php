@@ -105,7 +105,14 @@ if (isset($_GET['getinfo'])){
 //Out of the log
 //And polite bots are not wished as well
 //thanks to them for being polite
-if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarted&&!strstr('+', $_SERVER['HTTP_USER_AGENT'])&&!strstr('bot ', $_SERVER['HTTP_USER_AGENT'])) {
+if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarted
+		&&!strstr('+', $_SERVER['HTTP_USER_AGENT'])
+		&&!strstr('bot ', $_SERVER['HTTP_USER_AGENT'])
+		&&!strstr('crawl', $_SERVER['HTTP_USER_AGENT'])
+		&&(''!==$_SERVER['HTTP_USER_AGENT'])
+		
+		
+		) {
 	$recent=Array();
 	$recent['album']=$_GET['album'];
 	$recent['date']=microtime(true); 
