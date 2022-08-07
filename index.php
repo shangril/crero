@@ -97,7 +97,8 @@ if (isset($_GET['getinfo'])){
 	echo file_get_contents($clewnapiurl.'?getinfo='.urlencode($_GET['getinfo']));
 	exit();
 }
-//A last pre-caching thing
+//some last pre-caching thing
+//***************PRE CACHING THINGS***************************
 //We want to store in the recent.dat
 //The album currenlty played (if any)
 //If the RecentPlay option has been desired
@@ -161,7 +162,25 @@ if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarte
 	
 }
 
+//by the way, it's time to delete jailed album in recently played
+//that haven't been validated within a minute and a half
+//just by keeping those jailed
+//since less than this period
+$recentsjailed=Array();
+if (file_exists('./d/recent.dat')){
+	$recentsjailed=unserialize(file_get_contents('./d/recent.dat'));
+	
+}
+$recentsfinal=Array();
+foreach ($recentsjailed as $recent){
+	if($recent['jailed']===false||(($recent['jailed']===true)&&(floatval($recent['date'])+90.0)>floatval(time()))){
+		array_push($recentsfinal, $recent);
+		
+	}//if jailed && jailtime < 90 secondes OR not jailed
+}
+file_put_contents('./d/recent.dat', serialize($recentsfinal));
 
+//*************PRE CACHING ENDS**************
 //* caching of htmlpage ; here we are
 
 
@@ -2235,24 +2254,6 @@ if (isset($_GET['album'])&&$weactuallydisplayedsomething&&$recentplay){
 		file_put_contents('./d/recently_generated_albums.dat', serialize($recentalbums));
 	}
 }
-//by the way, it's time to delete jailed album in recently played
-//that haven't been validated within a minute and a half
-//just by keeping those jailed
-//since less than this period
-$recentsjailed=Array();
-if (file_exists('./d/recent.dat')){
-	$recentsjailed=unserialize(file_get_contents('./d/recent.dat'));
-	
-}
-$recentsfinal=Array();
-foreach ($recentsjailed as $recent){
-	if(!$recent['jailed']||($recent['jailed']&&floatval($recent['jailtime'])+90<=floatval(microtime(true)))){
-		array_push($recentsfinal, $recent);
-		
-	}//if jailed && jailtime < 90 secondes OR not jailed
-}
-file_put_contents('./d/recent.dat', serialize($recentsfinal));
-
 
 
 if ($activatehtmlcache){
