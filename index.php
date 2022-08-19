@@ -111,7 +111,7 @@ if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarte
 		&&!strstr('bot ', $_SERVER['HTTP_USER_AGENT'])
 		&&!strstr('crawl', $_SERVER['HTTP_USER_AGENT'])
 		&&(''!==$_SERVER['HTTP_USER_AGENT'])
-		
+		&&(null!==$_SERVER['HTTP_USER_AGENT'])
 		
 		) {
 	$recent=Array();
@@ -128,9 +128,9 @@ if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarte
 	else
 	{ $recents= Array(); }  
 	
-	if (count($recents)>=1000){//hey guys, let's store 100 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 10% of our list that is valid visitors. 
+	if (count($recents)>=10000){//hey guys, let's store 1000 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 0.1% of our list that is valid visitors. 
 		
-		$recents=array_slice($recents, 1, 999);
+		$recents=array_slice($recents, 1, 9999);
 		
 	}
 	array_push($recents, $recent);
