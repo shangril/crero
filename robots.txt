@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /ping_recently_played.php
+Disallow: /network/
+Disallow: /radio/skipsong.php
