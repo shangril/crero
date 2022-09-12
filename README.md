@@ -1,6 +1,9 @@
+# Help
+Primary place for information is the #crero chatroom on the libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
+
 # CreRo
 
-Currently requires PHP>=7.0 - Untested with PHP>=8.0
+Currently requires PHP>=7.0 - Untested with PHP>=8.0 - Basic PHP 8.x testing is planned during September 2022. 
 
 CURL php extension required 
 
@@ -81,7 +84,7 @@ If you get and HTTP 500 Internal Server Error, your install is probably safe, bu
 
 Apply previous steps 1-5
 
-1. download php-getid3/ from sourceforge.net (1.x version should always work) and put it at INSTALL ROOT/php-getid3
+1. download php-getid3/ from GetID3.org (1.x version should always work. Very old (2012 or so) 1.x are known to not work with PHP8) and put it at INSTALL ROOT/php-getid3
 
 2. put your audio in INSTALL ROOT/api/audio (same basename flac ogg mp3 with correct artist, album, title and comment tags)
 
