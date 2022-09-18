@@ -395,7 +395,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		$opts = array('http' =>
 			array(
 				'method'  => 'POST',
-				'header'  => Array('Content-type: application/x-www-form-urlencoded', 'User-agent: CreRo'),
+				'header'  => Array('Content-type: application/x-www-form-urlencoded', 'User-Agent: CreRo'),
 				'content' => $postdata
 			)
 		);
@@ -404,7 +404,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		$save=false;
 
 		$ttl=0;
-		$sid=0;
+		$sid="0";
 
 			
 		if($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'rb', false, $context)){

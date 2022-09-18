@@ -450,7 +450,7 @@ function skipsong() {
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
  onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.play();allowGentleResync=true;" 
- onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 3500);" 
+ onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);" 
  <?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo ' onPlay="resync();allowGentleResync=false;" ';
