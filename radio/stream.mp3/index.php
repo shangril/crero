@@ -23,7 +23,7 @@ if (true||!isset($_SESSION['whitelist'])){
 	$timestamps = array_diff(scandir ('../e'), Array('..', '.', '.htaccess'));
 	$dos=false;
 	foreach ($timestamps as $timestamp){
-		if (microtime(true)-floatval($timestamp)>3){
+		if (microtime(true)-floatval($timestamp)>1.2){
 			unlink('../e/'.$timestamp);
 			
 		}
