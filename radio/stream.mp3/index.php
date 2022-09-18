@@ -249,7 +249,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 				flush();
 			}
 			
-			$featured=explode("\n", $radiofeatured);
+			$featured=explode("\n", trim($radiofeatured));
 			shuffle($featured);
 			$thisfeatured = $featured[random_int(0, count($featured) - 1)];
 			$featuredbasenamed=explode('/', $thisfeatured);
@@ -289,7 +289,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 				flush();
 			}
 			
-			$featured=explode("\n", $radiobase);
+			$featured=explode("\n", trim($radiobase));
 			shuffle($featured);
 			$thisfeatured = $featured[random_int(0, count($featured) - 1)];
 			
