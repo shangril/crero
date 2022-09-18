@@ -1,0 +1,6 @@
+Please note that while LICENSE indicates the exact licence of almost anything here, some included and required librairies here are NOT placed under the AGPL licence indicated in LICENSE. This is specifically the following list :
+
+ * Redist-LGPL/ directory
+
+
+Please refer to LICENSE file indicated in the directories listed above for the applicable license of their own content. 

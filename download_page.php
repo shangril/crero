@@ -1,7 +1,12 @@
 <?php
-session_start();
 error_reporting(0);
+
+session_start();
 include ('./config.php');
+if (!file_exists('./admin/d/')){
+	mkdir('./admin/d/');
+		 }
+
 if (!file_exists('./admin/d/cartstats')){
 	mkdir('./admin/d/cartstats');
 		 }
@@ -15,9 +20,10 @@ $albprice=$downloadCartAlbumPrice;
 $trkprice=$downloadCartTrackPrice;
 $orderid=microtime(true);
 
-$supported_formats_remote=explode("\n", file_get_contents($clewnapiurl.'?listformats=true'));
-
-?><!DOCTYPE html><html>
+$supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?listformats=true')));
+?>
+<!DOCTYPE html>
+<html>
 <head>
 <link rel="shortcut icon" href="<?php echo $favicon;?>" />
 <link rel="stylesheet" href="http://<?php echo $server; ?>/style.css" type="text/css" media="screen" />
@@ -30,9 +36,9 @@ $supported_formats_remote=explode("\n", file_get_contents($clewnapiurl.'?listfor
 <body>
 <a href="./">&lt; Go back to the site</a><br/>
 <h1>You can now download</h1>
-<?php echo count($_SESSION['cart']['album']);?>
+<?php echo count($_SESSION['cart']['album']??Array());?>
  albums and 
-<?php echo count($_SESSION['cart']['track']);?>
+<?php echo count($_SESSION['cart']['track']??Array());?>
  individual tracks<br/>
  Download tip: use the contextual menu of your device then "save as"
  <h2>Albums : </h2>
@@ -65,7 +71,7 @@ $supported_formats_remote=explode("\n", file_get_contents($clewnapiurl.'?listfor
     <span style="float:right;">Download: <?php
 		foreach ($supported_formats_remote as $mat){
 		 ?>
-		 <a href="<?php 
+		 <a download href="<?php 
 		 echo $clewnaudiourl.urlencode ($trk['file_basename']).'.'.$mat.'" download>'.htmlspecialchars($mat); 
 		 ?></a> 
 		 <?php

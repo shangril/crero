@@ -395,24 +395,27 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		$opts = array('http' =>
 			array(
 				'method'  => 'POST',
-				'header'  => 'Content-type: application/x-www-form-urlencoded',
+				'header'  => Array('Content-type: application/x-www-form-urlencoded', 'User-agent: CreRo'),
 				'content' => $postdata
 			)
 		);
 
 		$context = stream_context_create($opts);
 		$save=false;
+
+		$ttl=0;
+		$sid=0;
+
 			
-		if($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
+		if($handler=fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'rb', false, $context)){
 			
 			$meta_data = stream_get_meta_data($handler);
-			$ttl=0;
-			$sid=0;
 			foreach ($meta_data['wrapper_data'] as $response) {
 
 
 				if (strtolower(substr($response, 0, 12)) == 'ypresponse: ') {
 					$save = boolval(substr($response, 12));
+					file_put_contents('../d/ypresp.txt', substr($response, 12));
 				}
 				if (strtolower(substr($response, 0, 11)) == 'touchfreq: ') {
 					$ttl = floatval(substr($response, 11));
@@ -427,9 +430,9 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		
 		if($save) {
 			
-			file_put_contents('../d/ypexpires.txt', microtime(true)+$ttl);
-			file_put_contents('../d/ypttl.txt', $ttl);
-			file_put_contents('../d/ypsid.txt', $sid);
+			file_put_contents('../d/ypexpires.txt', (string) (microtime(true)+$ttl));
+			file_put_contents('../d/ypttl.txt', (string) $ttl);
+			file_put_contents('../d/ypsid.txt', (string) $sid);
 		}
 		
 	}	
@@ -439,7 +442,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 	
 	if ($radiohasyp&&file_exists('../d/ypsid.txt')){
 		$sid=trim(file_get_contents('../d/ypsid.txt'));
-		$ttl=0;//floatval(file_get_contents('../d/ypttl.txt'));
+		$ttl=floatval(file_get_contents('../d/ypttl.txt'));
 		$nowplaying=html_entity_decode(file_get_contents('../d/nowplayingartist.txt').' - '.file_get_contents('../d/nowplayingtitle.txt'));
 		
 		$listenerscount=count(array_diff(scandir('../d/listeners'), Array ('.', '..')));
@@ -462,7 +465,7 @@ if(false&&(!isset($nowplayingartist) || trim($nowplayingartist)==='')&&$autodele
 		);
 
 		$context = stream_context_create($opts);
-		if($handler = fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'r', false, $context)){
+		if($handler = fopen('https://dir.xiph.org/cgi-bin/yp-cgi', 'rb', false, $context)){
 			foreach ($meta_data['wrapper_data'] as $response) {
 
 

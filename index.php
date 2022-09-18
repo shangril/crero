@@ -1,4 +1,6 @@
 <?php
+
+
 require_once('./config.php');
 //error_reporting(E_WARNING|E_NOTICE);
 
@@ -19,9 +21,12 @@ if (isset($_GET['embed'])){
 }else{$embed=false;}
 
 
+$sessionstarted=session_start();
+header("Content-Type: text/html; charset=utf-8");
+
+
 ob_start();
 
-$sessionstarted=session_start();
 
 if (!isset($_SESSION['origin'])){
 	$_SESSION['origin']=$_SERVER['HTTP_REFERER'];
@@ -317,11 +322,11 @@ error_reporting(E_ERROR | E_PARSE);
 if (isset($_GET['artist'])) {
 	$favicon='//'.$server.'/favicon.png';
 	$arturl='&artist='.urlencode($_GET['artist']);
-	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars($_GET['artist']).'</a> - A '.htmlspecialchars($sitename).' artist';
+	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars(html_entity_decode($_GET['artist'])).'</a> - A '.htmlspecialchars($sitename).' artist';
 	$artists_file=trim(file_get_contents('./d/artists.txt')); 
 
 	$artists=explode("\n", $artists_file);
-	if (!in_array($_GET['artist'], $artists)&&(file_exists('./d/artists.txt')&&count($artists)>0)) {
+	if (!in_array(html_entity_decode(html_entity_decode($_GET['artist'])), $artists)&&(file_exists('./d/artists.txt')&&count($artists)>0)) {
 		echo 'ooops... Invalid artist !';
 		exit();
 	}
@@ -354,11 +359,11 @@ else {
 	$artists=Array($_GET['artist']);
 }
 
-$material_artists_file=htmlentities(trim(file_get_contents('./d/material_artists.txt')));
+$material_artists_file=htmlentities(trim(file_get_contents('./d/material_artists.txt')), ENT_COMPAT);
 	
 $material_artists=explode("\n", $material_artists_file);
 	
-$material_blacklist_file=htmlentities(trim(file_get_contents('./d/material_blacklist.txt')));
+$material_blacklist_file=htmlentities(trim(file_get_contents('./d/material_blacklist.txt')), ENT_COMPAT);
 	
 $material_blacklist=explode("\n", $material_blacklist_file);
 
@@ -614,14 +619,13 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 <title><?php echo strip_tags($title); 
 
 if (isset($_GET['artist'])){
-	echo ' - '.htmlspecialchars($_GET['artist']);
+	echo ' - '.htmlspecialchars(html_entity_decode($_GET['artist']));
 }
-
 if (isset($_GET['album'])){
-	echo ' - '.htmlspecialchars($_GET['album']);
+	echo ' - '.htmlspecialchars(html_entity_decode($_GET['album']));
 }
 if (isset($_GET['track'])){
-	echo ' - '.htmlspecialchars($_GET['track']);
+	echo ' - '.htmlspecialchars(html_entity_decode($_GET['track']));
 }
 
 ?></title>
@@ -647,7 +651,7 @@ if ($mosaic&&$artisthighlighthomepage)
 <script>
 <?php 
 
-echo "var target_album='".urlencode(htmlentities($_GET['target_album']))."';
+echo "var target_album='".urlencode(htmlentities($_GET['target_album'], ENT_COMPAT))."';
 ";
 //if we are here to generate a page to be embeded, we will set a JS var to allow script.js to trigger continous play
 if (isset($_GET['embed']))
@@ -862,7 +866,7 @@ if ($hasradio){
 	
 }
 ?>
-<div/>
+<div></div>
 <span id="recentplay" style="display:<?php
 if ($recentplay){
 	echo 'block';
@@ -901,7 +905,7 @@ function displayRecentlyPlayed(){
 <hr style="float:none;clear:both;"/>
 </span>
 <br style="float:none;clear:both;"/>
-
+</span>
 
 <?php
 if (isset ($_GET['track'])) {
@@ -1059,13 +1063,13 @@ $artists_file=file_get_contents('./d/artists.txt');
 	
 		if (!file_exists('./d/artists.txt')||count($artists)==0)
 		{
-			$artists=explode("\n", trim(html_entity_decode(file_get_contents($clewnapiurl.'?listartists=true'))));
+			$artists=explode("\n", trim(html_entity_decode(file_get_contents($clewnapiurl.'?listartists=true'), ENT_COMPAT)));
 			
 			
 		}
 		if (isset($_GET['artist']))
 		{
-			$artists=array($_GET['artist']);
+			$artists=array(html_entity_decode($_GET['artist']));
 			
 		}
 		$querystring='';
@@ -1152,6 +1156,9 @@ $artists_file=file_get_contents('./d/artists.txt');
 		file_put_contents('./overload.dat', $overloadmove);
 			
 		$albums=unserialize($albums_file);
+
+		if (!is_array($albums)){$albums=Array();}
+
 		ksort($albums);
 		$albums=array_reverse($albums);
 		
@@ -1169,6 +1176,8 @@ $querystring = '';
 
 		$albums_file=file_get_contents($serverapi.'?'.$querystring);
 		$albums=unserialize($albums_file);
+		if (!is_array($albums)){$albums=Array();}
+
 		ksort($albums);
 		$albums=array_reverse($albums);
 		
@@ -1242,9 +1251,9 @@ if ($mosaic&&$artisthighlighthomepage){
 	$nobr=true;
 	echo '<table><tr>';
 	foreach ($hlartists as $hlart){
-		echo '<td><span class="colTranslate" style="float:left;width:100%;background-color:white;padding:2%;text-align;center;border:solid 3px; border-radius:8px;"><h2 style="display:inline;">';
-		echo '<a href="./?artist='.urlencode($hlart['name']).'">'.htmlspecialchars($hlart['name']).'</a><br/>';
-				echo '</h2>';
+		echo '<td><span class="colTranslate" style="float:left;width:100%;background-color:white;padding:2%;text-align;center;border:solid 3px; border-radius:8px;"><span style="font-size:120%;"><strong>';
+		echo '<a href="./?artist='.urlencode(htmlentities($hlart['name'])).'">'.htmlspecialchars($hlart['name']).'</a><br/>';
+				echo '</strong></span>';
 		echo '<em>'.htmlspecialchars($hlart['styles']).'</em>';
 		echo '<br/>';
 		echo '<strong>'.htmlspecialchars($hlart['infos']).'</strong>';
@@ -1330,7 +1339,7 @@ foreach ($contentlocal as $item){
 				if (file_exists('./d/covers.txt')){
 					$coversfile=trim(file_get_contents('./d/covers.txt'));
 					$coverslines=explode("\n", $coversfile); 
-					if (!in_array(html_entity_decode($item['album']), $coverslines)){
+					if (!in_array(html_entity_decode($item['album'], ENT_COMPAT), $coverslines)){
 							$displaythatcover=false;
 					}
 				}
@@ -1409,12 +1418,12 @@ foreach ($contentlocal as $item){
 				
 				if (!isset($_GET['track'])||$_GET['track']==$track_name)
 				{
-					if (in_array($track_artist, $artists)){
-					?>
+					if (in_array(html_entity_decode($track_artist, ENT_QUOTES | ENT_SUBSTITUTE), $artists)){
+											?>
 					<script>
 					overload_track_counter++;
 					</script>
-					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>"><span style="size:475%;">▶</span></a>
+					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>"><span style="size:475%;">▶</span></a>
 					 
 					 <?php if (!$embed){ ?>
 					 
@@ -1470,7 +1479,7 @@ foreach ($contentlocal as $item){
 					<?php
 					if (isset($_GET['autoplay'])&&$hasntautoplayed){
 						?>
-						<script>play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, false, true);</script>
+						<script>play('<?php echo str_replace("'", "\\'", htmlspecialchars($track, ENT_COMPAT)); ?>', <?php echo $trackcounter; ?>, false, true);</script>
 						<?php
 						$hasntautoplayed=false;
 					}
@@ -1664,7 +1673,7 @@ foreach ($content as $item){
 				if (file_exists('./d/covers.txt')){
 					$coversfile=trim(file_get_contents('./d/covers.txt'));
 					$coverslines=explode("\n", $coversfile); 
-					if (!in_array(html_entity_decode($item['album']), $coverslines)){
+					if (!in_array(html_entity_decode($item['album'], ENT_COMPAT), $coverslines)){
 							$displaythatcover=false;
 					}
 				}
@@ -1875,12 +1884,12 @@ foreach ($content as $item){
 					
 					if (!isset($_GET['track'])||$_GET['track']==$track_name)
 					{
-						if (in_array($track_artist, $artists)){
+						if (in_array(html_entity_decode($track_artist, ENT_QUOTES | ENT_SUBSTITUTE), $artists)){
 						?>
 						<script>
 						overload_track_counter++;
 						</script>
-						<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
+						<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
 						 <?php if (!$embed) {?>
 							 
 							 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
@@ -1929,7 +1938,7 @@ foreach ($content as $item){
 							 <div style="background-color:#F0F0F0;text-align:left;"><a href="javascript:void(0);" onclick="addTrackToCart('<?php 
 							 echo str_replace("'", "\\'", urlencode($track_name));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode($item['album']));?>', '<?php 
-							 echo str_replace("'", "\\'", urlencode(htmlentities($track)));?>', '<?php 
+							 echo str_replace("'", "\\'", urlencode(htmlentities($track, ENT_COMPAT)));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode ($track_artist));?>' );">Add to download cart</a> 
 							 
 							 <?php
@@ -2001,8 +2010,8 @@ foreach ($content as $item){
 				<br/>I want to pay <?php echo htmlspecialchars($material_currency);?> <input type="text" size="4" name="amount" value="2.50" />
 				<input type="hidden" name="shipping" value="0" />
 				<input type="hidden" name="cancel_return" value="http://<?php echo htmlspecialchars($server);?>" />
-				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>" />
-				<input type="submit" name="submit" value="Buy now !" /> or <a href="//<?php echo $server?>/?album=<?php echo urlencode(htmlentities($_GET['album']));?>">get it for free</a></span>
+				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode(htmlentities($_GET['album'], ENT_COMPAT));?>" />
+				<input type="submit" name="submit" value="Buy now !" /> or <a href="//<?php echo $server?>/?album=<?php echo urlencode(htmlentities($_GET['album'], ENT_COMPAT));?>">get it for free</a></span>
 								<?php
 				
 				
@@ -2106,7 +2115,7 @@ if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall']
 	}
 	else {
 	
-	echo '<a id="digolder" style="float:right;" href="./?album='.urlencode(htmlentities($_GET['target_album'])).$arturl.$autourl.'">Dig more...</a><br/>';
+	echo '<a id="digolder" style="float:right;" href="./?album='.urlencode(htmlentities($_GET['target_album'], ENT_COMPAT)).$arturl.$autourl.'">Dig more...</a><br/>';
 	
 	}
 }

@@ -1,13 +1,23 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 //require_once('./config.php');
-if (file_exists('../php-getid3/getid3.php')){
+/*if (file_exists('../php-getid3/getid3.php')){
 	require_once('../php-getid3/getid3.php');
 }
 else {
 	require_once('../php-getid3/getid3/getid3.php');
 
-}
+}*/
+
+require_once('./../Redist-LGPL/cretID3/getid3/getid3.php');
+
+
+
+
+
+
+
+
 function findAFormat(){
 
 
@@ -22,6 +32,12 @@ function findAFormat(){
 	return $format;
 }
 function listFormats() {
+	
+	if (!is_dir('./audio')){
+		
+		die('No ./audio/ subdirectory found');
+	}
+	
 	$files=array_diff(scandir('./audio'), array ('..', '.', '.htaccess'));
 	shuffle($files);
 	$sample=$files[0];
@@ -300,12 +316,17 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 //basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
 	$id='';
 	$artists=$_GET['listallalbums'];
-	sort($sartists);
+	sort($artists);
 	foreach ($artists as $artist) {
 		$id.=$artist."\n";
 	}
-	$numberoffiles=file_get_contents('./numberoffile.dat');
-	$currentfreshness=file_get_contents('./storedfreshness.dat');
+	
+	$numberoffiles=0;
+	$currentfreshness=0;
+	
+	
+	if (file_exists('./numberoffile.dat')){$numberoffiles=file_get_contents('./numberoffile.dat');}
+	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
 
 	
 	$cachedoutput=Array();
@@ -325,7 +346,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		$cachedfreshness=0;
 		
 	}
-	if ($numberoffile!==count(scandir('audio')))
+	if ($numberoffiles!==count(scandir('audio')))
 	{
 		$files=scandir('./audio');
 		$albums=Array();
@@ -597,7 +618,7 @@ else if (isset($_GET['radio'])) {
 		
 
 	}
-	if($run){
+	if($run&&false){//DEAD BRANCH
 		
 		$getID3 = new getID3;
 		
@@ -666,8 +687,8 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	
 	
 	$cachedoutput=Array();
-	if (file_exists('./apicache-noartist.php')){
-		$cachedoutput=unserialize(file_get_contents('./apicache-noartist.php'));
+	if (file_exists('./apicache-noartist.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache-noartist.dat'));
 		$cachedfressness=intval($cachedoutput[$id]['freshness']);
 		
 	}
@@ -743,7 +764,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		//storing the cache
 		$cachedoutput[$id]['freshness']=time();
 		$cachedoutput[$id]['data']=serialize($content);
-		file_put_contents('./apicache-noartist.php', serialize($cachedoutput));
+		file_put_contents('./apicache-noartist.dat', serialize($cachedoutput));
 
 	}
 }

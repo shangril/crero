@@ -14,12 +14,12 @@ $_SESSION['cart_id']=$orderid;
 
 if (isset($_GET['delete_album'])){
     unset($_SESSION['cart']['album'][$_GET['delete_album']]);
-    $_SESSION['cart']['album']=array_values($_SESSION['cart']['album']);
+    $_SESSION['cart']['album']=array_values($_SESSION['cart']['album'] ?? Array());
     }
 
 if (isset($_GET['delete_track'])){
     unset($_SESSION['cart']['track'][$_GET['delete_track']]);
-    $_SESSION['cart']['track']=array_values($_SESSION['cart']['track']);
+    $_SESSION['cart']['track']=array_values($_SESSION['cart']['track'] ?? Array());
     }
 ?><!DOCTYPE html><html>
 <head>
@@ -56,15 +56,15 @@ if ($isDownloadCartNameYourPrice){ ?>
 <body>
 <a href="./">&lt; Go back to the site</a><br/>
 <h1>In your cart</h1>
-<?php echo count($_SESSION['cart']['album']);?>
+<?php echo count($_SESSION['cart']['album'] ?? Array());?>
  albums and 
-<?php echo count($_SESSION['cart']['track']);?>
+<?php echo count($_SESSION['cart']['track'] ?? Array());?>
  individual tracks
  <h2>Albums : </h2>
  <?php
  foreach ($_SESSION['cart']['album'] as $alb){
     echo '<h4 style="display:inline;">'.$alb['title'].'</h4><span style="float:right;">';
-    echo count($alb['tracklist']).' tracks';
+    echo count($alb['tracklist'] ?? Array()).' tracks';
     $total=$total+$albprice;
 	echo ' <a href="?delete_album='.$albcounter.'">X Delete</a></span>';
 	echo '<hr/>';
@@ -83,10 +83,10 @@ if ($isDownloadCartNameYourPrice){ ?>
 
 
 
-echo '<hr/> '.count($_SESSION['cart']['album']).' times '.htmlspecialchars($downloadCartCurrency.' '.$albprice).' (full albums) plus '.count($_SESSION['cart']['track']).' times '.htmlspecialchars($downloadCartCurrency.' '.$trkprice).' (individual tracks)';
+echo '<hr/> '.count($_SESSION['cart']['album'] ?? Array()).' times '.htmlspecialchars($downloadCartCurrency.' '.$albprice).' (full albums) plus '.count($_SESSION['cart']['track'] ?? Array()).' times '.htmlspecialchars($downloadCartCurrency.' '.$trkprice).' (individual tracks)';
 echo '<span style="float:right;"><strong>TOTAL: </strong>';
 $payment=true;
-if (count($_SESSION['cart']['album'])>0 || count($_SESSION['cart']['track'])>0) {//we got more than 0 item in the cart, let's go
+if (count($_SESSION['cart']['album'] ?? Array())>0 || count($_SESSION['cart']['track'] ?? Array())>0) {//we got more than 0 item in the cart, let's go
 	
 	if ($isDownloadCartNameYourPrice){
 			echo htmlspecialchars($downloadCartCurrency). ' ';

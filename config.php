@@ -119,20 +119,28 @@ error_reporting(0);
  * 
  */
 
+$favicon = 'favicon.png' ; 
 
 $description = trim(file_get_contents('./d/description.txt'));
+
 $title=trim(file_get_contents('./d/title.txt'));
-$server=trim(file_get_contents('./d/server.txt'));;
+
+$server=trim(file_get_contents('./d/server.txt'));
 //change this to your server's domain name
+
 $sitename=trim(file_get_contents('./d/sitename.txt'));
+
 $serverapi='http://'.$server.'/api.php';
 //don't change this for typical install
+
 $clewnapiurl=trim(file_get_contents('./d/clewnapiurl.txt'));
 //you may change this to http://<your server>/whatever/path/to/free/audio/api.php
+
 $clewnaudiourl=trim(file_get_contents('./d/clewnaudiourl.txt'));
 //and this to http://<your server>/whatever/path/to/free/audio/audio/ ; otherwise you can upload your free audio to clewn and use it as free audio media server tier
 
 $videoapiurl=trim(file_get_contents('./d/videoapiurl.txt'));
+
 //same applies for video, with the difference that Clewn Video doesn't currently support public upload
 $videourl=trim(file_get_contents('./d/videourl.txt'));
 

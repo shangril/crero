@@ -75,7 +75,7 @@ if (isset($_GET['ajax'])){
 			$targetflac=str_replace('.mp3', '.flac', $target);
 			$targetogg=str_replace('.mp3', '.ogg', $target);
 			
-			echo 'Download <a target="new" href="'.$targetflac.'">flac</a> <a target="new" href="'.$targetogg.'">ogg</a> <a target="new" href="'.$target.'">mp3</a>';
+			echo 'Download <a download target="new" href="'.$targetflac.'">flac</a> <a download target="new" href="'.$targetogg.'">ogg</a> <a download target="new" href="'.$target.'">mp3</a>';
 			echo '<br/>'.file_get_contents('./d/license.txt');
 		}
 		else {
@@ -450,7 +450,7 @@ function skipsong() {
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
  onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.play();allowGentleResync=true;" 
- onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 500);" 
+ onError="window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 3500);" 
  <?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo ' onPlay="resync();allowGentleResync=false;" ';

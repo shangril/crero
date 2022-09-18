@@ -3,16 +3,22 @@ Primary place for information is the #crero chatroom on the https://libera.chat 
 
 # CreRo
 
-Currently requires PHP>=7.0 - Untested with PHP>=8.0 - Basic PHP 8.x testing is planned during September 2022. 
+Recommended (strongly) PHP version is PHP 8.1, but PHP 7.0 or above is mandatory and may work, but hasn't been tested for post-September 2022 releases, while PHP 8.1 was. Please refer to the "PHP 8.1 tested things" for details. 
 
 CURL php extension required 
 
-GD php extension required if you need cover art
+GD php extension required if you need cover art (likely to be already installed alongsite with PHP)
 
-GetID3 -formerly known as php-getID3- required if you host your audio on your own server. Refer to the "crash courses" below. 
+GetID3 -most of what is used in it- is now included in Redist and no longer requires manual download. 
 
-.htaccess support required in your webserver (in Apache >= 2.4 it is not enabled by default and you need to set AllowOveride to All in your Apache host configuration)
+.htaccess support required in your webserver (in Apache >= 2.4 it is not enabled by default and you need to set "AllowOverride All" in your Apache host configuration in <Directory "/path/to/crero"></Directory> but most commercial hosting will have it done for you)
+Please note that most default PHP installation "at home" will have their php.ini session.save-handler set to "file", which prevents the Radio (if enabled) to work properly. As a simple workaround, Session.save-handler should store the sessions in memory (see memcached and php8.1-memcache). In production environnement, your PHP will be likely already configured with memory, or databases.  
 
+# Quick jump
+
+You may want to skip to the "crash courses" below in "installation steps" to get a quick overview on how to get your install up. 
+
+# Notable milestones
 
 * 20220623 release : Support for embed. Example : You got a label at cremroad.com . You got an artist, say Me In The Bath. You want to set up meinthebath.com ; somewhere in your html in meinthebath.com add an iframe with its src attribute set to the http url of your label domain, in our case cremroad.com followed by the following path : /?artist=Me+In+The+Bath&embed=Me+In+The+Bath and you are done. Make sure to escape whitespaces as + and any special caracter not allowed in a URL scheme by the %XX number needed (search for "escaping characters in HTTP GET parameters").
  Radio block redesign for something less cumbersome, also. Support for continuous (album after album) playback for embed artist sites. 
@@ -25,6 +31,8 @@ GetID3 -formerly known as php-getID3- required if you host your audio on your ow
 * 20210711 Security patch. All versions newer than 20200919 must upgrade to fix a security issue that affected .htaccess in /radio/e/, causing exposition of the IPs of the listeners of the radio. Upgrade and make sure you have .htaccess in /radio/e/ still present and working. 
 
 * 20180817 release : stats rewritten. Please note that the ancient statistics you may have gathered won't now display correctly in the new stats system. If you need them for future reference, please make a backup before upgrade (ie: go to your admin pannel, select, copy, and paste elsewhere)
+
+# As an introduction
 
 CreRo is a CMS for record labels, and was initially written to power Crem Road records. 
 
@@ -50,6 +58,27 @@ New feature 16.11.30.0033 : create a subdir called "supporters" and put an index
 New Feature 17.03 there is now support for mp3 only catalogs (if you wish to host your audio on your own). Previously flac mp3 and ogg were all three mandatory. 
 
 An old undocumented feature : you can code a splash.php free-form HTML/php file and it will be displayed at the top of every page of the main site (not the radio). 
+
+# PHP 8.1 tested things
+
+1. Streaming-only music
+2. Free download music
+3. Donation module
+4. cover art, thumbnailer on the fly, caching of thumbnails
+5. Fan Network (a.k.a online webchat for your visitors)
+6. Radio module (inluding "skip song" feature if Fan Network is enabeld). Partial-only: the RadioHasYP Yellowpage registration in dir.xiph.org still needs to be tested on a live ("online and public") server as of 2022 Sept 15, and it will be done within a few day. If something goes wrong, expect a bugfix, don't expect much an update in the README 
+7. last level cache (HTMLCache option in admin panel) including anti-overload & manual cache purging
+
+Untestested things that should work but feedback is welcome, and, please, set up a server at home instead of testing these functionnalities in your production environnement
+(Please also note that the CreRo yellopages directory currently shows, and since many year, only one server that has enabled public directory listing ; which is, namely, mine. So then these "production environnement" servers are quite accurately only a crowd of one. )
+1. Sale of streaming only music for paid download
+2. Sale of physical releases and other merch bundles
+3. sugar like social media icons, artist highlight block on index page (will be validated upon production deployment within a few days)
+4. ./splash.php to be coded as you which and that will be include()'d on every non-radio page of the site (will be validated upon production deployment within a few days)
+5. Download cart. Used mandatory by point 1. Can also be used for "free download" music -fill up your cart, browse, fill fill fill, then validate card and download. More confusing to some users than straight download links on album page, which explains why it has retired from the CremRoad install finally. 
+6. Mailing list subscritpion request. Was simply an omnipresent form inviting to enter an email address ; then a mail() was sent to MailingListOwner (an option to set in panel). My own hosting disabled mail() a while ago, but for ages, the feature had been disabled for me cause mostly used by spambot to send me random addresses (3 times in a few days, no reply from any of them), much more than by legitimate subscribers (1 people). Alt. tip : use splash.php to show a contact address and invite people to get in touch to register to your newsletter. 
+7. Mixed pages ; undocumented, rarely used, useless, untested. 
+
 
 # Installation steps
 
@@ -84,17 +113,17 @@ If you get and HTTP 500 Internal Server Error, your install is probably safe, bu
 
 Apply previous steps 1-5
 
-1. download php-getid3/ from GetID3.org (1.x version should always work. Very old (2012 or so) 1.x are known to not work with PHP8) and put it at INSTALL ROOT/php-getid3
+1. A subset of GetID3 is now bundled with Crero in the Redist-LGPL directory. Separate download of GetID3 is no longer required. Please note that if you run your free download tier on a separate server, you'll need CreRo's ./Redist-LGPL and ./api at the top of your target install directory. 
 
 2. put your audio in INSTALL ROOT/api/audio (same basename flac ogg mp3 with correct artist, album, title and comment tags)
 
-3. update ''clewnapiurl'' to http://your server/install path/api/api.php and ''clewnaudiourl'' to http://your server/install path/api/audio/ (mind the trailing slash)
+3. update ''clewnapiurl'' to http://your server/install_path/api/api.php and ''clewnaudiourl'' to http://your server/install_path/api/audio/ (mind the trailing slash)
 
 4. Same as previous scenario steps 8 and 9
 
 ## Provide streaming only albums
 
-1. same id3 download as previous scenario step 1
+1. same GetID3 absence of download as previous scenario step 1
 
 2. same audio upload as previous scenario step 2 but in INSTALL ROOT/z
 

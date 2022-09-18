@@ -1,13 +1,16 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 
-if (file_exists('./php-getid3/getid3.php')){
+/*if (file_exists('./php-getid3/getid3.php')){
 	include('./php-getid3/getid3.php');
 }
 else {
 	include('./php-getid3/getid3/getid3.php');
 
-}
+}*/
+
+require_once('./Redist-LGPL/cretID3/getid3/getid3.php');
+
 
 function findAFormat(){
 
@@ -27,7 +30,9 @@ function listformats(){
 	//returns the list of available audio formats for the current catalog
 	//it is expected that the whole catalog is coherent : if one format is available
 	//each file of the catalog has to have it provided
-
+	if (!is_dir('./z')){
+		die();
+	}
 	$files=array_diff(scandir('./z'), array ('..', '.', '.htaccess'));
 	shuffle($files);
 	$sample=$files[0];
@@ -255,12 +260,17 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 //basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./z
 	$id='';
 	$artists=$_GET['listallalbums'];
-	sort($sartists);
+	sort($artists);
 	foreach ($artists as $artist) {
 		$id.=$artist."\n";
 	}
-	$numberoffiles=file_get_contents('./numberoffile.dat');
-	$currentfreshness=file_get_contents('./storedfreshness.dat');
+	
+	$numberoffiles=0;
+	$currentfreshness=0;
+	
+	
+	if (file_exists('./numberoffile.dat')){$numberoffiles=file_get_contents('./numberoffile.dat');}
+	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
 
 	
 	$cachedoutput=Array();
