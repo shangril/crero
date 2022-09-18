@@ -57,7 +57,7 @@ A name for your radio, eg "The Really Cool Label radio"
 radioDescription.txt
 A short description for your radio, used for its webplayer page and for (if enabled) yellowpage listing
 radioHasYp.txt
-can be 0 or 1. If set to 1, the radio stream will be listed in the public dir.xyph.org webradio directory
+DEPRECATED: Do not use. Since CreRo doesn't require a dedicated server, it does not encore the radio stream. Nowadays most common player will not be able to read such a stream. Then registering the radio in a YP is useless, since people cannot listen to it then. Can be 0 or 1. If set to 1, the radio stream will be listed in the public dir.xyph.org webradio directory
 labelGenres.txt
 Currently used only for radio directory listing. Tag-style (space separated) list of musical genres for your label, on a single line
 radioBase.txt
@@ -103,9 +103,9 @@ The list used with ArtistHighlightHomePage to display a menu with artists from y
 streaming_albums_ratio.txt
 The display ratio for streaming only cover arts in mosaic (index page) mode. Default is 0.65
 download_albums_magic_number.txt
-Used to compute, according to album score if stats enablesd, the display ratio for downloadable albs cover arts in mosaic (index page) mode. Default is 7550
+DEPRECATED and usure of what it does now. Please leave default. Used to compute, according to album score if stats enabled, the display ratio for downloadable albs cover arts in mosaic (index page) mode. Default is 7550
 recentplay.txt
-Can be 0 or 1 to not display or to display, either, recently played albums. Please note that used in conjunction with htmlcache, some played albums will be skipped. 
+DEPRECATED: Use RecentlyPlayed instead, which works alonside with htmlcache if enabled. Can be 0 or 1 to not display or to display, either, recently played albums. Please note that used in conjunction with htmlcache, some played albums will be skipped. 
 streamingAlbumsInfoNotice.txt
 Can be used for streaming only albums. By default each track will indicate "early access download not available for now". This sentence can be replaced by a free form text/html sentence. Indicate on the first line the name of the album, on the second line the sentence, on the third line the name of another album, on the fourth line the sentence for this fourth album, and so on. 
 albumsForDownloadInfoNotice.txt
