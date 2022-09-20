@@ -103,7 +103,7 @@ The list used with ArtistHighlightHomePage to display a menu with artists from y
 streaming_albums_ratio.txt
 The display ratio for streaming only cover arts in mosaic (index page) mode. Default is 0.65
 download_albums_magic_number.txt
-DEPRECATED and usure of what it does now. Please leave default. Used to compute, according to album score if stats enabled, the display ratio for downloadable albs cover arts in mosaic (index page) mode. Default is 7550
+DEPRECATED and usure of what it does now. Please let default setting. Used to compute, according to album score if stats enabled, the display ratio for downloadable albs cover arts in mosaic (index page) mode. Default is 7550
 recentplay.txt
 DEPRECATED: Use RecentlyPlayed instead, which works alonside with htmlcache if enabled. Can be 0 or 1 to not display or to display, either, recently played albums. Please note that used in conjunction with htmlcache, some played albums will be skipped. 
 streamingAlbumsInfoNotice.txt
