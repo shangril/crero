@@ -11,7 +11,11 @@ if (!isset($_POST['item'])){
 
 $material_artists_file=htmlentities(trim(file_get_contents('./d/material_artists.txt')));
 	
-$material_artists=explode("\n", $material_artists_file);
+$material_artists=explode("\n", $material_artists_file) ?? Array();
+
+if (count($material_artists)==0){
+	die();
+}
 	
 $material_blacklist_file=htmlentities(trim(file_get_contents('./d/material_blacklist.txt')));
 	
