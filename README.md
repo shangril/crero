@@ -1,3 +1,4 @@
+Security: do NOT enable "material things shop" CURRENTLY. It has a SEVERE security issue. Please wait for a security FIX. See ./tip.php. 2022/10/02
 # Help
 Primary place for information is the #crero chatroom on the https://libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
 
