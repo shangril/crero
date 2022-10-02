@@ -185,6 +185,13 @@ foreach ($recentsjailed as $recent){
 }
 file_put_contents('./d/recent.dat', serialize($recentsfinal));
 
+//some stuff when displaying the homepage : pinging the yp servers
+if (count($_GET??Array())==0){
+	foreach ($creroypservices as $ypservice){
+		file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description));
+	}
+}
+
 //*************PRE CACHING ENDS**************
 //* caching of htmlpage ; here we are
 
@@ -295,10 +302,7 @@ if (count($_GET)==0||isset($_GET['message'])){
 	$_GET['listall']='albums';
 	
 	
-	//some stuff when displaying the homepage : pinging the yp servers
-	foreach ($creroypservices as $ypservice){
-		file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description));
-	}
+	
 }
 
 
