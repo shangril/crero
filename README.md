@@ -1,4 +1,4 @@
-Security: do NOT enable "material things shop" CURRENTLY. It has a SEVERE security issue. Please wait for a security FIX. See ./tip.php. 2022/10/02
+Security: Affecting almost any version (20151123 or newer), please upgrade: "material things shop" SEVERE security issue just fixed. Please read about PHP 8.1 and tested things before enabling it. This line will be moved to Milestone sooner or later - 2022/10/03
 # Help
 Primary place for information is the #crero chatroom on the https://libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
 ## Additional documentation
