@@ -13,7 +13,7 @@ $material_artists_file=htmlentities(trim(file_get_contents('./d/material_artists
 	
 $material_artists=explode("\n", $material_artists_file) ?? Array();
 
-if (count($material_artists)==0){
+if ($material_artists_file==''||$material_artists[0]==''){
 	die();
 }
 	
