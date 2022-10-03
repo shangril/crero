@@ -86,10 +86,10 @@ td {border:solid 1px;}
 <?php
 
 echo '<table><tr><td>Album</td><td>Product</td><td>Quantity</td><td>Unit price</td><td>Total price</td></tr>';
-$items=array_keys(unserialize($_POST['item']));
-$_POST['shipping']=unserialize($_POST['shipping']);
-$order=unserialize($_POST['item']);
-$options=unserialize($_POST['option']);
+$items=array_keys(json_decode($_POST['item'], true));
+$_POST['shipping']=json_decode($_POST['shipping'], true);
+$order=json_decode($_POST['item'], true);
+$options=json_decode($_POST['option'], true);
 
 
 $productcount=0;
@@ -207,9 +207,9 @@ else {
 }
 
 echo '" name="tip"></input><br/>';
-echo '<span  style="float:right;"><a href="./">Cancel your order</a> or <input type="hidden" name="item" value="'.htmlspecialchars(serialize($order)).'"></input>';
-echo '<input type="hidden" name="option" value="'.htmlspecialchars(serialize($options)).'"></input>';
-echo '<input type="hidden" name="shipping" value="'.htmlspecialchars(serialize($_POST['shipping'])).'"></input>';
+echo '<span  style="float:right;"><a href="./">Cancel your order</a> or <input type="hidden" name="item" value="'.htmlspecialchars(json_encode($order)).'"></input>';
+echo '<input type="hidden" name="option" value="'.htmlspecialchars(json_encode($options)).'"></input>';
+echo '<input type="hidden" name="shipping" value="'.htmlspecialchars(json_encode($_POST['shipping'])).'"></input>';
 echo '<input type="submit" value="Process to payment"></input></form>';
 
 if ($ismaterialnameyourprice) {

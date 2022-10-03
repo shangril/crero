@@ -158,9 +158,9 @@ echo '<tr><td colspan="4" style="background-color:yellow;">Net total</td>';
 echo '<td>'.htmlspecialchars($material_currency).htmlspecialchars($totalshipping+$pricecount).'</td>';
 echo '</tr>';
 echo '</table>';
-echo '<span  style="float:right;"><a href="./">Cancel your order</a> or <form action="tip.php" method="post" style="display:inline;"><input type="hidden" name="item" value="'.htmlspecialchars(serialize($order)).'" />';
-echo '<input type="hidden" name="option" value="'.htmlspecialchars(serialize($options)).'"></input>';
-echo '<input type="hidden" name="shipping" value="'.htmlspecialchars(serialize($_POST['shipping'])).'"></input>';
+echo '<span  style="float:right;"><a href="./">Cancel your order</a> or <form action="tip.php" method="post" style="display:inline;"><input type="hidden" name="item" value="'.htmlspecialchars(json_encode($order)).'" />';
+echo '<input type="hidden" name="option" value="'.htmlspecialchars(json_encode($options)).'"></input>';
+echo '<input type="hidden" name="shipping" value="'.htmlspecialchars(json_encode($_POST['shipping'])).'"></input>';
 echo '<input type="submit" value="Proceed to payment"></input></form>';
 
 

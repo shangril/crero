@@ -74,10 +74,10 @@ td {border:solid 1px;}
 <?php
 
 echo '<table><tr><td>Album</td><td>Product</td><td>Quantity</td><td>Unit price</td><td>Total price</td></tr>';
-$items=array_keys(unserialize($_POST['item']));
-$_POST['shipping']=unserialize($_POST['shipping']);
-$order=unserialize($_POST['item']);
-$options=unserialize($_POST['option']);
+$items=array_keys(json_decode($_POST['item'], true));
+$_POST['shipping']=json_decode($_POST['shipping'], true);
+$order=json_decode($_POST['item'], true);
+$options=json_decode($_POST['option'], true);
 $tip=floatval($_POST['tip']);
 $currency=$material_currency;
 
@@ -211,7 +211,7 @@ else {
 	$orderdata=serialize ($bill);
 	mkdir ('./d/material_messages/'.$orderid);
 	
-	if (file_put_contents('./d/orders/'.$orderid.'.php', $orderdata)){
+	if (file_put_contents('./d/orders/'.$orderid.'.dat', $orderdata)){
 		echo 'Your order has been correctly recorded in our system under the reference '.htmlspecialchars($orderid).'. Please click on the above button to be redirected to a secure money transfer service and process the payment : ';
 		?>
 		<form style="text-align:right" name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
