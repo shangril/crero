@@ -1,6 +1,10 @@
 Security: do NOT enable "material things shop" CURRENTLY. It has a SEVERE security issue. Please wait for a security FIX. See ./tip.php. 2022/10/02
 # Help
 Primary place for information is the #crero chatroom on the https://libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
+## Additionnal documentation
+Once you have read some parts or more parts of this README file, a good additional reading, documenting interesting points for CreRo deployment for beginners, is to find in the README documentation of crero-yp (which is the YellowPage Service for CreRo instance CMS, allowing Your label to register its CreRo site to advertise in one or more YellowPage Services), especially in the following section: 
+https://github.com/shangril/crero-yp/blob/main/README.md#requirement-for-crero-instance-to-be-listed-in-a-yp-server 
+
 
 # CreRo
 
