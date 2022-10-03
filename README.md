@@ -74,8 +74,8 @@ Untestested things that should work but feedback is welcome, and, please, set up
 (Please also note that the CreRo yellopages directory currently shows, and since many year, only one server that has enabled public directory listing ; which is, namely, mine. So then these "production environnement" servers are quite accurately only a crowd of one. )
 1. Sale of streaming only music for paid download
 2. Sale of physical releases and other merch bundles
-3. sugar like social media icons, artist highlight block on index page (will be validated upon production deployment within a few days)
-4. ./splash.php to be coded as you which and that will be include()'d on every non-radio page of the site (will be validated upon production deployment within a few days)
+3. sugar like social media icons, artist highlight block on index page (will be validated upon production deployment within a few days) NOW TESTED
+4. ./splash.php to be coded as you wish and that will be include()'d on every non-radio page of the site (will be validated upon production deployment within a few days) NOW TESTED
 5. Download cart. Used mandatory by point 1. Can also be used for "free download" music -fill up your cart, browse, fill fill fill, then validate card and download. More confusing to some users than straight download links on album page, which explains why it has retired from the CremRoad install finally. 
 6. Mailing list subscritpion request. Was simply an omnipresent form inviting to enter an email address ; then a mail() was sent to MailingListOwner (an option to set in panel). My own hosting disabled mail() a while ago, but for ages, the feature had been disabled for me cause mostly used by spambot to send me random addresses (3 times in a few days, no reply from any of them), much more than by legitimate subscribers (1 people). Alt. tip : use splash.php to show a contact address and invite people to get in touch to register to your newsletter. 
 7. Mixed pages ; undocumented, rarely used, useless, untested. 
