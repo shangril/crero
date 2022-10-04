@@ -69,6 +69,11 @@ function listformats(){
 }
 $format=findAFormat();
 
+if (!is_dir('./z')&&!(isset($_GET['listallalbums'])||isset($_GET['l']))){
+		header('Content-Type: text/plain; charset=utf-8');
+		exit (0);
+		//empty streaming only tier
+	}
 
 if (isset($_GET['listformats'])){
 	//returns the list of available audio formats for the current catalog
@@ -290,7 +295,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		$cachedfreshness=0;
 		
 	}
-	if ($numberoffile!==count(scandir('./z')))
+	if (scandir('./z')&&$numberoffile!==count(scandir('./z')))
 	{
 		$files=scandir('./z');
 		$albums=Array();
@@ -305,6 +310,16 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		$currentfreshness=intval(array_keys($albums)[0]);
 		file_put_contents('./numberoffiles.dat', count(scandir('./z')));
 		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	else if (!scandir('./z'));
+	{
+			$currentfreshness=time();
+			
+			file_put_contents('./numberoffiles.dat', '0');
+				
+			
+			file_put_contents('./storedfreshness.dat', $currentfreshness);
 		
 	}
 	if ($cachedfreshness>=$currentfreshness){
