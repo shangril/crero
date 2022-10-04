@@ -4,8 +4,10 @@ Primary place for information is the #crero chatroom on the https://libera.chat 
 ## Additional documentation
 Once you have read some parts or more parts of this README file, a good additional reading, documenting interesting points for CreRo deployment for beginners, is to find in the README documentation of crero-yp (which is the YellowPage Service for CreRo instance CMS, allowing Your label to register its CreRo site to advertise in one or more YellowPage Services), especially in the following section: 
 https://github.com/shangril/crero-yp/blob/main/README.md#requirement-for-crero-instance-to-be-listed-in-a-yp-server 
-
-
+## Upgrading
+Please note that if you got a custom ./style.css, full upgrades any file will overwrite it. Either, make a backup before, and restore it, or, upgrade excluding the style.css file
+## Multi-instance on the same server
+If you plan to have several instance on the same server, you should set up a subdomain for each of them ; ie labelone.yourserver.tld ; labeltwo.yourserver.tld ; and so on. This is to prepare Syndication, then later, Federation, for which (black/white)listing of other servers will be made based on hostname, not full path. Then having different hostname will allow other instances to (black/white)list each of them at their convenience, and not all, at once, the instances you run on your server.  
 # CreRo
 
 Recommended (strongly) PHP version is PHP 8.1, but PHP 7.0 or above is mandatory and may work, but hasn't been tested for post-September 2022 releases, while PHP 8.1 was. Please refer to the "PHP 8.1 tested things" for details. 
