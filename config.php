@@ -433,7 +433,10 @@ $recentplay=false;
 if (file_exists('./d/RecentlyPlayed.txt')){
 	$recentplay=boolval(trim(file_get_contents('./d/RecentlyPlayed.txt')));
 }
+$YPForceHTTPS=0;
 
-
+if (file_exists('./d/YPForceHTTPS.txt')){
+	$YPForceHTTPS=intval(trim(file_get_contents('./d/YPForceHTTPS.txt')));
+	}
 
 ?>
