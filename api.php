@@ -274,7 +274,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	$currentfreshness=0;
 	
 	
-	if (file_exists('./numberoffile.dat')){$numberoffiles=file_get_contents('./numberoffile.dat');}
+	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
 	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
 
 	
@@ -295,7 +295,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		$cachedfreshness=0;
 		
 	}
-	if (scandir('./z')&&$numberoffile!==count(scandir('./z')))
+	if (true!==scandir('./z')&&$numberoffiles!==count(scandir('./z')))
 	{
 		$files=scandir('./z');
 		$albums=Array();
@@ -312,7 +312,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		file_put_contents('./storedfreshness.dat', $currentfreshness);
 		
 	}
-	else if (!scandir('./z'));
+	else if (true!==scandir('./z'));
 	{
 			$currentfreshness=time();
 			
