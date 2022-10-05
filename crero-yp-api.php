@@ -6,11 +6,28 @@ if (!array_key_exists('a', $_GET)){
 	echo '0';
 	exit(0);
 }
+
+$provided_api_versions = '1';
+	//must be a (string) list of space separated integers >0 ; each of these integers indicates that the corresponding API version is supported by this instance
+	//0 is a reserved value used to indicate that the requesting (CreRo or YP server) client cannot access this API, either that it is host-based blacklisted by the instance
+	//or that the instance has an host-based whiteslist and that the requesting server is not listed in it
+		
+
+
+$version=0;
+
+//manage all the black/whitelist stuff here
+//TODO
+
+$version=1;//Just an indicative variable to say that we are above zero. Currently unused	
 switch ($_GET['a']) {
 	case 'version':
 		//
-		echo '1';//must be a string containing an integer >0
+		echo $provided_api_versions;
 		break;
+		
+		
+	//HERE STARTS what is defined as supported by the Version 1 of the crero-yp-api	
 	case 'styles_defined':
 		//
 		if (count($labelgenres)>0)
@@ -77,6 +94,11 @@ switch ($_GET['a']) {
 		echo html_entity_decode(trim(file_get_contents($clewnapiurl.'?listartists=1')));
 		//todo : requires testing. 
 		break;
+	//Here should go the API V2 commands
+	//(...)
+	//Then the API V3 commands
+	//(...)
+	//And so on
 	default: 
 		echo 'Unsupported api action';
 }
