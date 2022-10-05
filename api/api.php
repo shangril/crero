@@ -175,7 +175,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	//returns the list of albums for a specified artist
 	$artist=$_GET['listalbums'];
 	$files=scandir('./audio');
-	$albums=Array();
+	$albums=array();
 	foreach ($files as $file){
 		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 			
@@ -183,16 +183,19 @@ header('Content-Type: text/plain; charset=utf-8');
 				$info = $getID3->analyze('audio/'.$file);
 				getid3_lib::CopyTagsToComments($info); 
 				if($info['comments_html']['artist'][0]===$artist){
-						$albums[$info['comments_html']['album'][0]]=$info['comments_html']['album'][0];
-					
+					if(strlen(trim($info['comments_html']['album'][0]))>0&&$info['comments_html']['album'][0]){
+						$albums[$info['comments_html']['album'][0]]=array_reverse(explode('-', $info['comments_html']['year'][0]))[0].'.'.filemtime('audio/'.$file).$info['comments_html']['album'][0];
+					}
 				}
 			
 		}
 		
 		
 	}
+	array_multisort($albums);
+	$albums = array_reverse($albums, true);
 	foreach ($albums as $album){
-		echo $album."\n";
+		echo array_keys($albums, $album)[0]."\n";
 		
 	}
 }
@@ -866,6 +869,6 @@ header('Content-Type: text/plain; charset=utf-8');
 
 		}
 }
-
-die();
+ob_flush();
+exit(0);
 ?>

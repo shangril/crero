@@ -107,7 +107,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	
 	$artist=$_GET['listalbums'];
 	$files=scandir('./z');
-	$albums=Array();
+	$albums=array();
 	foreach ($files as $file){
 		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 			
@@ -115,16 +115,21 @@ header('Content-Type: text/plain; charset=utf-8');
 				$info = $getID3->analyze('z/'.$file);
 				getid3_lib::CopyTagsToComments($info); 
 				if($info['comments_html']['artist'][0]===$artist){
-						$albums[$info['comments_html']['album'][0]]=$info['comments_html']['album'][0];
+					if(strlen(trim($info['comments_html']['album'][0]))>0&&$info['comments_html']['album'][0]){
 					
+						$albums[$info['comments_html']['album'][0]]=array_reverse(explode('-', $info['comments_html']['year'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
+					
+				}
 				}
 			
 		}
 		
 		
 	}
+	array_multisort($albums);
+	$albums = array_reverse($albums, true);
 	foreach ($albums as $album){
-		echo $album."\n";
+		echo array_keys($albums, $album)[0]."\n";
 		
 	}
 }
@@ -456,7 +461,9 @@ else if (isset($_GET['radio'])) {
 
 }
 else {
-	echo "\n";
+	//echo "\n"; THE MOST STUPID THING I EVER DONE IN MY LIFE 
+	//IS THIS LINE AND THE ONE I JUST CORRECTED JUSTE BELLOW
 }
-die();
+ob_flush();
+exit(0);
 ?>
