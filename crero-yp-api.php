@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 require_once('config.php');
-header( 'Content-Type: text/plain; charset=urf-8');
+header( 'Content-Type: text/plain; charset=utf-8');
 if (!array_key_exists('a', $_GET)){
 	echo '0';
 	exit(0);
