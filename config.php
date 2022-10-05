@@ -237,7 +237,7 @@ if (file_exists('./d/social_media_icons.txt')){
 		array_push($socialmediaicons, $socialone);
 	}
 }
-$creroypservices=Array();
+$creroypservices=array();
 //yellopages services
 if (file_exists('./d/crero_yp_services.txt')){
 	$ypdata=trim(file_get_contents('./d/crero_yp_services.txt'));

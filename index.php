@@ -14,7 +14,158 @@ function checkOverload ($apiResponse) {
 	}
 	
 }
+//error_reporting(E_ALL);
+if (array_key_exists('ypservices', $_GET)){
+	$ypindex=$_GET['ypservices'];
+	
+	
+	if (!is_numeric($ypindex)){
+		exit (0);
+	}
+	$ypindex=intval($ypindex);
+	$arryp=array();
+	if (file_exists('./ypservices.dat')){
+		$ypfile=file_get_contents('./ypservices.dat');
+		if ($ypfile){
+			$ypdata=unserialize($ypfile);
+		}
+		if (false===$ypdata||!is_array($ypdata)){
+			unlink('./ypservices.dat');//this is malformed data, either non-unserializable, or not an array. Delete. 
+		}
+		else {
+			$arryp=$ypdata;
+		}
+		//Note that in the case of the file was not readable, 
+		//we will continue anyway, 
+		//and ypdata will be an empty array
+		//so then will begin to fill it
+		//with the current index ypservice
+		//and (try to) save it
+		//for this index
+		//and keep on saving it
+		//for each other index
+		
+	}
+	if (count($creroypservices)>0){
+		//let's do some cleanup in the .dat record
+		
+		foreach (array_keys($arryp) as $tmpypent){
+			if (!in_array($tmpypent, $creroypservices)){
+				unset($arryp[$tmpypent]);
+			}
 
+		}
+		//Here comes the main stuff
+		
+		if (isset($creroypservices[$ypindex])){
+			$ypservice=$creroypservices[$ypindex];
+			$ypre=null;
+			
+			if (!array_key_exists($ypservice, $arryp)){
+					//we create the record
+					$arryp[$ypservice]=array();
+				}
+			$yppong=array();
+			if (array_key_exists('ping', $_GET)&&$ypindex==0){//We only ping YP when homepage is displayed, not upon every call to the AJAX
+				$ypre=file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description).'&forceHTTPS='.urlencode($YPForceHTTPS));
+			}
+			if (isset($ypre)&&false===$ypre){
+				
+					if (is_array($arryp[$ypservice])){
+						$arryp[$ypservice]['hasFailed']=true;
+						$arryp[$ypservice]['repliedFailureTime']=time();
+					}
+					
+				}
+				else {//we pinged since ypre is no longer null, and YP replied, since it is not false, so store the pong reply
+					$yppong=explode (' ', $ypre);
+					if (is_array($arryp[$ypservice])){
+						$arryp[$ypservice]['hasFailed']=false;
+						$arryp[$ypservice]['repliedSuccessTime']=time();
+					}
+					
+				}
+			//we didn't ping'ed, but can continue
+			if (count($yppong)>0){
+				//we just got a reply, update the record
+				$arryp[$ypservice]['pong']=$yppong;
+			}
+			//at this point is soon enough to save the .dat on disk, since we will only need read access from now
+			$data=serialize($arryp);
+			if ($data!==false){//serialized OK
+				file_put_contents('./ypservices.dat', $data);//note that it can return false on failure and we won't handle such a thing. 
+			}
+			//and now let's thing about our web browser waiting for data
+			$yp_server_addr_no_proto = $ypservice;
+			$yp_server_addr_no_proto = str_replace('https://', '', $yp_server_addr_no_proto);
+			$yp_server_addr_no_proto = str_replace('http://', '', $yp_server_addr_no_proto);
+			
+			if (count($arryp[$ypservice]['pong'])>=3){//3 is enough for now and stricly necessary according to protocol RTFS specifications
+				$pong_saved_status=boolval ($arryp[$ypservice]['pong'][0]);
+				$pong_force_https=boolval (strtoupper($arryp[$ypservice]['pong'][1])=='HTTPS');
+				$pong_public=boolval (strtolower($arryp[$ypservice]['pong'][2])=='public');
+			}
+			else {//lets use default value suitable in most cases
+				$pong_saved_status=true;//never got a failure, never, before pong replies introduction
+				
+				$pong_force_https=false;
+				if (strpos($ypservice, 'https://')!==false&&strpos($ypservice, 'https://')==0){
+					$pong_force_https=true;//if nothing more indicated, let's trust what have been entered by CreRo admins
+				}
+				$pong_public=true;
+			}
+			$ourproto='http://';
+			if ($pong_force_https){
+				$ourproto='https://';
+			}
+			if($pong_public){
+				echo '[<a href="'.$ourproto.str_replace('"','', $yp_server_addr_no_proto).'">'.$ourproto.str_replace('"','', $yp_server_addr_no_proto).'</a>] (';
+				
+				if (array_key_exists('hasFailed', $arryp[$ypservice])){
+					$yp_hasfailed=boolval($arryp[$ypservice]['hasFailed']);
+				}
+				else $yp_hasfailed=null;
+				if (array_key_exists('repliedFailureTime', $arryp[$ypservice])){
+					$yp_failuretime=$arryp[$ypservice]['repliedFailureTime'];
+				}
+				else $yp_failuretime=null;
+				if (array_key_exists('repliedSuccessTime', $arryp[$ypservice])){
+					$yp_successtime=$arryp[$ypservice]['repliedSuccessTime'];
+				}
+				else $yp_successtime=null;
+				
+				if (!isset($yp_hasfailed))
+					echo 'Last ping success is unknown';
+				else if ($yp_hasfailed){
+					echo 'Last ping has failled ';
+					if (isset($yp_hasfailed)){
+							echo ''.date(DATE_RSS, $yp_hasfailed).'  ';
+						}
+						else
+							echo 'an unkown time ago.';
+				}
+				if (isset($yp_successtime)){
+					echo 'Last ping success '.date(DATE_RSS, $yp_successtime).' ';
+					}
+				else
+					echo 'Last ping success is unknown ';
+			
+			   echo ') ';
+			
+			}
+		}
+		else {//we finished, going bybye
+			
+			exit (0);
+			
+		}
+	}
+
+	//and now we're done, now we can go home
+	exit(0);
+
+
+}//Ajax reply to ypservices get parameter
 
 if (isset($_GET['embed'])){
 	$embed=$_GET['embed'];
@@ -185,12 +336,6 @@ foreach ($recentsjailed as $recent){
 }
 file_put_contents('./d/recent.dat', serialize($recentsfinal));
 
-//some stuff when displaying the homepage : pinging the yp servers
-if (count($_GET??Array())==0){
-	foreach ($creroypservices as $ypservice){
-		file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description).'&forceHTTPS='.urlencode($YPForceHTTPS));
-	}
-}
 
 //*************PRE CACHING ENDS**************
 //* caching of htmlpage ; here we are
@@ -2189,7 +2334,8 @@ if (!$embed){ //IF NOT EMBED STARTS ******************************************
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"/><object data="./network/index.php" style="width:100%;height:495px;" width="100%" height="495"></object>
+		<a name="social"><object data="./network/index.php" style="width:100%;height:495px;" width="100%" height="495"></object></a>
+		
 <?php
 }
 
@@ -2242,6 +2388,77 @@ setInterval(function (){
 <?php  
 }
 ?>
+<?php if (count($creroypservices)>0) { ?>
+<div>YellowPages services in use: 
+<span id="yp-services-content">Loading </span><noscript>... If you enable Javascript</noscript>
+<script>
+<?php if (count($_GET)>1){//We only ping YP when homepage is displayed, not upon ever
+		echo 'var ypping=false;';
+	}	
+	else {
+		echo 'var ypping=true;';
+	}
+	?>
+	
+var yprun=true;
+var ypindex=0;
+var appendypreq='';
+var ypretries=0;
+var ypcurrentindexretries=0;
+function delegate()  {
+	
+	if (yprun){
+		
+		var xhttpyp = new XMLHttpRequest();
+		  if (ypcurrentindexretries!=ypindex){
+		  
+			ypcurrentindexretries=ypindex;
+			ypretries=0;
+			}
+			
+		  xhttpyp.onreadystatechange = function() {
+			
+			if (this.readyState == 4 && this.status == 200) {
+			 if (document.getElementById('yp-services-content').innerHTML=='Loading ') {
+				 document.getElementById('yp-services-content').innerHTML='';
+			 }
+			 
+			 
+			 document.getElementById('yp-services-content').innerHTML = document.getElementById('yp-services-content').innerHTML+this.responseText;
+			 ypindex++;
+			 ypretries=0;
+			 
+			 if (this.responseText === ''){
+				 yprun=false;
+			 }
+			}
+			else if (this.status != 200){
+				ypretries++;
+			}
+		  };
+		  
+		  
+		  
+		  if (ypping){
+			  appendypreq='&ping=ping';
+		  }
+		  xhttpyp.open("GET", './?ypservices='+encodeURI(ypindex)+appendypreq, true);
+		  xhttpyp.send();
+		  if (ypretries>9){
+			  document.getElementById('yp-services-content').innerHTML=document.getElementById('yp-services-content').innerHTML+' (no reply for YP index: '+parseInt(ypindex)+', skipping)'; 
+			  ypindex++;
+		  }
+	
+	   }//if yprun
+	clearInterval(myfunc);
+	}//function delegate()
+	
+var myfunc=setInterval (delegate, 4500);	
+
+
+</script>
+</div>
+<?php } //end of YP Services infos ?>
 <div style="float:rigth;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels and webradios">CreRo, the CMS for record labels and webradios</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
 
 
