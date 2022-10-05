@@ -1,107 +1,107 @@
 <?php
+error_reporting(0);
 
+class SystemExit extends Exception {}
+try {
 
 require_once('./config.php');
 //error_reporting(E_WARNING|E_NOTICE);
 
 require_once('./crero-lib.php');
 //error_reporting(E_WARNING|E_NOTICE|E_ERROR|E_PARSE);
+//error_reporting(E_ALL);
 
 function checkOverload ($apiResponse) {
 	if ($apiResponse===false){
 	echo '<br/>Oooops... We are currently over capacity. Please try again later<br/></body></html>';
-	die();
+	throw new SystemExit();
 	}
 	
 }
-//error_reporting(E_ALL);
+if (filemtime('./ypservices.lock')+60<time()){
+	unlink ('./ypservices.lock');
+}
 if (array_key_exists('ypservices', $_GET)){
+    touch ('./ypservices.lock');
+
 	$ypindex=$_GET['ypservices'];
 	
 	
 	if (!is_numeric($ypindex)){
-		exit (0);
+		throw new SystemExit();
 	}
 	$ypindex=intval($ypindex);
 	$arryp=array();
 	if (file_exists('./ypservices.dat')){
 		$ypfile=file_get_contents('./ypservices.dat');
-		if ($ypfile){
-			$ypdata=unserialize($ypfile);
-		}
-		if (false===$ypdata||!is_array($ypdata)){
-			unlink('./ypservices.dat');//this is malformed data, either non-unserializable, or not an array. Delete. 
-		}
-		else {
-			$arryp=$ypdata;
-		}
+		$ypdata=unserialize($ypfile);
+		$arryp=$ypdata;
 		//Note that in the case of the file was not readable, 
 		//we will continue anyway, 
-		//and ypdata will be an empty array
-		//so then will begin to fill it
-		//with the current index ypservice
-		//and (try to) save it
-		//for this index
-		//and keep on saving it
-		//for each other index
+		//and ypdata will be an FALSE boolean no longer an//empty array
 		
 	}
 	if (count($creroypservices)>0){
 		//let's do some cleanup in the .dat record
-		
-		foreach (array_keys($arryp) as $tmpypent){
-			if (!in_array($tmpypent, $creroypservices)){
-				unset($arryp[$tmpypent]);
+		$barryp=array();
+		foreach ($creroypservices as $srv){
+			if (array_key_exists($srv, $arryp))
+			{
+				$barryp[$srv]=$arryp[$srv];
+				
 			}
-
+		
 		}
+		$arryp=$barryp;
+		
+		$data=serialize($arryp);
+		
+		file_put_contents('./ypservices.dat', $data);//note that it can return false on failure and we won't handle such a thing. 
+
+		
 		//Here comes the main stuff
 		
 		if (isset($creroypservices[$ypindex])){
 			$ypservice=$creroypservices[$ypindex];
 			$ypre=null;
 			
-			if (!array_key_exists($ypservice, $arryp)){
-					//we create the record
+			if (!is_array($arryp[$ypservice]))
+				{
 					$arryp[$ypservice]=array();
 				}
-			$yppong=array();
-			if (array_key_exists('ping', $_GET)&&$ypindex==0){//We only ping YP when homepage is displayed, not upon every call to the AJAX
+			
+			if (array_key_exists('ping', $_GET)){//We only ping YP when homepage is displayed, not upon every call to the AJAX
 				$ypre=file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description).'&forceHTTPS='.urlencode($YPForceHTTPS));
-			}
-			if (isset($ypre)&&false===$ypre){
 				
-					if (is_array($arryp[$ypservice])){
-						$arryp[$ypservice]['hasFailed']=true;
-						$arryp[$ypservice]['repliedFailureTime']=time();
-					}
+				if (!is_string($ypre)){
 					
-				}
-				else {//we pinged since ypre is no longer null, and YP replied, since it is not false, so store the pong reply
-					$yppong=explode (' ', $ypre);
-					if (is_array($arryp[$ypservice])){
-						$arryp[$ypservice]['hasFailed']=false;
-						$arryp[$ypservice]['repliedSuccessTime']=time();
-					}
+							$arryp[$ypservice]['hasFailed']=true;
+							$arryp[$ypservice]['repliedFailureTime']=time();
+						}
+						
+					else {//we pinged since ypre is no longer null, and YP replied, since it is not false, so store the pong reply
+						$yppong=explode (' ', $ypre);
+							$arryp[$ypservice]['hasFailed']=false;
+							$arryp[$ypservice]['repliedSuccessTime']=time();
+							$arryp[$ypservice]['pong']=array();
+							$arryp[$ypservice]['pong']=$yppong;
+						
 					
-				}
-			//we didn't ping'ed, but can continue
-			if (count($yppong)>0){
-				//we just got a reply, update the record
-				$arryp[$ypservice]['pong']=$yppong;
-			}
-			//at this point is soon enough to save the .dat on disk, since we will only need read access from now
-			$data=serialize($arryp);
-			if ($data!==false){//serialized OK
+					}
+				//we didn't ping'ed, but can continue
+			
+				//at this point is soon enough to save the .dat on disk, since we will only need read access from now
+				$data=serialize($arryp);
+				
 				file_put_contents('./ypservices.dat', $data);//note that it can return false on failure and we won't handle such a thing. 
-			}
+			}	
 			//and now let's thing about our web browser waiting for data
 			$yp_server_addr_no_proto = $ypservice;
 			$yp_server_addr_no_proto = str_replace('https://', '', $yp_server_addr_no_proto);
 			$yp_server_addr_no_proto = str_replace('http://', '', $yp_server_addr_no_proto);
 			
-			if (count($arryp[$ypservice]['pong'])>=3){//3 is enough for now and stricly necessary according to protocol RTFS specifications
-				$pong_saved_status=boolval ($arryp[$ypservice]['pong'][0]);
+			if (isset($arryp[$ypservice]['pong'])){//3 is enough for now and stricly necessary according to protocol RTFS specifications
+				$pong_saved_status=boolval ($arryp[$ypservice]['pong'][0]=='0');
 				$pong_force_https=boolval (strtoupper($arryp[$ypservice]['pong'][1])=='HTTPS');
 				$pong_public=boolval (strtolower($arryp[$ypservice]['pong'][2])=='public');
 			}
@@ -125,11 +125,11 @@ if (array_key_exists('ypservices', $_GET)){
 					$yp_hasfailed=boolval($arryp[$ypservice]['hasFailed']);
 				}
 				else $yp_hasfailed=null;
-				if (array_key_exists('repliedFailureTime', $arryp[$ypservice])){
+				if (array_key_exists('repliedFailureTime', $arryp[$ypservice]??array())){
 					$yp_failuretime=$arryp[$ypservice]['repliedFailureTime'];
 				}
 				else $yp_failuretime=null;
-				if (array_key_exists('repliedSuccessTime', $arryp[$ypservice])){
+				if (array_key_exists('repliedSuccessTime', $arryp[$ypservice]??array())){
 					$yp_successtime=$arryp[$ypservice]['repliedSuccessTime'];
 				}
 				else $yp_successtime=null;
@@ -138,14 +138,17 @@ if (array_key_exists('ypservices', $_GET)){
 					echo 'Last ping success is unknown';
 				else if ($yp_hasfailed){
 					echo 'Last ping has failled ';
-					if (isset($yp_hasfailed)){
-							echo ''.date(DATE_RSS, $yp_hasfailed).'  ';
+					if (isset($yp_failuretime)){
+							echo ''.date(DATE_RSS, $yp_failuretime).'  ';
 						}
 						else
 							echo 'an unkown time ago.';
 				}
 				if (isset($yp_successtime)){
 					echo 'Last ping success '.date(DATE_RSS, $yp_successtime).' ';
+					if (!$pong_saved_status){
+						echo 'but the YP replied that its record was not updated';
+						}
 					}
 				else
 					echo 'Last ping success is unknown ';
@@ -155,14 +158,15 @@ if (array_key_exists('ypservices', $_GET)){
 			}
 		}
 		else {//we finished, going bybye
-			
-			exit (0);
+			unlink ('./ypservices.lock');
+			throw new SystemExit();
 			
 		}
 	}
 
 	//and now we're done, now we can go home
-	exit(0);
+	unlink ('./ypservices.lock');
+	throw new SystemExit();
 
 
 }//Ajax reply to ypservices get parameter
@@ -234,7 +238,7 @@ if (isset($_POST['page_purge'])&&$activatehtmlcache){
 	}
 	
 	echo '">Continue</a></body></html>';
-	exit();
+	throw new SystemExit();
 
 }
 
@@ -244,14 +248,14 @@ $myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 if (isset($_GET['purge'])){
 	$myhtmlcache->purgeCache();
 	echo '<html><body>Cache purged. <a href="./">Proceed</a></body></html>';
-	exit();
+	throw new SystemExit();
 
 }
 
 
 if (isset($_GET['getinfo'])){
 	echo file_get_contents($clewnapiurl.'?getinfo='.urlencode($_GET['getinfo']));
-	exit();
+	throw new SystemExit();
 }
 //some last pre-caching thing
 //***************PRE CACHING THINGS***************************
@@ -350,7 +354,7 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 	}
 	else {
 		echo $myhtmlcache->getCachedPage($cachingkey);
-		exit();
+		throw new SystemExit();
 	}
 
 
@@ -436,7 +440,7 @@ if ($activatestats&&isset($_GET['pingstat'])){
 	}
 		
 		
-	die();
+	throw new SystemExit();//die();
 }
 		
 
@@ -477,7 +481,7 @@ if (isset($_GET['artist'])) {
 	$artists=explode("\n", $artists_file);
 	if (!in_array(html_entity_decode(html_entity_decode($_GET['artist'])), $artists)&&(file_exists('./d/artists.txt')&&count($artists)>0)) {
 		echo 'ooops... Invalid artist !';
-		exit();
+		throw new SystemExit();
 	}
 
 }
@@ -2392,7 +2396,7 @@ setInterval(function (){
 <div>YellowPages services in use: 
 <span id="yp-services-content">Loading </span><noscript>... If you enable Javascript</noscript>
 <script>
-<?php if (count($_GET)>1){//We only ping YP when homepage is displayed, not upon ever
+<?php if (count($_GET)>=1){//We only ping YP when homepage is displayed, not upon ever
 		echo 'var ypping=false;';
 	}	
 	else {
@@ -2400,11 +2404,13 @@ setInterval(function (){
 	}
 	?>
 	
+var myfunc;	
 var yprun=true;
 var ypindex=0;
 var appendypreq='';
 var ypretries=0;
 var ypcurrentindexretries=0;
+var stall=false;
 function delegate()  {
 	
 	if (yprun){
@@ -2425,11 +2431,13 @@ function delegate()  {
 			 
 			 
 			 document.getElementById('yp-services-content').innerHTML = document.getElementById('yp-services-content').innerHTML+this.responseText;
-			 ypindex++;
-			 ypretries=0;
 			 
-			 if (this.responseText === ''){
+			 ypretries=0;
+			 ypindex++;
+			 stall=false;
+			 if (this.responseText.trim() == ''){
 				 yprun=false;
+				 clearInterval(myfunc);
 			 }
 			}
 			else if (this.status != 200){
@@ -2443,17 +2451,19 @@ function delegate()  {
 			  appendypreq='&ping=ping';
 		  }
 		  xhttpyp.open("GET", './?ypservices='+encodeURI(ypindex)+appendypreq, true);
+		  stall=true;
 		  xhttpyp.send();
+		 
 		  if (ypretries>9){
-			  document.getElementById('yp-services-content').innerHTML=document.getElementById('yp-services-content').innerHTML+' (no reply for YP index: '+parseInt(ypindex)+', skipping)'; 
+			  document.getElementById('yp-services-content').innerHTML=document.getElementById('yp-services-content').innerHTML+' (no reply for YP index: '+parseInt(ypindex)+', skipping) '; 
 			  ypindex++;
 		  }
 	
 	   }//if yprun
-	clearInterval(myfunc);
+	
 	}//function delegate()
 	
-var myfunc=setInterval (delegate, 4500);	
+myfunc=setInterval (delegate, 1000);	
 
 
 </script>
@@ -2497,4 +2507,6 @@ if ($activatehtmlcache){
 	}
 
 }
+}//TRY initial
+catch (SystemExit $e) { /* do nothing */ }
 ?>
