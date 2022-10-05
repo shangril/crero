@@ -73,7 +73,7 @@ if (array_key_exists('ypservices', $_GET)){
 			if (array_key_exists('ping', $_GET)){//We only ping YP when homepage is displayed, not upon every call to the AJAX
 				$ypre=file_get_contents(trim($ypservice).'?url='.urlencode('http://'.$server).'&name='.urlencode($sitename).'&description='.urlencode($description).'&forceHTTPS='.urlencode($YPForceHTTPS));
 				
-				if (!is_string($ypre)){
+				if (($ypre===false)){
 					
 							$arryp[$ypservice]['hasFailed']=true;
 							$arryp[$ypservice]['repliedFailureTime']=time();
@@ -109,7 +109,7 @@ if (array_key_exists('ypservices', $_GET)){
 				$pong_saved_status=true;//never got a failure, never, before pong replies introduction
 				
 				$pong_force_https=false;
-				if (strpos($ypservice, 'https://')!==false&&strpos($ypservice, 'https://')==0){
+				if (!(strpos($ypservice, 'https://')===false)&&strpos($ypservice, 'https://')==0){
 					$pong_force_https=true;//if nothing more indicated, let's trust what have been entered by CreRo admins
 				}
 				$pong_public=true;
@@ -122,21 +122,21 @@ if (array_key_exists('ypservices', $_GET)){
 				echo '[<a href="'.$ourproto.str_replace('"','', $yp_server_addr_no_proto).'">'.$ourproto.str_replace('"','', $yp_server_addr_no_proto).'</a>] (';
 				
 				if (array_key_exists('hasFailed', $arryp[$ypservice])){
-					$yp_hasfailed=boolval($arryp[$ypservice]['hasFailed']);
+					$yp_hasfailed=$arryp[$ypservice]['hasFailed'];
 				}
 				else $yp_hasfailed=null;
-				if (array_key_exists('repliedFailureTime', $arryp[$ypservice]??array())){
+				if (array_key_exists('repliedFailureTime', $arryp[$ypservice])){
 					$yp_failuretime=$arryp[$ypservice]['repliedFailureTime'];
 				}
 				else $yp_failuretime=null;
-				if (array_key_exists('repliedSuccessTime', $arryp[$ypservice]??array())){
+				if (array_key_exists('repliedSuccessTime', $arryp[$ypservice])){
 					$yp_successtime=$arryp[$ypservice]['repliedSuccessTime'];
 				}
 				else $yp_successtime=null;
 				
 				if (!isset($yp_hasfailed))
 					echo 'Last ping success is unknown';
-				else if ($yp_hasfailed){
+				else if ($yp_failuretime>$yp_successtime){
 					echo 'Last ping has failled ';
 					if (isset($yp_failuretime)){
 							echo ''.date(DATE_RSS, $yp_failuretime).'  ';
@@ -2396,14 +2396,9 @@ setInterval(function (){
 <div>YellowPages services in use: 
 <span id="yp-services-content">Loading </span><noscript>... If you enable Javascript</noscript>
 <script>
-<?php if (count($_GET)>=1){//We only ping YP when homepage is displayed, not upon ever
-		echo 'var ypping=false;';
-	}	
-	else {
-		echo 'var ypping=true;';
-	}
-	?>
-	
+
+var ypping=true;
+
 var myfunc;	
 var yprun=true;
 var ypindex=0;
