@@ -11,7 +11,23 @@ else {
 
 require_once('./../Redist-LGPL/cretID3/getid3/getid3.php');
 
-
+if (!file_exists('./audio')){
+	mkdir ('./audio');
+}
+else if (!is_dir('./audio')){
+	if (array_key_exists('l', $_GET)||array_key_exists('listallalbums', $_GET)){
+			header('Content-Type: application/x-httpd-php; charset=utf-8');
+			$resp=Array();
+			$resp[0]=Array();
+			$resp[0]['artist']='Fatal error on download media tier. ./api/audio exists, but is not a directory. It is a regular file. Exiting';
+			$resp[0]['album']='Fatal error on download media tier. ./api/audio exists, but is not a directory. It is a regular file. Exiting';
+			echo serialize($resp);
+	}
+	else {
+		echo 'Fatal error on download media tier. ./api/audio exists, but is not a directory. It is a regular file. Exiting';
+	}
+	exit(1);
+}
 
 
 
@@ -114,7 +130,7 @@ else if (isset($_GET['getinfo'])){
 
 else if (isset($_GET['freshness'])){
 	header('Content-Type: text/plain; charset=utf-8');
-
+	//todo : case of emptied ./audio : once a freshness is obtained, store in ./audio-freshness.dat ; after foreach, if $albums is empty, echo content of this .dat file instead of usual return. If no freshness was obtained, echo, and store in .dat, current time() 
 	$files=scandir('./audio');
 	$albums=Array();
 	foreach ($files as $file){
@@ -303,6 +319,10 @@ header('Content-Type: text/plain; charset=utf-8');
 
 else if (isset($_GET['listallalbums'])||isset($_GET['l'])) {
 header('Content-Type: application/x-httpd-php; charset=utf-8');
+	//TODO : introduce listallalbums2 and l2 which would do exactly the same thing but with JSON output instead of serialized PHP data
+	//to prevent auto-execution of malicious code at client-side deserialization if the audio tier is rogue (maybe public, offering free storage...)
+	//until now no public audio tier never born execpting the one operated by the author of this line. 
+
 	//returns a serialized array of all albums for a specified array of artists
 	//keys are mtime of the albums
 	//values are ['album'] : album title
@@ -325,7 +345,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	$currentfreshness=0;
 	
 	
-	if (file_exists('./numberoffile.dat')){$numberoffiles=file_get_contents('./numberoffile.dat');}
+	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
 	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
 
 	
