@@ -119,6 +119,9 @@ if (array_key_exists('ypservices', $_GET)){
 				$ourproto='https://';
 			}
 			if($pong_public){
+				
+				
+				
 				echo '[<a href="'.$ourproto.str_replace('"','', $yp_server_addr_no_proto).'">'.$ourproto.str_replace('"','', $yp_server_addr_no_proto).'</a>] (';
 				
 				if (array_key_exists('hasFailed', $arryp[$ypservice])){
@@ -133,6 +136,7 @@ if (array_key_exists('ypservices', $_GET)){
 					$yp_successtime=$arryp[$ypservice]['repliedSuccessTime'];
 				}
 				else $yp_successtime=null;
+				
 				
 				if (!isset($yp_hasfailed))
 					echo 'Last ping success is unknown';
@@ -2406,9 +2410,10 @@ var appendypreq='';
 var ypretries=0;
 var ypcurrentindexretries=0;
 var stall=false;
+var yparrvalidated=[];
 function delegate()  {
 	
-	if (yprun){
+	if (yprun&&!stall){
 		
 		var xhttpyp = new XMLHttpRequest();
 		  if (ypcurrentindexretries!=ypindex){
@@ -2424,9 +2429,12 @@ function delegate()  {
 				 document.getElementById('yp-services-content').innerHTML='';
 			 }
 			 
-			 
-			 document.getElementById('yp-services-content').innerHTML = document.getElementById('yp-services-content').innerHTML+this.responseText;
-			 
+			 if (yparrvalidated[ypindex]!=true){
+			 //juste to make sure we don't add duplicate entries
+			 //over slow internet connexions
+				document.getElementById('yp-services-content').innerHTML = document.getElementById('yp-services-content').innerHTML+this.responseText;
+				yparrvalidated[ypindex]=true;
+			 }
 			 ypretries=0;
 			 ypindex++;
 			 stall=false;
@@ -2437,6 +2445,7 @@ function delegate()  {
 			}
 			else if (this.status != 200){
 				ypretries++;
+				stall=false;
 			}
 		  };
 		  
