@@ -219,7 +219,7 @@ if (file_exists('./d/clewnapiurl.txt')){
 	$clewnapiurl=trim(file_get_contents('./d/clewnapiurl.txt'));
 }
 else {
-	$cleanapiurl='http://'.$server.'/api/api.php';
+	$clewnapiurl='http://'.$server.'/api/api.php';//a quick help for newbies
 }
 //you may change this to http://<your server>/whatever/path/to/free/audio/api.php
 
