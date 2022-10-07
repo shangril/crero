@@ -1,7 +1,89 @@
 <?php
 error_reporting(0);
 
-// ! ! ! ! all of the below comments are totally outdated now
+//since this config.php is used on every main pages of the main section
+//and also in the ./radio subsection
+//and even in ./script.php 
+//and also in the "Fan network" ./network chat optionnal module
+//it's a good entry point to start thinking about the .htaccess thing
+//since each and every sensitive data is protected by such a file
+//and if its not honored
+//sensitive informations such as Paypal email adress to route donation (if enabled)
+//shadowed (encrypted) Admin password
+//and many things alike (IP address of current listeners of the radio)
+//and (worst) if .htaccess is not active and Fan Network enable, fan users could
+//possibly forge a RCE attack by including <?php //code in their chat message
+//and access a private .php file if they got it's exact name
+//to exectude the code they passed
+// (this is on its way to be secured 20221007 but currently chat serialize data
+// are stored in .php file (I think I'm dumb, as Nirvana sang)
+// but should be changed to .dat file somedays
+// but in the meanwhile it .php which is silly, and the only protection against this "Fan network" RCE
+// is the .htaccess directives)
+
+
+//All of these are protected from outside access by .htacess directive, which is the mandatory way to use CreRo
+//so then we are now going to test that the server honors .htaccess
+//and emit a general warning toward the server admin and exit if not
+//please refer to README.md for more information about .htaccess
+
+//also note that most if not any commercial-grade hostings will have enable .htaccess
+//and that this checking requires that the server administrators
+//*have set up a password to access their admin pannel (neccessary preamble to set up the $server variable, that is required for anything in CreRo to work)
+//*the $server is correcty configured to the actual path of crero
+// if one of the above is missing, a warning will be issued and the script will exit
+//then the real checking will take place
+//and if .htaccess is not honored, the whole (non ./admin) site will be disabled and awaiting for a FIX by admin team
+
+//we don't want to test ANYTHING it is a hook call from this script to the homepage cuz it would cause infinite loop
+
+if (!array_key_exists('no-infinite-loop-please', $_GET)){
+
+		//here we got
+		//firstly we check the existence of the shadowed password
+
+		if (!file_exists('./admin/d/pwd.dat')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+		echo '<!DOCTYPE html><body>General error: Site administrators, please edit ./admin/config.php to configure username and password of your administrator account then browse &lt;yourserver.tld/(path/to/crero)/admin&gt; for changes to take effect. </body></html>';
+		exit(0);
+
+		}
+		//then we check that server.txt is set and we also won't die() if the user is in admin (allong him/her to set server.txt)
+		else if (!file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+		echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, please log in the admin panel at &lt;yourserver.tld/(path/to/crero)/admin&gt; and set up the "server" option</body></html>';
+		exit(0);
+		}
+		//useful data starting from now
+		$server=trim(file_get_contents('./d/server.txt'));
+		$proto='http';
+		if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
+			$proto='https';
+		}
+		//then we check the consistency of server.tx and also won't die() if the user is admin at the admin panel 
+		else if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+			if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')===false){
+				echo '<!DOCTYPE html><body style="font-size:320%;">General error: get content replied false, the site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
+				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter</li>
+				</ul></body></html>';
+				exit(0);
+			}
+			else if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')!==false&&!strstr($http_response_header[0], ' 200 OK')){
+				echo '<!DOCTYPE html><body style="font-size:320%;">General error: http response was not 200 OK, he site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
+				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter</li>
+				</ul></body></html>';
+				exit(0);
+				}
+
+				
+			}
+
+		//Main thing now, check the .htaccess is honored
+
+		if (strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')&&file_get_contents($proto.'://'.$server.'/admin/d/fields.txt')!==false&&strstr($http_response_header[0], ' 200 OK')&&file_get_contents($proto.'://'.$server.'/admin/d/fields.txt')===file_get_contents('./admin/d/fields.txt')){
+		echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, you MUST enable .htaccess directives respect in your webserver configuration. Please refer to README.me.</body></html>';
+		exit(0);
+		}
+	}
+
 
 /*** Known bugs
  * 
@@ -133,7 +215,12 @@ $sitename=trim(file_get_contents('./d/sitename.txt'));
 $serverapi='http://'.$server.'/api.php';
 //don't change this for typical install
 
-$clewnapiurl=trim(file_get_contents('./d/clewnapiurl.txt'));
+if (file_exists('./d/clewnapiurl.txt')){
+	$clewnapiurl=trim(file_get_contents('./d/clewnapiurl.txt'));
+}
+else {
+	$cleanapiurl='http://'.$server.'/api/api.php';
+}
 //you may change this to http://<your server>/whatever/path/to/free/audio/api.php
 
 $clewnaudiourl=trim(file_get_contents('./d/clewnaudiourl.txt'));
