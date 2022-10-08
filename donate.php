@@ -16,6 +16,9 @@ $trans['fr']['donate']='Faire un don';
 
 ?>
 <script>
+	
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 var monthly=false;
 
 function toggleMonthly(){
@@ -36,6 +39,8 @@ function toggleMonthly(){
 }
 
 
+
+// @license-end
 </script>
 <span style="font-size:76%;"><?php echo $trans[$lang]['help'];?>
 <form target="new" name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >

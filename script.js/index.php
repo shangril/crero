@@ -11,6 +11,27 @@ $supported_formats_local=explode("\n", file_get_contents($serverapi.'?listformat
 
 header('Content-Type: text/javascript');
 ?>
+/*********************************
+* Please note that this script.js, while available under a free license, namely AGPL Version 3 or later
+* has been built specifically for the following CreRo instance, that is to find at
+* <?php echo str_replace('*/', '', $server); ?>;
+* and contains hardcoded data in it
+* that are specific for this very instance
+* and in fact this code as-is will not be easily useful
+* but
+* it is quite easy to get the *generic* version of this script
+* that will hardcode site-specific data according to CreRo instance specific configuration
+* by visiting the original Crero code repository, https://github.com/shangril/crero
+* or one of its possibly existing, and mandatory AGPL'ed as well, subsequent forks
+* and take a look at ./script.js/index.php
+* and more generally at CreRo as a whole
+* Thanks for reading
+*/
+
+
+
+
+
 var infoselected=null;
 var isplaying=-1;
 var currenttarget='';

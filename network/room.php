@@ -17,7 +17,39 @@ if (!isset($_GET['ajaxx'])){
 color:black;
 text-decoration:none;
 }</style>
+	<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+ 
+        /*    
+        @licstart  The following is the entire license notice for the 
+        JavaScript code in this page. While it is already specified
+        * for external script.js ressourece
+        * for each <script> tag in this file
+        this is simply an indication for event handlers. 
+        
+        The JavaScript code in this page is free software: you can
+        redistribute it and/or modify it under the terms of the GNU
+        Affero General Public License (GNU AGPL) as published by the Free Software
+        Foundation, either version 3 of the License, or (at your option)
+        any later version.  The code is distributed WITHOUT ANY WARRANTY;
+        without even the implied warranty of MERCHANTABILITY or FITNESS
+        FOR A PARTICULAR PURPOSE.  See the GNU AGPL for more details.
+
+        @licend  The above is the entire license notice
+        for the JavaScript code in this page. It is already mentionned
+        (same AGPL V3 or above) in each <script>
+        
+        and then, this is clear for Event Handlers as well. 
+        */
+        
+// @license-end
+</script>
+
 <script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+ 
 var syncLock=false;	
 //var attempt=0;
 	
@@ -52,6 +84,8 @@ function resync() {
 window.setInterval(resync, 3000);
 
 
+
+// @license-end
 </script>
 
 </head>
@@ -190,9 +224,14 @@ foreach ($files as $fil)
 }
 ?>
 <script content="text/javascript">
+	
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 x = 0;  
 y = document.getElementById('bod').scrollHeight; 
 window.scroll(x,y);
+
+// @license-end
 </script>
 <?php
 } // ajaxx 

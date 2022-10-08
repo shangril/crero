@@ -252,6 +252,40 @@ function loginpanel($activateaccountcreation){
 <meta name="charset" value="utf-8" />
 <title><?php echo strip_tags($radioname); ?></title>
 <meta name="description" content="<?php echo htmlspecialchars($radiodescription); ?>" />
+	<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
+
+        /*    
+        @licstart  The following is the entire license notice for the 
+        JavaScript code in this page. While it is already specified
+        * for external script.js ressourece
+        * for each <script> tag in this file
+        this is simply an indication for event handlers. 
+        
+        The JavaScript code in this page is free software: you can
+        redistribute it and/or modify it under the terms of the GNU
+        Affero General Public License (GNU AGPL) as published by the Free Software
+        Foundation, either version 3 of the License, or (at your option)
+        any later version.  The code is distributed WITHOUT ANY WARRANTY;
+        without even the implied warranty of MERCHANTABILITY or FITNESS
+        FOR A PARTICULAR PURPOSE.  See the GNU AGPL for more details.
+
+        @licend  The above is the entire license notice
+        for the JavaScript code in this page. It is already mentionned
+        (same AGPL V3 or above) in each <script>
+
+        as well as with ./about-js (see bottom of page) for external
+        ./script.js file
+        
+        and then, this is clear for Event Handlers as well. 
+        */
+        
+
+// @license-end
+</script>
+
 <style>
 	
 	@media screen and (max-width:800px) {
@@ -304,6 +338,9 @@ function loginpanel($activateaccountcreation){
 
 </span><br style="clear:both;"/>
 <script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 	
 var cover='';
 var start;
@@ -399,6 +436,8 @@ setTimeout (refreshCover, 3000);
 <?php if ($IsRadioResyncing) { ?>
 window.setInterval(resync, <?php echo $RadioResyncInterval; ?>);
 <?php   } ?>
+
+// @license-end
 </script>
 <?php echo $radioBanner; ?>
 Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
@@ -409,6 +448,9 @@ Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
 <div id="block" style="padding-left:4%;"></div>
 <br style="clear:both;float:none;"/>
 <script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 <?php
 if (!$activatechat===false){
 ?>
@@ -447,6 +489,8 @@ function skipsong() {
 }
 ?>
 
+
+// @license-end
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
  onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.play();allowGentleResync=true;" 
@@ -464,6 +508,9 @@ function skipsong() {
  <!--Here comes The SPECIALS-->
  <div class="damnMobilesWhoUsedToSupportControlsFromTheBeginningOfAudioThenSomeStoppedSupportingForEIGHTYearsBeforeReintroducingThem">
 							<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 							
 							function togglePlay(){
 								
@@ -479,7 +526,9 @@ function skipsong() {
 								
 								
 							}
-							</script>
+							
+// @license-end
+</script>
 						If you don't see Controls, update your mobile browser app if you can. In the meanwhile you can <a href="javacript:void(0);" onClick="togglePlay();">tap here</a> to start or pause sound. 
 </div>
 <!--SPECIAL 2014->2021-->
@@ -498,11 +547,16 @@ if (!$activatechat===false){
 
 <hr style="float:none;clear:both;">
 <script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
 //document.getElementById('player').load();
 //document.getElementById('player').autoplay='autoplay';
 //document.getElementById('player').play();
 
+
+// @license-end
 </script>
 <?php
 if (!$activatechat===false){
@@ -517,10 +571,15 @@ if ($activatestats){
 ?>
 <script>
 
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
+
     var xhttp = new XMLHttpRequest();
 	  xhttp.open("GET", "./?pingstat=true", true);
 	  xhttp.send();
 
+
+// @license-end
 </script>
 
 <?php
