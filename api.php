@@ -33,7 +33,7 @@ function listformats(){
 	if (!is_dir('./z')){
 		die();
 	}
-	$files=array_diff(scandir('./z'), array ('..', '.', '.htaccess'));
+	$files=array_diff(scandir('./z'), array ('..', '.', '.htaccess', 'index.html', 'index.php', 'index.htm'));
 	shuffle($files);
 	$sample=$files[0];
 	$toks=explode ('.', $sample);

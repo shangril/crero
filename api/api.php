@@ -54,7 +54,7 @@ function listFormats() {
 		die('No ./audio/ subdirectory found');
 	}
 	
-	$files=array_diff(scandir('./audio'), array ('..', '.', '.htaccess'));
+	$files=array_diff(scandir('./audio'), array ('..', '.', '.htaccess', 'index.html', 'index.php', 'index.htm'));
 	shuffle($files);
 	$sample=$files[0];
 	$toks=explode ('.', $sample);

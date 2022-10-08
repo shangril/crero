@@ -769,36 +769,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 ?><!DOCTYPE html>
 <html>
 <head>
-	<script>
 
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- 
-        /*    
-        @licstart  The following is the entire license notice for the 
-        JavaScript code in this page. While it is already specified
-        * for external script.js ressourece
-        * for each <script> tag in this file
-        this is simply an indication for event handlers. 
-        
-        The JavaScript code in this page is free software: you can
-        redistribute it and/or modify it under the terms of the GNU
-        Affero General Public License (GNU AGPL) as published by the Free Software
-        Foundation, either version 3 of the License, or (at your option)
-        any later version.  The code is distributed WITHOUT ANY WARRANTY;
-        without even the implied warranty of MERCHANTABILITY or FITNESS
-        FOR A PARTICULAR PURPOSE.  See the GNU AGPL for more details.
-
-        @licend  The above is the entire license notice
-        for the JavaScript code in this page. It is already mentionned
-        (same AGPL V3 or above) in each <script>
-        as well as with ./about-js (see bottom of page) for external
-        ./script.js file
-        
-        and then, this is clear for Event Handlers as well. 
-        */
-        
-// @license-end
-</script>
 
 	
 	
@@ -841,7 +812,7 @@ if ($mosaic&&$artisthighlighthomepage)
 	</style>
 	
 <?php }?> 
-<script src="//<?php echo $server;?>/script.js/index.php">
+<script src="./crero-script.js">
 </script>
 <script>
 
@@ -849,7 +820,32 @@ if ($mosaic&&$artisthighlighthomepage)
  
 <?php 
 
-echo "var target_album='".urlencode(htmlentities($_GET['target_album'], ENT_COMPAT))."';
+
+
+echo 'var dl_audiourl='."'".$clewnaudiourl."';\n";
+echo 'var str_audiourl='."'//".$server."/z/';\n";
+$api_dl_formats=file_get_contents($clewnapiurl.'?listformats=1');
+$api_str_formats=file_get_contents('http://'.$server.'/api.php/?listformats=1');
+
+if ($api_dl_formats!==false&&strlen($api_dl_formats)>2){
+	echo 'var dlformats='."'".str_replace("\n", ' ', $api_dl_formats)."'".'.split(" ");';
+}
+else {//we revert to mp3 as a default. How ugly is this, indeed ? 
+	
+	echo 'var dlformats=["mp3"];';
+	
+}
+if ($api_str_formats!==false&&strlen($api_str_formats)>2){
+
+	echo 'var strformats='."'".str_replace("\n", ' ',  $api_str_formats)."'".'.split(" ");';
+}
+else {//we revert to mp3 as a default. How ugly is this, indeed ? 
+	
+	echo 'var strformats=["mp3"];';
+	
+}	
+	
+	echo "var target_album='".urlencode(htmlentities($_GET['target_album'], ENT_COMPAT))."';
 ";
 //if we are here to generate a page to be embeded, we will set a JS var to allow script.js to trigger continous play
 if (isset($_GET['embed']))
@@ -955,7 +951,7 @@ onLoad="stats();"
 	</span>
 	</form>
 	</span>
-	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="document.getElementById('overload_splash').style.display='none';">X Close</a>
+	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document-getElementById_overload_splash_-style-display('none');">X Close</a>
 </div>
 
 <script>
@@ -970,9 +966,9 @@ var overload_track_counter=0;
 
 <!-- volume controler code -->
 <span style="position: fixed; left:0px; top:0px; font-size:140%; border:solid 1px; border-radius:5px">
-<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="document.getElementById('player').volume=document.getElementById('player').volume-0.1;">-</a>
+<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()-0.1;">-</a>
 <span style="font-size:108%;background-color:black;">🔈</span>
-<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;;background-color:#18FF18;" onClick="document.getElementById('player').volume=document.getElementById('player').volume+0.1;">+</a>
+<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()+0.1;">+</a>
 <!--end volume controler code -->
 
 </span>	
@@ -1027,96 +1023,7 @@ var overload_track_counter=0;
 <audio id="player" onEnded="playNext();">
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio>
-<noscript>Dear nnoscripter, <br/>
-Javascript is currently not enabled in your web browser<br/>
-<em><strong>Don't panic, a vanilla install of CreRo, which is the CMS propelling this website, does not include any kind of third party scripts<br/>
-However, coders of CreRo, which is free, AGPL'ed licensed software (see page footer) have no control about what end-user CreRo site administrators will do with their install. This can be a concern<br/>
-For this particular point, the best advice for noscripters is to use some kind of browser extension which will allow site-specific Javascript but will block 3rd party (especially proprietary, obfuscated, likely spying) javascript included from elsewhere remote server.<br/>
-Concerning particulary CreRo without any kind of CreRo site administrator starting to mess up with proprietary traffic analytics 3rd party site, embeding of 3rd pary Javascript-controlled video content, and so on...<br/>
-But especially talking about an as-is, clean CreRo install :<br/>
-<ul>
-	<li><ol>
-			<li>A first point to note is that CreRo is relying on two things : a file named ./script.js that is not obfuscated and that you can download and read, which especially deals with management of audio streaming, like starting playback, starting the next song once the current one is finished, and, but only for 3rd-party artist separate websites that are used by a particular CreRo-powered label's artist to run his/her own website while using CreRo player as an embed iframe to provide his/her own music on his/her own website, to trigger continuous play album after album.</li>
-			<li>And also, CreRo is making heavy usage of inline Javascript for necessary and basic operations</li>
-		</ol>
-	</li>
-	<li>Some things will not work if you does not enable Javascript: 
-		<ol>
-			<li>For the main site (index page, album pages, artist-specific album pages (which, them, allows you to get the most recent album from an artist, and to keep on digging older in the artist discography): 
-				<ol>
-					<li>Some parts of text content of the site are hidden by default (especially the menu, which shows long name of the label, description of the label, and a link bringing you back to the home page.<br/>
-						The link will be here but nothing will happen when you click. You will have to rely on your browser's "go back" feature if you need to go back to the hompage. <br/>
-						Also, the page footer (which, generally speaking, is used by CreRo-propelled sites to indicate copyright, legal informations, things like that) is hidden by default but<br/>
-						<strong>since we are nice people which included a NoScript fallback to display this page footer anyway if Javascript is disabled.</strong>
-					</li>
-					<li>Audio streaming is completely and necessarily (since we will have to move from one song to another after the end of each song) controlled by JavaScript. Then it will not be available without it. Note that Dowload will work. </li>
-					<li>Undoubtely the most annoying point: the cover art mosaïc, displayed in the index page, and mandatory to start browsing the audio catalog, is relying on Javascript...
-						<ul>
-							<li>That's because most if not any CreRo instance will count literraly hundreds of covert art, most likely in high resolution and needing ressources on the user side						
-							</li>
-							<li>To avoid low-end devices, like old phones or low-RAM computers, to get on their knees when displaying the homepage, thumbnails are generated on-the-fly (and cached for a short while to speed up future access<br/>
-							<strong>AND</strong><br/>
-							These thumbnail are generated accordingly to the resolution of the browser window of the client user, to fit perfectly at an optimal quality/weight ratio whatever the resolution is. <br/>
-							The only way to get the actual width, in pixel, of the client window, is by using Javascript. 
-							</li>
-						</ul>
-						<strong>BUT noscripters nevertheless can still get a navigable page with all albums and no cover art by pointing their browser to <a href="./listall=albums">List All Albums</a> page</strong><br/>
-						(if Javascript is enabled, you'll get covert arts as a bonus)<br/>
-						<ul>
-							<li>In relation to this point, the javascript thumbnailer is also used on each album page. No javascript, no cover art. TODO: include a fallback to display the even-heavy-heavy cover art on album pages specifically in a NoScript tag</li>
-						</ul>					
-					</li>
-					<li>
-					The "Recently Played" feature (if enabled) is using Ajax to query back the server and get which "vanilla" album pages (not digging album after album, either by starting by a vanilla album then "dig older, or by starting by an artist most recent album) have been recently requested by the no-polite-bots or human audience, requires AJAX and then Javascript.<br/>
-					This is necessary because CreRo includes a last-level "htmlcache" option for speeding up page load especially on low-end hostings with above-average audience. Then to get up-to-date information the sole way is to query back the server in Ajax, because the page itself can be very old in the cache.  
-					</li>
-					<li>
-					Talking about HTML cache, CreRo got an anti-overload mechanism that detects if a page have been cached while the queried media tier was suffering an overload and replied with an empty playlist for this particular album. <br/>
-					In such case, Javascript will display a warning splash allowing to purge the cache for this particular page, re-generate it, and hopefully get it, and display it, with a non-empty tracklist. 
-					<br/><strong>Noscripters, when landing on an album page with an empty playlist, have no other choice that to wait and hope that a Javascripter will clear the cache for them</strong><br/>
-					Note that non-htmlcache-enabled installs allow noscripters to simply reload the empty-playlist page and hope that the media tier linked to this album will not be in overload and issue a tracklist. <br/>
-					</li>
-					<li>While we are talking about media tier overloads and alike errors, and <em>since these things HAVE to be handled by Javascript on the client side, because of the possibility of pages being cached for a long time</em> and changes append on label catalogs in between ; then up to date information can only be fetched through Ajax
-						<ol><li>
-							Note that CreRo is completely designed with in mind the fact that labels owner do not have much time for filling out form, do sysadmin, and things like that
-							</li>
-							<li>That's the reason for two things :
-								<ol>
-<hr/>
 
-THIS DOCUMENTATION HAS TO BE COMPLETED LATER BUT IN THE MEANWHILE ANYTHING RELATED TO JAVASCRIPT IN CRERO HAS BEEN MADE COMPATIBLE WITH Libre.js ; which should help much noscripters ; it's a browser extension to restrict javascript dependencies to free software, trustable Javascript only. Please see
-<br/>
-<a href="https://www.gnu.org/software/librejs/" target="_blank">https://www.gnu.org/software/librejs/</a>
-
-
-
-<hr/>									
-								
-								</ol>
-							</li>
-						</ol>
-					</li>
-				</ol>
-			</li>
-			<li>For the radio section of the site (if enabled):
-			
-			</li>
-			<li>For the <em>Fan network</em> (a.k.a) live webchat for visitors and musician from the label: 
-			
-			
-			
-			
-			</li>
-			<li>For the donation module (if enabled):
-			
-			
-			</li>
-		</ol>
-	</li>
-</ul>
-
-
-</noscript> 
 	
 	
 <?php if (!$embed) { //IF NOT EMBED ********************* STARTS?>	
@@ -1274,7 +1181,7 @@ else if (isset ($_GET['artist'])) {
 	}
 ?>
 </div>
-<div><a href="#menu" onclick="mainmenu=document.getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
+<div><a href="#menu" onclick="mainmenu=cr_document_menu_getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
 
 <span id="loginpanel" style="float:right;text-align:right;margin-bottom:2%;">
 	<?php
@@ -1707,7 +1614,7 @@ foreach ($contentlocal as $item){
 					echo '</div>';
 				 }
 				
-				echo '<div><a href="javascript:void(0);" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
+				echo '<div>Controls / tracklisting<br/><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&!isset($_GET['track'])){
 					echo 'style="display:inline;"';
@@ -2498,18 +2405,8 @@ if (!$embed){// IF NOT EMBED STARTS ********************************************
 echo $pageFooterSplash;
 ?>
 
-<a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=document.getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>
+<a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=cr_document_menu_getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>
 <a name="bottommenu"></a>
-<noscript>
-	<div id="bottommenu-noscript">
-<?php
-
-echo $footerhtmlcode;
-
-?>
-	</div>
-</noscript>
-
 
 
 <div style="display:none;" id="bottommenu">
@@ -2630,7 +2527,7 @@ setInterval(function (){
 ?>
 <?php if (count($creroypservices)>0) { ?>
 <div>YellowPages services in use: 
-<span id="yp-services-content">Loading </span><noscript>... If you enable Javascript</noscript>
+<span id="yp-services-content">Loading <noscript>... If you enable Javascript</noscript></span>
 <script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
@@ -2660,7 +2557,7 @@ function delegate()  {
 		  xhttpyp.onreadystatechange = function() {
 			
 			if (this.readyState == 4 && this.status == 200) {
-			 if (document.getElementById('yp-services-content').innerHTML=='Loading ') {
+			 if (document.getElementById('yp-services-content').innerHTML.startsWith('Loading ')) {
 				 document.getElementById('yp-services-content').innerHTML='';
 			 }
 			 
@@ -2715,7 +2612,7 @@ myfunc=setInterval (delegate, 1000);
 
 
 <?php } //IF NOT EMBED ENDS * * ** * * * * ** * * * * ** * * * * ** * * ?>
-<br/><a style="float:right;font-size:76%;" href="/about-js.html" data-jslicense="1" target="_blank">JavaScript license information</a>
+<br/><a style="float:right;font-size:76%;" href="./about-js.html" data-jslicense="1" target="_blank">JavaScript license information</a>
 </body>
 </html><?php
 //oh, did we generate an album page (caching enabled or not) ?
