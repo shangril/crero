@@ -62,13 +62,13 @@ if (!array_key_exists('no-infinite-loop-please', $_GET)){
 		else if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
 			if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')===false){
 				echo '<!DOCTYPE html><body style="font-size:320%;">General error: get content replied false, the site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
-				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter</li>
+				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
 				</ul></body></html>';
 				exit(0);
 			}
 			else if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')!==false&&!strstr($http_response_header[0], ' 200 OK')){
 				echo '<!DOCTYPE html><body style="font-size:320%;">General error: http response was not 200 OK, he site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
-				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter</li>
+				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
 				</ul></body></html>';
 				exit(0);
 				}
