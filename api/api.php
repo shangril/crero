@@ -88,7 +88,13 @@ function listFormats() {
 	return $return;
 }
 $format=findAFormat();
-if (isset($_GET['listfiles'])){
+if (count($_GET)==0){
+	header('Content-Type: text/plain; charset=utf-8');
+	echo 'No API command detected.';
+	
+}
+
+else if (isset($_GET['listfiles'])){
 
 	header('Content-Type: text/plain; charset=utf-8');
 	$filez=array_diff(scandir('audio'), array ('.', '..'));
@@ -319,7 +325,11 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 }
-
+//***************SECURITY WARNING***********************
+//THIS API CALL IS DANGEROUS FOR THE CALLER
+//A ROGUE MEDIA TIER COULD EXECUTE ARBITRARY CODE
+//ON THE CALLER SERVER
+//PLEASE USE listallalbums2 and l2 instead
 else if (isset($_GET['listallalbums'])||isset($_GET['l'])) {
 header('Content-Type: application/x-httpd-php; charset=utf-8');
 	//TODO : introduce listallalbums2 and l2 which would do exactly the same thing but with JSON output instead of serialized PHP data
@@ -446,9 +456,147 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 
 	}
 }
+//***************SECURITY WARNING***********************
+//THIS API CALL IS SAFE FOR THE CALLER
+//A ROGUE MEDIA TIER CANNOT EXECUTE ARBITRARY CODE
+//ON THE CALLER SERVER
+//PREFER IT OVER listallalbums and l instead
+else if (isset($_GET['listallalbums2'])||isset($_GET['l2'])) {
+header('Content-Type: application/json; charset=utf-8');
+	//DONE : introduce listallalbums2 and l2 which would do exactly the same thing but with JSON output instead of serialized PHP data
+	//to prevent auto-execution of malicious code at client-side deserialization if the audio tier is rogue (maybe public, offering free storage...)
+	//until now no public audio tier never born execpting the one operated by the author of this line. 
+
+	//returns a serialized array of all albums for a specified array of artists
+	//keys are mtime of the albums
+	//values are ['album'] : album title
+	if (isset($_GET['l2'])){
+		$_GET['listallalbums2']=$_GET['l2'];
+	}
+	if (isset($_POST['l2'])){
+		$_GET['listallalbums2']=$_POST['l2'];
+	}
+
+//basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
+	$id='';
+	$artists=$_GET['listallalbums2'];
+	sort($artists);
+	foreach ($artists as $artist) {
+		$id.=$artist."\n";
+	}
+	
+	$numberoffiles=0;
+	$currentfreshness=0;
+	
+	
+	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
+	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
+
+	
+	$cachedoutput=Array();
+
+	if (file_exists('./apicache.php')){
+		rename('./apicache.php', 'apicache.dat');
+	}
+
+
+	if (file_exists('./apicache.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+		if ($cachedoutput!==false){
+			$cachedfreshness=intval($cachedoutput[$id]['freshness']);
+		}
+		else {
+			$cachedfreshness=0;
+		}
+	}
+	else
+	{
+		$cachedfreshness=0;
+		
+	}
+	if ($numberoffiles!==count(scandir('audio')))
+	{
+		$files=scandir('./audio');
+		$albums=Array();
+		foreach ($files as $file){
+			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+		
+			}
+		}
+		krsort($albums);
+
+		$currentfreshness=intval(array_keys($albums)[0]);
+		file_put_contents('./numberoffiles.dat', count(scandir('./audio')));
+		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	if ($cachedfreshness>=$currentfreshness){
+		echo json_encode(unserialize($cachedoutput[$id]['data']));
+		
+	}
+	else {
+		
+			//outdated cache
+
+
+
+
+		$artists=$_GET['listallalbums2'];
+		$files=scandir('./audio');
+		$albumlist=Array();
+		
+		foreach ($files as $file){
+		
+
+			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				
+					$getID3 = new getID3;
+					$info = $getID3->analyze('audio/'.$file);
+					getid3_lib::CopyTagsToComments($info); 
+					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
+							
+							
+							
+							$albumlist[filemtime('audio/'.$file)]=$info['comments_html']['album'][0];
+							
+							$year=$info['comments_html']['date'][0];
+							
+							$year=array_reverse(explode('-', $year))[0];
+							
+							$content[$year.'.'.filemtime('audio/'.$file)]['album']=$info['comments_html']['album'][0];
+							$content[$year.'.'.filemtime('audio/'.$file)]['artist']=$info['comments_html']['artist'][0];
+							
+							
+							//bogus; do not use !
+							if (!isset($content[$year.'.'.filemtime('audio/'.$file)]['artists'])){
+								$content[$year.'.'.filemtime('audio/'.$file)]['artists']=Array();
+							}
+							//end of bogus
+							
+							array_push($content[$year.'.'.filemtime('audio/'.$file)]['artists'],$info['comments_html']['artist'][0]);
+							
+					
+					
+					}
+				
+			}
+			
+		}
+		echo json_encode($content);
+		//storing the cache
+		$cachedoutput[$id]['freshness']=time();
+		$cachedoutput[$id]['data']=serialize($content);
+		file_put_contents('./apicache.dat', serialize($cachedoutput));
+
+	}
+}
+
+
+
 else if (isset($_GET['getcover'])) {
 	//BUG NOT WORKING still safe but not working
-	
+	//UPDATE not safe ! Do not call. BTW it will die()
 header('Content-Type: text/plain; charset=utf-8');
 
 	die ('feature not implemented');
@@ -586,7 +734,21 @@ else if (isset($_GET['radio'])) {
 	
 	
 	$run=false;
+	/* this is an unused feature that was once useful
+	 * 1) files that were batch imported from Dogmazic.net
+	 * 2) files that used the old, pre-2013 filename formating specific to dogmazic.net
+	 * 3) files that got empty tags (ie, not tagged by the artist and uploaded in the years either when the tagging robot of Dogmazic hasn't been invented, or the late, troubled years nearby 2011-2012 when it was failing)
 	
+	In such case, this feature used to write semi correct or correct tags on the fly. 
+	
+	Since GetID3 has been frozen/forked ; is now bundled with CreCro ; this fork is a subset and does not support writing tags
+	
+	And since it was a niche feature, we decided to disable it completely
+	* 
+	*/	
+	
+	
+	/* DISABLED CODE BEGINS HERE
 	if(
 	
 	(
@@ -641,7 +803,7 @@ else if (isset($_GET['radio'])) {
 		
 
 	}
-	if($run&&false){//DEAD BRANCH
+	if($run&&false){//DEAD BRANCH ! REMOVE THE FALSE AND THE WHOLE RADIO API WILL FAIL BECAUSE OF require OF php-getid3/write.php not satistied ! ! ! ! 
 		
 		$getID3 = new getID3;
 		
@@ -679,6 +841,7 @@ else if (isset($_GET['radio'])) {
 			
 			}
 		}
+		*/
 	echo $artist."\n";
 	echo $info['comments_html']['album'][0]."\n";
 	echo $info['comments_html']['title'][0]."\n";
@@ -699,8 +862,8 @@ else if (isset($_GET['radio'])) {
 }
 
 else if (isset($_GET['listalbums-noartist'])) {
-header('Content-Type: application/x-httpd-php; charset=utf-8');
-	//returns a serialized array of all albums for a specified array of artists
+header('Content-Type: application/json; charset=utf-8');
+	//returns a no longer serialized array, now a json-encoded array, of all albums for all artists
 	//keys are mtime of the albums
 	//values are ['album'] : album title
 
@@ -712,8 +875,12 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	$cachedoutput=Array();
 	if (file_exists('./apicache-noartist.dat')){
 		$cachedoutput=unserialize(file_get_contents('./apicache-noartist.dat'));
-		$cachedfressness=intval($cachedoutput[$id]['freshness']);
-		
+		if ($cachedoutput){	
+			$cachedfreshness=intval($cachedoutput[$id]['freshness']);
+		}
+		else{
+			$cachedfreshness=0;
+		}
 	}
 	else
 	{
@@ -732,7 +899,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 
 	$currentfreshness=intval(array_keys($albums)[0]);
 	if ($cachedfreshness>=$currentfreshness){
-		echo $cachedoutput[$id]['data'];
+		echo json_encode(unserialize($cachedoutput[$id]['data']));
 		
 	}
 	else {
@@ -783,7 +950,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 			}
 			
 		}
-		echo serialize($content);
+		echo json_encode($content);
 		//storing the cache
 		$cachedoutput[$id]['freshness']=time();
 		$cachedoutput[$id]['data']=serialize($content);

@@ -11,6 +11,25 @@ else {
 
 require_once('./Redist-LGPL/cretID3/getid3/getid3.php');
 
+if (!file_exists('./z')){
+	mkdir ('./z');
+}
+else if (!is_dir('./z')){
+	if (array_key_exists('l', $_GET)||array_key_exists('listallalbums', $_GET)){
+			header('Content-Type: application/x-httpd-php; charset=utf-8');
+			$resp=Array();
+			$resp[0]=Array();
+			$resp[0]['artist']='Fatal error on download media tier. ./z exists, but is not a directory. It is a regular file. Exiting';
+			$resp[0]['album']='Fatal error on download media tier. ./z exists, but is not a directory. It is a regular file. Exiting';
+			echo serialize($resp);
+	}
+	else {
+		echo 'Fatal error on streaming media tier. ./z exists, but is not a directory. It is a regular file. Exiting';
+	}
+	exit(1);
+}
+
+
 
 function findAFormat(){
 
@@ -71,11 +90,16 @@ $format=findAFormat();
 
 if (!is_dir('./z')&&!(isset($_GET['listallalbums'])||isset($_GET['l']))){
 		header('Content-Type: text/plain; charset=utf-8');
-		exit (0);
+
 		//empty streaming only tier
 	}
+else if (count($_GET)==0){
+	header('Content-Type: text/plain; charset=utf-8');
+	echo 'No API command detected.';
+	
+}
 
-if (isset($_GET['listformats'])){
+else if (isset($_GET['listformats'])){
 	//returns the list of available audio formats for the current catalog
 	//it is expected that the whole catalog is coherent : if one format is available
 	//each file of the catalog has to have it provided
@@ -256,6 +280,13 @@ header('Content-Type: text/plain; charset=utf-8');
 }
 
 else if (isset($_GET['listallalbums'])||isset($_GET['l'])) {
+////********SECURITY WARNING*********************
+//CALLS TO THIS API METHOD IS UNSAFE FOR THE CALLER
+//A ROGUE MEDIA TIER COULD USE IT TO EXECUTE ARBITRARY CODE
+//ON THE CALLER SERVER
+//USE listallalbums2 or l2 instead	
+//***********************************************
+	
 header('Content-Type: application/x-httpd-php; charset=utf-8');
 	//returns a serialized array of all albums for a specified array of artists
 	//keys are mtime of the albums
@@ -387,6 +418,154 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 
 	}
 }
+else if (isset($_GET['listallalbums2'])||isset($_GET['l2'])) {
+////********SECURITY WARNING*********************
+//CALLS TO THIS API METHOD IS SAFE FOR THE CALLER
+//A ROGUE MEDIA TIER CANNOT USE IT TO EXECUTE ARBITRARY CODE
+//ON THE CALLER SERVER
+//PREFER IT TO listallalbums or l
+//***********************************************
+	
+header('Content-Type: application/json; charset=utf-8');
+	//returns a serialized array of all albums for a specified array of artists
+	//keys are mtime of the albums
+	//values are ['album'] : album title
+	if (isset($_GET['l2'])){
+		$_GET['listallalbums2']=$_GET['l2'];
+	}
+	if (isset($_POST['l2'])){
+		$_GET['listallalbums2']=$_POST['l2'];
+	}
+
+//basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./z
+	$id='';
+	$artists=$_GET['listallalbums2'];
+	sort($artists);
+	foreach ($artists as $artist) {
+		$id.=$artist."\n";
+	}
+	
+	$numberoffiles=0;
+	$currentfreshness=0;
+	
+	
+	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
+	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
+
+	
+	$cachedoutput=Array();
+
+	if (file_exists('./apicache.php')){
+		rename('./apicache.php', 'apicache.dat');
+	}
+
+
+	if (file_exists('./apicache.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+		
+		if($cachedoutput!==false){
+			$cachedfreshness=intval($cachedoutput[$id]['freshness']);
+		}
+		else {
+			
+			$cachedfreshness=0;
+			
+		}
+	}
+	else
+	{
+		$cachedfreshness=0;
+		
+	}
+	if (true!==scandir('./z')&&$numberoffiles!==count(scandir('./z')))
+	{
+		$files=scandir('./z');
+		$albums=Array();
+		foreach ($files as $file){
+			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				$albums[filemtime('./z/'.$file)]=filemtime('./z/'.$file);
+		
+			}
+		}
+		krsort($albums);
+
+		$currentfreshness=intval(array_keys($albums)[0]);
+		file_put_contents('./numberoffiles.dat', count(scandir('./z')));
+		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	else if (true!==scandir('./z'));
+	{
+			$currentfreshness=time();
+			
+			file_put_contents('./numberoffiles.dat', '0');
+				
+			
+			file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	if ($cachedfreshness>=$currentfreshness){
+		echo json_encode(unserialize($cachedoutput[$id]['data']));
+		
+	}
+	else {
+		
+			//outdated cache
+
+
+
+
+		$artists=$_GET['listallalbums2'];
+		$files=scandir('./z');
+		$albumlist=Array();
+		
+		foreach ($files as $file){
+		
+
+			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				
+					$getID3 = new getID3;
+					$info = $getID3->analyze('z/'.$file);
+					getid3_lib::CopyTagsToComments($info); 
+					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
+							
+							
+							
+							$albumlist[filemtime('z/'.$file)]=$info['comments_html']['album'][0];
+							
+							$year=$info['comments_html']['date'][0];
+							
+							$year=array_reverse(explode('-', $year))[0];
+							
+							$content[$year.'.'.filemtime('z/'.$file)]['album']=$info['comments_html']['album'][0];
+							$content[$year.'.'.filemtime('z/'.$file)]['artist']=$info['comments_html']['artist'][0];
+							
+							
+							//bogus; do not use !
+							if (!isset($content[$year.'.'.filemtime('z/'.$file)]['artists'])){
+								$content[$year.'.'.filemtime('z/'.$file)]['artists']=Array();
+							}
+							//end of bogus
+							
+							array_push($content[$year.'.'.filemtime('z/'.$file)]['artists'],$info['comments_html']['artist'][0]);
+							
+					
+					
+					}
+				
+			}
+			
+		}
+		echo json_encode($content);
+		//storing the cache
+		$cachedoutput[$id]['freshness']=time();
+		$cachedoutput[$id]['data']=serialize($content);
+		if($cachedoutput[$id]['data']!==false){	
+			file_put_contents('./apicache.dat', serialize($cachedoutput));
+		}
+	}
+}
+
 else if (isset($_GET['getcover'])) {
 	//BUG NOT WORKING still safe but not working
 	

@@ -1,4 +1,6 @@
 Security: Affecting almost any version (20151123 or newer), please upgrade: "material things shop" SEVERE security issue just fixed. Please read about PHP 8.1 and tested things before enabling it. This line will be moved to Milestone sooner or later - 2022/10/03
+
+Security: please note that API on any media tier (free download/Streaming only) will assume that the function returning the current date (time(); to name it) will return an up-to-date date, coherent with the "modification date" that is added to each file when uploaded on the tier. Make sure the system date of the server hasn't been moved to the past (like, 1 jan 1970, but it is juste an example), both for uploading files and to build API cache freshness. 
 # Help
 Primary place for information is the #crero chatroom on the https://libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
 ## Additional documentation
@@ -11,8 +13,9 @@ If you plan to have several instances on the same server, you should set up a su
 # CreRo
 
 Recommended (strongly) PHP version is PHP 8.1, but PHP 7.0 or above is mandatory and may work, but hasn't been tested for post-September 2022 releases, while PHP 8.1 was. Please refer to the "PHP 8.1 tested things" for details. 
+If something fails (it can for quotes, double quotes, non-ASCII characters in either audio metadata (tags for artist, album, title, year and commment), filename of audio file stored by the server, please 1) upgrade your server to PHP 8.1 b) see "Emergency measures" section at the bottom of the document. 
 
-CURL php extension required 
+CURL php extension required (likely to be installed already at least on commercial-grade hosting services)
 
 GD php extension required if you need cover art (likely to be already installed alongsite with PHP)
 
@@ -20,6 +23,8 @@ GetID3 -most of what is used in it- is now included in Redist and no longer requ
 
 .htaccess support required in your webserver (in Apache >= 2.4 it is not enabled by default and you need to set "AllowOverride All" in your Apache host configuration in <Directory "/path/to/crero"></Directory> but most commercial hosting will have it done for you)
 Please note that most default PHP installation "at home" will have their php.ini session.save-handler set to "file", which prevents the Radio (if enabled) to work properly. As a simple workaround, Session.save-handler should store the sessions in memory (see memcached and php8.1-memcache). In production environnement, your PHP will be likely already configured with memory, or databases.  
+
+Your server(s) underlaying operating system must support gettimeofday(2) system calls, plus, system clock must be properly set to the exact time and never be changed over time like moving to an inexact date in the past or the future (such a change could lead to hasardous behaviours, like, Radio-feature DOSing bots successing their DOS, people reading "Fan network"-feature chat message posted prior to their chat connexion, loss of chat nicknames or messages, stall or complete fail of Radio-feature stream, API never updating their cache even after a file upload, HTMLCache (if enabled) either not expiring as set up, or, unable to recover when a page-caching while a media tier overload (empty tracklist and so on) is detected and the user is provided with a recovering mechanism, YellowPage API (used by YP services to query Crero, and for possible interinstance (syndication, federation) communication) either serving always outdated data or always requerying metadata and slowing down a lot everything, and, much, much more. So keep your time on time.   
 
 # Quick jump
 
@@ -270,4 +275,11 @@ option, leave a blank line. Line 5 : the name of the second product, line 5 : th
 * A free html block to insert whatever you want in a banner on top of the material release list, like a set of external links to other online shops where your products can be found, or special custom subsection of the shop you may have created. 
 
   `materialmenu.txt`
-`
+
+# Emergency measures for strange behavior (non playing track, undownloable track, missing artist, missing album, additionnal "info+" link not displaying anything) upon strange characters -"strange" includes single quotes- in audio metadata (artist name, album title, track title, description field, year) or in the audio file name itself. 
+
+* Upgrade your server to a version of PHP supported and recommended by CreRo
+* delete any .dat file excepting ./admin/d/pwd.dat in the following places :
+.dat files at the root of your crero install ; .dat files in ./api/ directory ;.dat files in ./crero-yp-api-cache/ if this directory is present at the root of your install ; .dat file in the ./radio/d/ ./radio/e/ and ./radio/f ; ALSO FOR RADIO any .txt file in these same d, e, and f directories. This yould be enough. ./network/ (d/ e/ f/) may have strange behaviors like misformed quotes but for no longer than 100 minutes. 
+
+Make sure that the underlying file system on your media hosting server(s) supports utf-8 character encoding. If not, avoid any non-latin character in filenames. 

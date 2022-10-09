@@ -1306,7 +1306,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 		$querystring='';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='l[]='.urlencode(htmlentities($artist)).'&';
+			$querystring.='l2[]='.urlencode(htmlentities($artist)).'&';
 			
 			
 		}
@@ -1330,7 +1330,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 
 		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_URL,$clewnapiurl.'?l=true');
+		curl_setopt($ch, CURLOPT_URL,$clewnapiurl.'?l2=true');
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $querystring);
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
@@ -1338,23 +1338,23 @@ $artists_file=file_get_contents('./d/artists.txt');
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		$albums_file= curl_exec ($ch);
+		$albums_file_json= curl_exec ($ch);
 
 		curl_close ($ch);
-
+		$albums_file=$albums_file_json;
 
 
 
 		//$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
 
-		if ($albums_file===false){
-			if (!file_exists('./remoteapicache.dat')){
+		if ($albums_file_json===false){
+			if (!file_exists('./remoteapicache-v2.dat')){
 			
 				echo '<h2><strong>Sorry ! </strong>It seems that the free albums host, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. ';
 			
 			}
 			else {
-				$remoteapicache=unserialize(file_get_contents('./remoteapicache.dat'));
+				$remoteapicache=unserialize(file_get_contents('./remoteapicache-v2.dat'));
 				if (isset($remoteapicache[$querystring])){
 					$albums_file=$remoteapicache[$querystring];
 					
@@ -1371,11 +1371,11 @@ $artists_file=file_get_contents('./d/artists.txt');
 		else {
 			$cache=Array();
 			
-			if (file_exists('./remoteapicache.dat')){
-				$cache=unserialize(file_get_contents('./remoteapicache.dat'));
+			if (file_exists('./remoteapicache-v2.dat')){
+				$cache=unserialize(file_get_contents('./remoteapicache-v2.dat'));
 			}
 			$cache[$querystring]=$albums_file;
-			file_put_contents('./remoteapicache.dat', serialize($cache));
+			file_put_contents('./remoteapicache-v2.dat', serialize($cache));
 
 		}
 		
@@ -1386,7 +1386,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 		
 		file_put_contents('./overload.dat', $overloadmove);
 			
-		$albums=unserialize($albums_file);
+		$albums=json_decode($albums_file, true);
 
 		if (!is_array($albums)){$albums=Array();}
 
@@ -1398,7 +1398,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 $querystring = '';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='&listallalbums[]='.urlencode(htmlentities($artist));
+			$querystring.='&listallalbums2[]='.urlencode(htmlentities($artist));
 			
 			
 		}
@@ -1406,7 +1406,7 @@ $querystring = '';
 
 
 		$albums_file=file_get_contents($serverapi.'?'.$querystring);
-		$albums=unserialize($albums_file);
+		$albums=json_decode($albums_file, true);
 		if (!is_array($albums)){$albums=Array();}
 
 		ksort($albums);

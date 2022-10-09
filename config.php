@@ -231,6 +231,10 @@ $videoapiurl=trim(file_get_contents('./d/videoapiurl.txt'));
 //same applies for video, with the difference that Clewn Video doesn't currently support public upload
 $videourl=trim(file_get_contents('./d/videourl.txt'));
 
+//
+
+
+//OUTDATED NEVER USE
 //whatever message you want to display if the HTTP GET message is set to this value, e.g. for advertising campaign or whatever
 
 $message['show_youtube']='
