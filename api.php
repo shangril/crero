@@ -122,6 +122,52 @@ else if (isset($_GET['getinfo'])){
 	echo $artist;
 
 }
+else if (isset($_GET['freshness'])){
+	header('Content-Type: text/plain; charset=utf-8');
+	//DONE : case of emptied ./audio : once a freshness is obtained, store in ./audio-freshness.dat ; after foreach, if $albums is empty, echo content of this .dat file instead of usual return. If no freshness was obtained, echo, and store in .dat, current time() 
+	$files=scandir('./z');
+	$albums=Array();
+	foreach ($files as $file){
+		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			$albums[filemtime('./z/'.$file)]=filemtime('./z/'.$file);
+	
+		}
+	}
+	
+	if (count($albums)>0){
+		
+		krsort($albums);
+
+		$freshness = array_keys($albums)[0];
+		
+		if (!file_put_contents('./audio-freshness.dat', $freshness)){
+			if (!unlink('./audio-freshness.dat')){
+				rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+			}
+		}
+	}
+	else {
+		if (file_get_contents('./audio-freshness.dat')){
+			
+			$freshness = file_get_contents('./audio-freshness.dat');
+			
+		}
+		else {
+			
+			$freshness=time();
+			if (!file_put_contents('./audio-freshness.dat', $freshness)){
+				if (!unlink('./audio-freshness.dat')){
+					rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	echo $freshness;
+}
 else if (isset($_GET['listalbums'])) {
 header('Content-Type: text/plain; charset=utf-8');
 
