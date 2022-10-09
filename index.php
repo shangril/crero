@@ -5,6 +5,8 @@ class SystemExit extends Exception {}
 try {
 
 require_once('./config.php');
+//error_reporting(E_ERROR | E_PARSE);
+//error_reporting(E_ALL);
 //error_reporting(E_WARNING|E_NOTICE);
 
 require_once('./crero-lib.php');
@@ -208,7 +210,7 @@ $cachingkey='key:';
 
 $get_keys=array_keys($_GET);
 
-$whitelist= array ('artist', 'album', 'track', 'offset', 'listall', 'autoplay', 'vid', 'twist', 'embed');
+$whitelist= array ('artist', 'album', 'track', 'offset', 'autoplay', 'vid', 'twist', 'embed');
 
 foreach ($get_keys as $get_key){
 	if (in_array($get_key, $whitelist)){
@@ -450,14 +452,22 @@ if ($activatestats&&isset($_GET['pingstat'])){
 
 
 $mosaic=false;
-if (count($_GET)==0||isset($_GET['message'])){
+if (count(array_intersect(array_keys($_GET),array ('offset', 'listall', 'autoplay', 'vid', 'twist', 'embed')))==0){
 	$mosaic=true;
-	$_GET['listall']='albums';
-	
+	if ($_GET['listall']!='material'){
+		$_GET['listall']='albums';
+	}
 	
 	
 }
-
+if (count(array_intersect(array_keys($_GET), array ('artist', 'album', 'track', 'offset')))>0){
+	if($_GET['listall']=='albums')
+		unset($_GET['listall']);
+	$mosaic=false;
+}
+if (array_key_exists('listall', $_GET)&&$_GET['listall']!='albums'&&$_GET['listall']!='material'&&$_GET['listall']!='bogus'){
+	$mosaic=false;
+}
 
 
 if (isset($_GET['random'])&&$_GET['random']=='true'&&!isset($_GET['artist'])){
@@ -474,7 +484,7 @@ else if (isset($_GET['artist'])||isset($_GET['listall'])){
 	
 }
 
-error_reporting(E_ERROR | E_PARSE);
+
 
 if (isset($_GET['artist'])) {
 	$favicon='//'.$server.'/favicon.png';
@@ -947,12 +957,12 @@ onLoad="stats();"
 	<br/>
 	You can try to clear the cache for this particular page and see if it can solve this error. 
 	<form id="overload_form" method="POST">
-	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode($_GET));?>"/>
+	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode(array_diff($_GET, array($_GET['listall']))));?>"/>
 	<span id="overload_button">
 	</span>
 	</form>
 	</span>
-	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document-getElementById_overload_splash_-style-display('none');">X Close</a>
+	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document_getElementById_overload_splash__style_display('none');">X Close</a>
 </div>
 
 <script>
@@ -1441,7 +1451,7 @@ else {
 echo '<script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-var offset='.$offset.'
+var offset='.$offset.';
  //@license-end 
  </script>';
 if ($_SESSION['random']){
@@ -1644,7 +1654,7 @@ foreach ($contentlocal as $item){
 				
 				if (!isset($_GET['track'])||$_GET['track']==$track_name)
 				{
-					if (in_array(html_entity_decode($track_artist, ENT_QUOTES | ENT_SUBSTITUTE), $artists)){
+					if (in_array(html_entity_decode($track_artist), $artists)){
 											?>
 					<script>
 
@@ -2135,7 +2145,7 @@ foreach ($content as $item){
 					
 					if (!isset($_GET['track'])||$_GET['track']==$track_name)
 					{
-						if (in_array(html_entity_decode($track_artist, ENT_QUOTES | ENT_SUBSTITUTE), $artists)){
+						if (in_array(html_entity_decode($track_artist), $artists)){
 						?>
 						<script>
 

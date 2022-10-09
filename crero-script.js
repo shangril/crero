@@ -2,7 +2,7 @@
 
 
 function cr_document_getElementById_overload_splash__style_display(display){
-	document.getElementById(overload_splash).style.display=display;
+	document.getElementById('overload_splash').style.display=display;
 }
 function cr_document_getElementById_player__volume(){
 		return document.getElementById(player).volume;

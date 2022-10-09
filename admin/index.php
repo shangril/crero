@@ -24,8 +24,8 @@ if (!file_exists('./d/pwd.dat')){
 			}
 			else {
 				file_put_contents('./config.php', '<?php
-				$user=\'\';
-				$password=\'\';
+				$user=\'changeme\';
+				$password=\'hackme\';
 				?>');
 				
 			}
