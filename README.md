@@ -1,5 +1,5 @@
 
-Security: please note that API on any media tier (free download/Streaming only) will assume that the function returning the current date (time(); to name it) will return an up-to-date date, coherent with the "modification date" that is added to each file when uploaded on the tier. Make sure the system date of the server hasn't been moved to the past (like, 1 jan 1970, but it is just an example) or to the future, both for uploading files and to build API cache freshness. 
+Security: please note that API on any media tier (free download/Streaming only) will assume that the function returning the current date (time(); to name it) will return an up-to-date date, coherent with the "modification date" that is added to each file when uploaded on the tier. Make sure the system date of the server hasn't been moved to the past (like, 1 jan 1970, but it is just an example) or to the future. This is a concern both for uploading files and to build API cache freshness. 
 # Help
 Primary place for information is the #crero chatroom on the https://libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
 ## Additional documentation
