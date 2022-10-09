@@ -31,6 +31,8 @@ You may want to skip to the "crash courses" below in "installation steps" to get
 
 # Notable milestones
 
+* 20221010 release : Rogue media tiers no more able to RCE querying servers. No public media tier AFAIK has never been operated by anyone, exception the author of this line. If you run your own media tiers, front-end NOW requires updated api.php on each tier you operate. 
+
 * 20221009 release : Security FIX. Affecting almost any version (20151123 or newer), please upgrade: "material things shop" SEVERE security issue. (2022/10/03 additionnal note: Please read about PHP 8.1 and tested things before enabling it)
 
 * 20220623 release : Support for embed. Example : You got a label at cremroad.com . You got an artist, say Me In The Bath. You want to set up meinthebath.com ; somewhere in your html in meinthebath.com add an iframe with its src attribute set to the http url of your label domain, in our case cremroad.com followed by the following path : /?artist=Me+In+The+Bath&embed=Me+In+The+Bath and you are done. Make sure to escape whitespaces as + and any special caracter not allowed in a URL scheme by the %XX number needed (search for "escaping characters in HTTP GET parameters").
