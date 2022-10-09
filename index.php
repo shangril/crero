@@ -1031,9 +1031,9 @@ var overload_track_counter=0;
 
  ?>
 	
-<audio id="player" onEnded="playNext();">
+<a name="top"><audio id="player" onEnded="playNext();">
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
-</audio>
+</audio></a>
 
 	
 	
@@ -2077,8 +2077,8 @@ foreach ($content as $item){
 				
 				if ($enableDownloadCart)
 				{
-					echo '<div id="ajax_splash" style="position:absolute; top:0; left:0;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="javascript:void(0);" style="text-align:right;width:100%;" onclick="document.getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
-					echo '<a href="javascript:void(0);" onclick="addFullAlbumToCart(\''.str_replace("'", "\\'", urlencode($item['album'])).'\');">Add full album to download cart</a><br/>';	
+					echo '<a name="top"></a><div id="ajax_splash" style="position:absolute; top:0; left:0;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="#top" style="text-align:right;width:100%;" onclick="cr_c_document_getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
+					echo '<a href="#top" onclick="addFullAlbumToCart(\''.str_replace("'", "\\'", urlencode($item['album'])).'\');">Add full album to download cart</a><br/>';	
 					
 				}
 					
@@ -2201,7 +2201,7 @@ foreach ($content as $item){
 							}
 						else if (!$mixed&&$enableDownloadCart){
 								?>
-							 <div style="background-color:#F0F0F0;text-align:left;"><a href="javascript:void(0);" onclick="addTrackToCart('<?php 
+							 <div style="background-color:#F0F0F0;text-align:left;"><a href="#top" onclick="addTrackToCart('<?php 
 							 echo str_replace("'", "\\'", urlencode($track_name));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode($item['album']));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode(htmlentities($track, ENT_COMPAT)));?>', '<?php 

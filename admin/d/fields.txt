@@ -85,13 +85,13 @@ Update : no longer used. Dangerous. If set to 1, will replace, each time a track
 autoDeletePrefixPath.txt
 Useful only with autoDeleteUntagguedTracks. The base filename will be prepend to this relative-to-/radio/stream.mp3 path to search the file that has to be replaced by silent. Then, autoDelete can only be used if the free download media tier is on the same physical filesystem than the front end component of Crero. 
 enable_download_cart.txt
-If set to 0, the download cart will not be enabled. If set to 1 it will. 
+If set to 0, the download cart will not be enabled. If set to 1 it will. Please not that if you enable the download_cart, it is MANDATORY to set each of the 5 following *download_cart*.txt options, from is_download_cart_name_your_price to download_card_paypal_address, and ANY of them, otherwise the Download Cart will COMPLETELY not work !
 is_download_cart_name_your_price.txt
 If set to 0 the payment price for download cart will be fixed according to the album price and track price options. If set to 1, the download cart will display the recommended price but will accept any value including 0 (name your price no minimum)
 download_cart_currency.txt
 The three letters Paypal-style currency code for download cart payment. Ex : EUR for Euro, USD for US Dollars, JPY for Japan Yen, etc
 download_cart_track_price.txt
-The price of one single track download, expressed in the currency defined by download_cart_curreny
+The price of one single track download, expressed in the currency defined by download_cart_currency
 download_cart_album_price.txt
 The price of a full album download, expressed in the currency defined by download_cart_currency
 download_cart_paypal_address.txt

@@ -1,6 +1,10 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
 
+function cr_c_document_getElementById(ajax_splash){
 
+	return document.getElementById(ajax_splash);
+
+}
 function cr_document_getElementById_overload_splash__style_display(display){
 	document.getElementById('overload_splash').style.display=display;
 }

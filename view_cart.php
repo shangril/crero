@@ -33,11 +33,13 @@ if (isset($_GET['delete_track'])){
 <?php 
 if ($isDownloadCartNameYourPrice){ ?>
 <script>
+	// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
 	function compute_total(){
     if (document.getElementById('total')!=null){
 		if (!isNaN(parseFloat(document.getElementById('total').value))){
-				document.getElementById('amount').value=document.getElementById('total').value;
-				if (parseFloat(document.getElementById('total').value)>0){
+				document.getElementById('amount').value=document.getElementById('total').value.replace(',','.');
+				if (parseFloat(document.getElementById('amount').value)>0){
 					document.getElementById('paypal_form').submit();
 					
 					}
@@ -46,12 +48,25 @@ if ($isDownloadCartNameYourPrice){ ?>
 					}
 			}
 			else{
-				alert('please enter a numeric value');
+				alert('please enter a numeric value with a dot ( . ) for decimal separation');
 			}
 		}
     }
+    // @license-end
 </script>
-<?php  } ?>
+<?php  } else { ?>
+<script>
+	// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
+	function compute_total(){
+					document.getElementById('paypal_form').submit();
+    }
+    // @license-end
+</script>
+	
+	
+	
+<?php } ?>
 </head>
 <body>
 <a href="./">&lt; Go back to the site</a><br/>
