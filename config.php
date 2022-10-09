@@ -529,5 +529,8 @@ $YPForceHTTPS=0;
 if (file_exists('./d/YPForceHTTPS.txt')){
 	$YPForceHTTPS=intval(trim(file_get_contents('./d/YPForceHTTPS.txt')));
 	}
-
+$YP_APIMisconfiguredDateOnHostingToleranceWindow=0;
+if (file_exists('./d/YP-APIMisconfiguredDateOnHostingToleranceWindow.txt')) {
+	$YP_APIMisconfiguredDateOnHostingToleranceWindow=floatval(file_get_contents('./d/YP-APIMisconfiguredDateOnHostingToleranceWindow.txt'));
+}
 ?>
