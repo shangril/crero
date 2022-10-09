@@ -1693,7 +1693,7 @@ foreach ($contentlocal as $item){
 					?>
 					
 					
-					<!--<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>-->
+					<!--<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo htmlspecialchars($track);?>');">+</a>-->
 							</div>
 					<div style="display:none;" id="info<?php echo $trackcounter;?>"></div>
 					<?php
@@ -2200,7 +2200,7 @@ foreach ($content as $item){
 								}
 						if (!$mixed){
 							?>
-							 -<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=document.getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">|info+|</a>
+							 -<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">|info+|</a>
 							 </div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);

@@ -11,6 +11,10 @@ function cr_document_menu_getElementById(menu_item){
 	return document.getElementById(menu_item);
 	
 }
+
+function cr_info_document_getElementById(target_info){
+	return document.getElementById(target_info);
+}
 var infoselected=null;
 var isplaying=-1;
 var currenttarget='';
