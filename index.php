@@ -817,7 +817,8 @@ if ($mosaic&&$artisthighlighthomepage)
 <script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- 
+var infoselected=null;
+
 <?php 
 
 
@@ -2079,10 +2080,10 @@ foreach ($content as $item){
 				
 				
 				
-				echo '<div><a href="javascript:void(0);" onclick="document.getElementById(\'tracklist\').style.display=\'inline\';">Controls / tracklisting</a></div><span id="tracklist" ';
+				echo '<div>Controls / tracklisting</div><span id="tracklist" ';
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&isset($_GET['track'])){
-					echo 'style="display:none;"';
+					echo 'style="display:inline;"';
 				}
 				echo '>';
 			}
@@ -2200,7 +2201,10 @@ foreach ($content as $item){
 								}
 						if (!$mixed){
 							?>
-							 -<a href="javascript:void(0);" style="text-align:right;float:right;" onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">|info+|</a>
+							 -<a href="javascript:void(0);" 
+							 style="text-align:right;float:right;" 
+							 onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">|info+|</a>
+							 
 							 </div>
 							<?php
 							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
