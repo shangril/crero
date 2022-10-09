@@ -2213,7 +2213,7 @@ foreach ($content as $item){
 							?>
 							 -<a href="javascript:void(0);" 
 							 style="text-align:right;float:right;" 
-							 onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track))?>');">|info+|</a>
+							 onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT))?>');">|info+|</a>
 							 
 							 </div>
 							<?php
