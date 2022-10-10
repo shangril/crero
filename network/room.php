@@ -1,12 +1,11 @@
-<?php  if(!isset($_SESSION)){session_start();}
-include('site_variables.php');
+<?php  session_start();
 chdir ('..');
 include ('./config.php');
 chdir ('./network');
 if (!$activatechat){
 	exit(0);
 }
-include ('header_functs.php');
+include ('site_variables.php');
 if (!isset($_GET['ajaxx'])){
 ?>
 <html>
@@ -77,13 +76,13 @@ if (isset($_GET['ajaxx'])){
 	$data['color']=$mysession['color'];
 	$data['norange']=$mysession['norange'];
 	$dat=serialize($data);
-	file_put_contents('./'.$seedroot.'/e/'.microtime(true).'.php', $dat);
+	file_put_contents('./'.$seedroot.'/e/'.microtime(true).'.dat', $dat);
 
 $files=scandir('./'.$seedroot.'/f');
 sort($files);
 foreach ($files as $fil)
 {
-	if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<microtime(true)-3000)
+	if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<microtime(true)-3000)
 	{
 		unlink('./'.$seedroot.'/f/'.$fil);
 		}
@@ -94,7 +93,7 @@ $files=scandir('./'.$seedroot.'/e');
 sort($files);
 foreach ($files as $fil)
 {
-	if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<microtime(true)-6)
+	if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<microtime(true)-6)
 	{
 		unlink('./'.$seedroot.'/e/'.$fil);
 		}
@@ -103,7 +102,7 @@ $files=scandir('./'.$seedroot.'/d');
 sort($files);
 foreach ($files as $fil)
 {
-	if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<microtime(true)-3000)
+	if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<microtime(true)-3000)
 	{
 		unlink('./'.$seedroot.'/d/'.$fil);
 		}
@@ -121,7 +120,7 @@ $files=scandir('./'.$seedroot.'/'.$target);
 sort($files);
 foreach ($files as $fil)
 {
-	if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))>floatval($mysession['zero']))
+	if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))>floatval($mysession['zero']))
 	{
 		$data=file_get_contents('./'.$seedroot.'/'.$target.'/'.$fil);
 		$dat=unserialize($data);
@@ -180,7 +179,7 @@ foreach ($files as $fil)
 				
 				){
 
-			$ts=floatval(str_replace('.php','',$fil));
+			$ts=floatval(str_replace('.dat','',$fil));
 			$ttl=3000-(microtime(true)-$ts);
 			
 			echo htmlspecialchars(round($ttl));

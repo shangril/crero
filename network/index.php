@@ -5,14 +5,84 @@ chdir ('./network');
 if (!$activatechat){
 	exit(0);
 }
-if (isset($_GET['ajaxx'])&&(session_status()===PHP_SESSION_NONE||session_status()===PHP_SESSION_DISABLED)){
+
+session_start();
+include('site_variables.php');
+
+if (!array_key_exists('meep_ppl', $_SESSION))
+	$_SESSION['meep_ppl']=false;
+if (!array_key_exists('meep_mus', $_SESSION))
+	$_SESSION['meep_mus']=false;
+		
+if ($_GET['reg_meep']=='true'){
+				if ($_GET['meep']==1){
+					$_SESSION['meep_ppl']=true;
+					$meepenabled=true;
+				}
+				else {
+					$_SESSION['meep_ppl']=false;
+					$meepenabled=false;
+				}
+				if ($_GET['mus_meep']==1){
+					$_SESSION['meep_mus']=true;
+					$mus_meepenabled=true;
+				}
+				else {
+					$_SESSION['meep_mus']=false;
+					$mus_meepenabled=false;
+				}
+				
+		//echo 'please wait...';
+		$_GET=array();
+		}
+	
+
+
+
+
+
+//once for all
+//big cleanup
+$seedroot='';
+$targ_dirs=array ('./'.$seedroot.'/d/','./'.$seedroot.'/e/','./'.$seedroot.'/f/');
+foreach ($targ_dirs as $tar_dir){
+		$rnfs=array_diff(scandir($tar_dir), array( '.htaccess', '..', '.'));
+		foreach ($rnfs as $rnf){
+			rename ($tar_dir.$rnf, str_replace('.php', '.dat', $tar_dir.$rnf));
+		}
+	
+	
+}
+//usual cleanup
+$files=scandir('./e');
+		sort($files);
+		foreach ($files as $fil)
+		{	
+			if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<(microtime(true)-6))
+			{
+				unlink('./e/'.$fil);
+				}
+		}
+		
+		
+		$meepenabled=$_SESSION['meep_ppl'];
+		$mus_meepenabled=$_SESSION['meep_mus'];
+		
+		
+		$havetomeep=false;
+		$mus_havetomeep=false;
+
+
+
+if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
+	
 		
 		//count()
 		$files=array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'));
 		sort($files);
 		
 		$nicklist=Array();
-	
+		$musicianlist=Array();
 		$onlinepeople=0;
 		foreach ($files as $fil)
 		{	
@@ -21,37 +91,80 @@ if (isset($_GET['ajaxx'])&&(session_status()===PHP_SESSION_NONE||session_status(
 			
 			if (isset($this_record['nick'])){
 				$nicklist[$this_record['nick'].$this_record['color']]=1;
+				if(array_key_exists('musician', $this_record)){
+					$musicianlist[$this_record['nick'].$this_record['color']]=1;
+				}
 			}
 			
 			
 		}
 		$onlinepeople=count($nicklist);
+		$onlinemusicians=count($musicianlist);
 		
-		
-		
-		
-		echo '
-	
-<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' online)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect ! "/></form>
-		';
-		
-		$files=scandir('./e');
-		sort($files);
-		foreach ($files as $fil)
-		{	
-			if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<(microtime(true)-6))
-			{
-				unlink('./e/'.$fil);
-				}
+		if (!$activate_musician_accounts){
+			$onlinemusicians=intval('-1');
 		}
 		
+		if ($onlinepeople!==file_get_contents('./onlinepeople.dat')){
+			file_put_contents('./onlinepeople.dat', $onlinepeople);
 		
-		die();
-}// ajaxx
+			if (file_get_contents('./oldonlinepeople.dat')!==file_get_contents('./onlinepeople.dat')){
+				if (intval(file_get_contents('./oldonlinepeople.dat'))< $onlinepeople){
+					$havetomeep=true;
+					
+				}
+				file_put_contents('./oldonlinepeople.dat', $onlinepeople);
+			
+			}
+		}
+		
+		if ($onlinemusicians!==file_get_contents('./mus_onlinepeople.dat')){
+			file_put_contents('./mus_onlinepeople.dat', $onlinemusicians);
+		
+			if (file_get_contents('./mus_oldonlinepeople.dat')!==file_get_contents('./mus_onlinepeople.dat')){
+				if (intval(file_get_contents('./mus_oldonlinepeople.dat'))< $onlinemusicians){
+					$mus_havetomeep=true;
+					
+				}
+				file_put_contents('./musoldonlinepeople.dat', $onlinemusician);
+			
+			}
+		}
+		$mus_txt=$onlinemusicians;
+		
+		if ($onlinemusicians==intval('-1')){
+			$mus_txt='an unknown number of';
+		}
+		if ($havetomeep){
+			echo '<audio autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
+		}
+		if ($mus_havetomeep){
+			echo '<audio autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
+		}
 
-session_start();
 
-
+		if (isset($_GET['ajaxx'])){
+			echo '
+		
+			<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' people online including '.$mus_txt.' label musicians)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect!"/></form>
+			';
+		} 
+		
+			
+		
+	//Ajax not meeponly
+		if (isset($_GET['meep'])){	
+		//finally
+		echo '<br/><form method="GET" action="./index.php"><input type="hidden" name="ajaxx" value="true"/><input type="hidden" name="meep" value="true"/><input type="hidden" name="reg_meep" value="true"/>Play a sound whenever <input onclick="this.form.submit();" type="checkbox" ';
+		if ($meepenabled){echo ' checked ';}
+		echo ' name="meep" value="1" /> someone enters | <input onclick="this.form.submit();" type="checkbox" ';
+		if ($mus_meepenabled){echo ' checked ';}
+		echo ' name="mus_meep" value="1"/> a label musician enters</form>';
+		
+	}
+		
+	exit(0);	
+	}// isset meep
 
 
 if (isset($_GET['login'])){
@@ -59,13 +172,13 @@ if (isset($_GET['login'])){
 	
 }
 
-if (!isset($_SESSION['logged'])){
-
+if (!$_SESSION['logged']&&!isset($GET['ajaxx'])){
+	$seedroot='';
 	$files=scandir('./'.$seedroot.'/e');
 	sort($files);
 	foreach ($files as $fil)
 	{	
-		if (strstr($fil, '.php')&&floatval(str_replace('.php','',$fil))<(microtime(true)-6))
+		if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<(microtime(true)-6))
 		{
 			unlink('./'.$seedroot.'/e/'.$fil);
 			}
@@ -136,7 +249,7 @@ function resync() {
 					}
 				  
 				  };
-			  xhttp.open("GET", "?ajaxx=true", true);
+			  xhttp.open("GET", "?ajaxx=true&meep=true", true);
 			  xhttp.send();
 			}
 		}
@@ -172,10 +285,10 @@ window.setInterval(resync, 3000);
 	
 	
 	
-	die();
+	
 }
 
-
+else if (!isset($_GET['ajax'])) {
 include('site_variables.php');
 
 include ('header_functs.php');
@@ -216,7 +329,7 @@ if (((!isset($mysession['nick'])&&!isset($mysession['logout']))&&!(strstr($_SERV
 	
 		
 	$dat=serialize($data);
-	file_put_contents('./'.$seedroot.'/'.$target.'/'.microtime(true).'.php', $dat);
+	file_put_contents('./'.$seedroot.'/'.$target.'/'.microtime(true).'.dat', $dat);
 	
 	
 
@@ -233,10 +346,11 @@ if (isset($_POST['nick'])&&trim($_POST['nick'])!==''){
 		$data['nick']=$mysession['nick'];
 		$data['range']=$mysession['range'];
 		$data['message']='changed nick to <'.$_POST['nick'].'> *';
+		$_SESSION['saved_nick']=$_POST['nick'];
 		$data['color']=$mysession['color'];
 		$data['norange']=$mysession['norange'];
 		$dat=serialize($data);
-		file_put_contents('./'.$seedroot.'/d/'.microtime(true).'.php', $dat);
+		file_put_contents('./'.$seedroot.'/d/'.microtime(true).'.dat', $dat);
 		
 		
 		
@@ -250,7 +364,10 @@ echo generate_header($site_name.' - '.$site_slogan,$site_description);
 if (isset($mysession['lat'])&&isset($mysession['long'])&&isset($mysession['nick']))
 {
 	include ('chat.php');
-	die(); } 
+	 }
+	 
+}///*big else
+/* 
 $getloc=false;
 	
 	?>
@@ -308,6 +425,8 @@ else if (!$getloc) {
 
 ?>
 </div>
+
 <?php
 echo generate_footer($site_footer);
 ?>
+*/

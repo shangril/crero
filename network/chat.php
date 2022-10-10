@@ -35,7 +35,7 @@ if (isset($_POST['message'])){
 	
 	
 	$dat=serialize($data);
-	file_put_contents('./'.$seedroot.'/'.$target.'/'.microtime(true).'.php', $dat);
+	file_put_contents('./'.$seedroot.'/'.$target.'/'.microtime(true).'.dat', $dat);
 	
 	
 }
@@ -102,7 +102,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 }
 ?>
 <br/>
-<iframe style="display:inline;float:left;width:60%;height:380px;border:0px;" src="./room.php<?php 
+<iframe style="display:inline;float:left;width:60%;height:358px;border:0px;" src="./room.php<?php 
 
 	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
 		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
@@ -110,7 +110,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 	}
 
 ?>"></iframe>
-<iframe style="display:inline;float:left;width:40%;height:380px;border:0px;" src="./who.php<?php 
+<iframe style="display:inline;float:left;width:40%;height:358px;border:0px;" src="./who.php<?php 
 
 	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
 		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
@@ -134,4 +134,43 @@ if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 echo ' <form style="display:inline;margin-bottom:0px;padding-bottom:0px;margin-top:0px;padding-top:0px;" action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
 echo '<a style="float:right;margin-bottom:0px;padding-bottom:0px;margin-top:0px;padding-top:0px;" href="./?logout=true">Logout</a>';
 ?>
+<div id="meepcontent"></div>
+		<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+ 
+var syncLock=false;	
+//var attempt=0;
+	
+function resync() {
+			//attempt++;
+			//document.getElementById("content").innerHTML+="<br/>Attempt: "+attempt;
+			if (!syncLock){
+			  syncLock=true;
+			  
+			  var xhttp = new XMLHttpRequest();
+			  xhttp.onreadystatechange = function(){
+				  if (xhttp.readyState==4) {
+						syncLock=false;
+						
+						if (xhttp.status==200) {
+							
+							document.getElementById("meepcontent").innerHTML= xhttp.responseText;
+							}
+					}
+				  
+				  };
+			  xhttp.open("GET", "./index.php?meep=meeponly", true);
+			  xhttp.send();
+			}
+		}
+
+
+window.setInterval(resync, 3000);
+
+
+
+// @license-end
+</script>
+
 </body></html>

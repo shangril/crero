@@ -533,4 +533,13 @@ $YP_APIMisconfiguredDateOnHostingToleranceWindow=0;
 if (file_exists('./d/YP-APIMisconfiguredDateOnHostingToleranceWindow.txt')) {
 	$YP_APIMisconfiguredDateOnHostingToleranceWindow=floatval(file_get_contents('./d/YP-APIMisconfiguredDateOnHostingToleranceWindow.txt'));
 }
+
+$activate_musician_accounts=false;
+//currently it as to be and stay false
+
+
+
+
+
+
 ?>

@@ -1,8 +1,9 @@
-<?php if(!isset($_SESSION)){session_start();}
-include('site_variables.php');
+<?php session_start();
 chdir ('..');
 include ('./config.php');
 chdir ('./network');
+include('site_variables.php');
+
 if (!$activatechat){
 	exit(0);
 }
@@ -122,7 +123,7 @@ if (isset($_GET['ajaxx'])){
 					
 								}
 
-									if(floatval(str_replace('.php', '', $privatefile))>$lastseentimestamp){
+									if(floatval(str_replace('.dat', '', $privatefile))>$lastseentimestamp){
 
 										$msgcount++;
 									
@@ -168,7 +169,7 @@ if (isset($_GET['ajaxx'])){
 				
 				<a style="color:black;text-decoration:none;" target="_parent" >'.htmlspecialchars($dat['nick']).'
 				
-				</a></strong> (
+				</a></strong> 
 				
 				';
 				//href="./?private_nick='.urlencode($dat['nick']).'&private_sid='.urlencode($dat['color']).'"
@@ -178,10 +179,10 @@ if (isset($_GET['ajaxx'])){
 				
 				$output.=htmlspecialchars($distance);
 				}
-			else {$output.= 'n/a ';}
+			else {$output.= ' ';}
 				
 				
-				$output.= 'kms)<br/>';
+				$output.= ' <br/>';
 				
 				$keys[$dat['color']][$dat['nick']]=true;
 				$nicklist[$msgcount][$dat['nick']]=$output;
