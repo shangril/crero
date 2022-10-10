@@ -49,10 +49,10 @@ $supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?li
     foreach ($alb['tracklist'] as $trk){
 		echo '<h5 style="display:inline;">'.$trk['title'].'</h5><span style="float:right;">Download: ';
 		foreach ($supported_formats_remote as $mat){
-		 ?>
-		 <a href="<?php 
+		 ?> 
+		 <a href="[<?php 
 		 echo $clewnaudiourl.urlencode ($trk['file_basename']).'.'.$mat.'" download>'.htmlspecialchars($mat); 
-		 ?></a> 
+		 ?>]</a> 
 		 <?php
 		 }
 
@@ -70,10 +70,10 @@ $supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?li
     ?>
     <span style="float:right;">Download: <?php
 		foreach ($supported_formats_remote as $mat){
-		 ?>
-		 <a download href="<?php 
+		 ?> 
+		 <a download href="[<?php 
 		 echo $clewnaudiourl.urlencode ($trk['file_basename']).'.'.$mat.'" download>'.htmlspecialchars($mat); 
-		 ?></a> 
+		 ?>]</a>  
 		 <?php
 		 }
 
