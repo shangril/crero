@@ -135,10 +135,10 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if ($onlinemusicians==intval('-1')){
 			$mus_txt='an unknown number of';
 		}
-		if ($havetomeep){
+		if ($havetomeep==true&&$mus_meepenabled){
 			echo '<audio autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
 		}
-		if ($mus_havetomeep){
+		if ($mus_havetomeep==true&&$meepenabled){
 			echo '<audio autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
 		}
 
@@ -146,7 +146,7 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if (isset($_GET['ajaxx'])){
 			echo '
 		
-			<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' people online including '.$mus_txt.' label musicians)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect!"/></form>
+			<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' people online including '.$mus_txt.' label musicians)<form method="post" style="display:inline;" action="./?login=login"><input type="hidden" name="reallogin" value="reallogin"/><input type="submit" value="Connect!"/></form>
 			';
 		} 
 		
@@ -272,8 +272,8 @@ window.setInterval(resync, 3000);
 		</head>
 		
 		<body>
+		<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab is currently muted. Click to unmute</a>
 		<span id="content">Loading fan network...</span>
-		
 		
 		
 		
@@ -293,8 +293,8 @@ include('site_variables.php');
 
 include ('header_functs.php');
 
-
-
+if (isset($_POST['reallogin']))
+		$_SESSION['reallogin']=true;
 
 if (isset($_GET['norange'])){
 	unset($mysession['lat']);
@@ -363,6 +363,12 @@ echo generate_header($site_name.' - '.$site_slogan,$site_description);
 
 if (isset($mysession['lat'])&&isset($mysession['long'])&&isset($mysession['nick']))
 {
+	if (isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
+		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab is currently muted. Click to unmute</a>';
+		
+		
+	}
+	
 	include ('chat.php');
 	 }
 	 
