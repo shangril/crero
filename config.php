@@ -215,11 +215,11 @@ $sitename=trim(file_get_contents('./d/sitename.txt'));
 $serverapi='http://'.$server.'/api.php';
 //don't change this for typical install
 
-if (file_exists('./d/clewnapiurl.txt')){
+if (file_exists('./d/clewnapiurl.txt')&&file_get_contents('./d/clewnapiurl.txt')!==false){
 	$clewnapiurl=trim(file_get_contents('./d/clewnapiurl.txt'));
 }
 else {
-	$clewnapiurl='http://'.$server.'/api/api.php';//a quick help for newbies
+	$clewnapiurl=false;//sorry for the news, newbies, but we have to plan for the future
 }
 //you may change this to http://<your server>/whatever/path/to/free/audio/api.php
 
