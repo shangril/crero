@@ -1,0 +1,16 @@
+Planned things :
+
+Here you'll find random toughts about CreRo's future with no particular ordrer
+
+20221011: planning to move the whole site to Ajax in order to renable continous play (it would be a good reason) but also to keep the "newly introduced" play-a-sound-notification upon joins on the chat keep on working from page to page
+	* status : WIP
+20221011: planning to enable a Version 2 of crero-yp-api with more informations for inter-instance communication
+	* status : currenly in design phase
+20221011: planning to test and validate physical release shop for PHP 8.1
+	* status : to be done ASAP because needed by our own label
+20220111: planning to add an option for user-defined footer page "+" unroll symbol, like say "Copyright, copyleft and legal" or whatever the user wants
+	* status : planned and so quick to implement that it's a shame that the autor of this line is currently writing it instead of working on it
+20220111: planning to use YP Services as a hub for inter-instance communication using crero-yp-api and introduce a simple syndication for album page footers with albums from similar styles artists/labels displayed in a "you could like too..." fashion
+	* status : on the team's mind for years, serious design has been made mainly in-brain but also a bit on-paper
+20220111: planning to set up a Fediverse of Crero instance, using YP Services to discover instances list & crero-yp-api for inter-instance communication, and then the possibility to run in federated mode, that is to say include music from other labels in the world ; this, with a possibility to blacklist or whitelist particular instances on a per (sub)domain basis
+	* status : in early design stage -things have been thought about the how's and the to's, and notes taken, but they even don't fill an half A4 sheet of paper
