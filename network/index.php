@@ -138,11 +138,19 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if ($onlinemusicians==intval('-1')){
 			$mus_txt='an unknown number of';
 		}
+<<<<<<< HEAD
 		if ($havetomeep==true&&$mus_meepenabled==true){
 			echo '<audio onload="this.play();" autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
 		}
 		if ($mus_havetomeep==true&&$meepenabled==true){
 			echo '<audio onload="this.play();" autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
+=======
+		if ($havetomeep==true&&$mus_meepenabled){
+			echo '<audio autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
+		}
+		if ($mus_havetomeep==true&&$meepenabled){
+			echo '<audio autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
+>>>>>>> 106b5ef54a626241e21780dd554859be1634973a
 		}
 
 
@@ -275,15 +283,19 @@ window.setInterval(resync, 3000);
 		</head>
 		
 		<body>
+<<<<<<< HEAD
 		<a href="#" style="display:';
 		if (in_array('fromajax', array_keys($_GET)))
 			echo 'none;';
 		else
 			echo 'block;';
+=======
+		<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab is currently muted. Click to unmute</a>
+		<span id="content">Loading fan network...</span>
+>>>>>>> 106b5ef54a626241e21780dd554859be1634973a
 		
 		echo '" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>
 		<span id="content">Loading fan network...</span>
-		
 		
 		
 		</body>
@@ -390,8 +402,13 @@ echo generate_header($site_name.' - '.$site_slogan,$site_description);
 
 if (isset($mysession['lat'])&&isset($mysession['long'])&&isset($mysession['nick']))
 {
+<<<<<<< HEAD
 	if (!(in_array('fromajax', array_keys($_GET)))&&isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
 		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>';
+=======
+	if (isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
+		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab is currently muted. Click to unmute</a>';
+>>>>>>> 106b5ef54a626241e21780dd554859be1634973a
 		
 		
 	}
