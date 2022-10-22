@@ -188,7 +188,7 @@ header('Content-Type: text/plain; charset=utf-8');
 				$getID3 = new getID3;
 				$info = $getID3->analyze('z/'.$file);
 				getid3_lib::CopyTagsToComments($info); 
-				if($info['comments_html']['artist'][0]===$artist){
+				if($info['comments']['artist'][0]===$artist){
 					
 					$albums[strval($info['comments_html']['album'][0])]=array_reverse(explode('-', $info['comments_html']['date'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
 					

@@ -193,52 +193,7 @@ else if (isset($_GET['listformats'])){
 	echo listformats();
 }
 
-else if (isset($_GET['freshness'])){
-header('Content-Type: text/plain; charset=utf-8');
-	//DONE : case of emptied ./audio : once a freshness is obtained, store in ./audio-freshness.dat ; after foreach, if $albums is empty, echo content of this .dat file instead of usual return. If no freshness was obtained, echo, and store in .dat, current time() 
-	$files=scandir('./z');
-	$albums=Array();
-	foreach ($files as $file){
-		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))||$file=='.timestamp'){
-			$albums[filectime('./audio/'.$file)]=filectime('./audio/'.$file);
-	
-		}
-	}
-	
-	if (count($albums)>0){
-		
-		krsort($albums);
 
-		$freshness = array_keys($albums)[0];
-		
-		if (!file_put_contents('./audio-freshness.dat', $freshness)){
-			if (!unlink('./audio-freshness.dat')){
-				rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
-			}
-		}
-	}
-	else {
-		if (file_get_contents('./audio-freshness.dat')){
-			
-			$freshness = file_get_contents('./audio-freshness.dat');
-			
-		}
-		else {
-			
-			$freshness=time();
-			if (!file_put_contents('./audio-freshness.dat', $freshness)){
-				if (!unlink('./audio-freshness.dat')){
-					rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
-				}
-			}
-		}
-	}
-	
-	
-	
-	
-	echo $freshness;
-}
 else if (isset($_GET['getmtime'])) {
 header('Content-Type: text/plain; charset=utf-8');
 
@@ -832,6 +787,39 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 
+}
+else if (isset($_GET['listalbums'])) {
+header('Content-Type: text/plain; charset=utf-8');
+
+
+	//returns the list of albums for a specified artist
+	
+	
+	$artist=$_GET['listalbums'];
+	$files=scandir('./audio');
+	$albums=array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			
+				$getID3 = new getID3;
+				$info = $getID3->analyze('audio/'.$file);
+				getid3_lib::CopyTagsToComments($info); 
+				if($info['comments']['artist'][0]===$artist){
+					
+					$albums[strval($info['comments_html']['album'][0])]=array_reverse(explode('-', $info['comments_html']['date'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
+					
+				
+				}
+			
+		}
+		
+		
+	}
+	arsort($albums);
+	foreach ($albums as $album){
+		echo array_keys($albums, $album)[0]."\n";
+		
+	}
 }
 else if (isset($_GET['radio'])) {
 	header('Content-Type: text/plain; charset=utf-8');

@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ERROR | E_PARSE);
+error_reporting(0);
 require_once('config.php');
 //error_reporting(E_ALL);
 header( 'Content-Type: text/plain; charset=utf-8');
