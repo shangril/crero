@@ -1,6 +1,6 @@
 <?php session_start();
 chdir ('..');
-include ('./config.php');
+require_once ('./config.php');
 chdir ('./network');
 include('site_variables.php');
 
@@ -16,7 +16,7 @@ if (isset($mysession['nick'])&&trim($mysession['nick'])===''){
 
 if (!isset($_GET['ajaxx'])){
 ?>
-<html>
+<!DOCTYPE html><html>
 <head>
 <!--<meta http-equiv="refresh" content="3">-->
 <style>

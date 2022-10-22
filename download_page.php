@@ -30,7 +30,7 @@ $supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?li
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
-<title><?php echo strip_tags($title); ?> - Your download page</title>
+<title>Download page</title>
 
 </head>
 <body>
@@ -50,9 +50,9 @@ $supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?li
 		echo '<h5 style="display:inline;">'.$trk['title'].'</h5><span style="float:right;">Download: ';
 		foreach ($supported_formats_remote as $mat){
 		 ?> 
-		 <a href="[<?php 
+		 [<a href="<?php 
 		 echo $clewnaudiourl.urlencode ($trk['file_basename']).'.'.$mat.'" download>'.htmlspecialchars($mat); 
-		 ?>]</a> 
+		 ?></a>]
 		 <?php
 		 }
 
@@ -71,9 +71,9 @@ $supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?li
     <span style="float:right;">Download: <?php
 		foreach ($supported_formats_remote as $mat){
 		 ?> 
-		 <a download href="[<?php 
+			[<a download href="<?php 
 		 echo $clewnaudiourl.urlencode ($trk['file_basename']).'.'.$mat.'" download>'.htmlspecialchars($mat); 
-		 ?>]</a>  
+		 ?></a>]  
 		 <?php
 		 }
 

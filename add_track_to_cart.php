@@ -27,17 +27,17 @@ $tracktoadd['album']=$track_album;
 array_push($_SESSION['cart']['track'], $tracktoadd);
 
 ?>
-<div style="text-align:center;">
+<!--<div style="text-align:center;">
 
-<h2>Track added to cart</h2>
-<strong>The track was added to your download cart</strong>
+<h2>Track added to cart</h2>-->
+<strong>The track was added to your download cart</strong> <a target="_blank" href="view_cart.php" onclick="get_player().pause();">[view cart and download]</a><!--
 <br/>
 What would you want to do now ? 
 <h2><a href="javascript:void(0);" onclick="cr_c_document_getElementById('ajax_splash').style.display='none';">Continue picking songs</a></h2>
 or
-<h2><a href="view_cart.php" >Proceed to download</a></h2>
+<h2><a target="_blank" href="view_cart.php" onclick="get_player().pause();">Proceed to download</a></h2>
 
-</div>
+</div>-->
 
 <?php
 

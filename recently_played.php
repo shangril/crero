@@ -27,28 +27,30 @@ This is a frozen -and slightly modified- version from displaycover 20220729 from
 		$url=null;
 		while ($i<count($coverslines)){
 			if ($coverslines[$i]===html_entity_decode($album)){
-				$url=$coverslines[$i+1];
-				
+				if (isset($coverslines[$i+1])){
+					$url=$coverslines[$i+1];
+				}
 			}
 			$i++;
 			$i++;
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img style="width:100%;" src="./covers/'.rawurlencode($url).'" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
+			$output.='<img style="width:100%;" onload="if(!get_page_init()){init_page();}" src="./covers/'.rawurlencode($url).'" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
 		
 			
 			return $output;
 		}
 		else {
-			return '';
+			return '<img style="width:100%;" onload="if(!get_page_init()){init_page();}" src="./favicon.png" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
 		}
 	
 	
 	
 	}
 	else{
-		return '';
+		return '<img style="width:100%;" onload="if(!get_page_init()){init_page();}" src="./favicon.png" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
+
 	}	
 }
 
@@ -74,7 +76,7 @@ if (file_exists('./d/recently_generated_albums.dat')){
 }
 $counter=0;
 $recentsr=array_reverse($recents);
-
+echo 'Recently played: <a href="javascript:void(0);" onclick="displayRecentlyPlayed();">refresh</a> / <a href="javascript:void(0);" onclick="hideRecentlyPlayed();">hide</a><br/>';
 foreach ($recentsr as $recent){
 	if (!isset($recent['jailed'])){
 		$recent['jailed']=false;
@@ -83,7 +85,7 @@ foreach ($recentsr as $recent){
 	
 	if(in_array($recent['album'], $allowedAlbums)&&!$recent['jailed']&&$counter<10){
 		$counter++;
-		echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="./?album='.urlencode($recent['album']).'">'.displaycover($recent['album'], 10, 'mini'.rand(0,1000)).'</a><br/>';
+		echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="javascript:page_init=false;arr=[\''.urlencode(str_replace("'", "\\'", html_entity_decode($recent['album']))).'\'];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&autoplay=true\');">'.displaycover($recent['album'], 10, 'mini'.rand(0,1000)).'</a><br/>';
 		echo htmlspecialchars(round((time()-intval($recent['date']))/60));
 		echo ' mn<br/>';
 		//echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';

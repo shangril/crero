@@ -58,24 +58,19 @@ function listformats(){
 	$toks=explode ('.', $sample);
 	$extension=array_reverse($toks)[0];
 	
-	$formats=array();
-	
-	$formats[$extension]=$extension;
 	
 	$supported=array('.flac', '.ogg', '.mp3');
 	
-	$result=$formats;
+	$result=array();
 	
 	
 	
-	foreach ($formats as $format){
-			foreach ($supported as $tested){
-				if (file_exists('./z/'.str_replace('.'.array_reverse($toks)[0], $tested, $sample))){
-						$result[str_replace('.', '', $tested)]=str_replace('.', '', $tested);
-						
-				}
+		foreach ($supported as $tested){
+			if (file_exists('./z/'.str_replace('.'.$extension, $tested, $sample))){
+					$result[str_replace('.', '', $tested)]=str_replace('.', '', $tested);
+					
 			}
-	}	
+		}
 	ksort($result);
 	$return='';
 	foreach ($result as $line) {
@@ -128,8 +123,8 @@ else if (isset($_GET['freshness'])){
 	$files=scandir('./z');
 	$albums=Array();
 	foreach ($files as $file){
-		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			$albums[filemtime('./z/'.$file)]=filemtime('./z/'.$file);
+		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))||$file=='.timestamp'){
+			$albums[filectime('./z/'.$file)]=filectime('./z/'.$file);
 	
 		}
 	}
@@ -137,14 +132,23 @@ else if (isset($_GET['freshness'])){
 	if (count($albums)>0){
 		
 		krsort($albums);
-
-		$freshness = array_keys($albums)[0];
-		
-		if (!file_put_contents('./audio-freshness.dat', $freshness)){
-			if (!unlink('./audio-freshness.dat')){
-				rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
-			}
+		$oldfreshness=file_get_contents('freshness.dat');
+		if ($oldfreshness===false){
+			$oldfreshness=time();
 		}
+			
+		if ($oldfreshness>array_keys($albums)[0]){
+					$freshness=time();
+					}
+			else {
+				$freshness = array_keys($albums)[0];
+		    }
+		file_put_contents('freshness.dat', $freshness);
+		
+		if (!unlink('./audio-freshness.dat')){
+			rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+		}
+	
 	}
 	else {
 		if (file_get_contents('./audio-freshness.dat')){
@@ -185,19 +189,17 @@ header('Content-Type: text/plain; charset=utf-8');
 				$info = $getID3->analyze('z/'.$file);
 				getid3_lib::CopyTagsToComments($info); 
 				if($info['comments_html']['artist'][0]===$artist){
-					if(strlen(trim($info['comments_html']['album'][0]))>0&&$info['comments_html']['album'][0]){
 					
-						$albums[$info['comments_html']['album'][0]]=array_reverse(explode('-', $info['comments_html']['year'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
+					$albums[strval($info['comments_html']['album'][0])]=array_reverse(explode('-', $info['comments_html']['date'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
 					
-				}
+				
 				}
 			
 		}
 		
 		
 	}
-	array_multisort($albums);
-	$albums = array_reverse($albums, true);
+	arsort($albums);
 	foreach ($albums as $album){
 		echo array_keys($albums, $album)[0]."\n";
 		
@@ -427,7 +429,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 					$getID3 = new getID3;
 					$info = $getID3->analyze('z/'.$file);
 					getid3_lib::CopyTagsToComments($info); 
-					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
+					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
 							
 							
 							
@@ -491,123 +493,197 @@ header('Content-Type: application/json; charset=utf-8');
 		$id.=$artist."\n";
 	}
 	
-	$numberoffiles=0;
-	$currentfreshness=0;
 	
-	
-	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
-	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
-
-	
-	$cachedoutput=Array();
-
-	if (file_exists('./apicache.php')){
-		rename('./apicache.php', 'apicache.dat');
-	}
-
-
+	$cachedfreshness=0;
+				
 	if (file_exists('./apicache.dat')){
-		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+				$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+				if ($cachedoutput!==false){
+					if (array_key_exists($id, $cachedoutput)&&array_key_exists('freshness', $cachedoutput[$id])&&is_numeric($cachedoutput[$id]['freshness'])){
+						
+						$cachedfreshness=floatval($cachedoutput[$id]['freshness']);
+					}	
+					
+				}
+			}
+	
+	if(file_exists('./apicache-timestamp.dat')&&file_get_contents('./apicache-timestamp.dat')!==false&&$cachedfreshness>=floatval(file_get_contents('./apicache-timestamp.dat'))){
+	
+		echo json_encode($cachedoutput[$id]['data']);
+	
+	}
+	
+	
+	
+	else
+	{
+		$numberoffiles=0;
+		$currentfreshness=0;
+		$cachedfresshness=0;
+		$moved_freshness=false;
+			
 		
-		if($cachedoutput!==false){
-			$cachedfreshness=intval($cachedoutput[$id]['freshness']);
+		if (file_exists('./l2-numberoffiles.dat')){$numberoffiles=intval(file_get_contents('./l2-numberoffiles.dat'));}
+		if (file_exists('./storedfreshness.dat')){$currentfreshness=floatval(file_get_contents('./storedfreshness.dat'));}
+
+		
+		$cachedoutput=Array();
+
+		if (file_exists('./apicache.php')){
+			rename('./apicache.php', 'apicache.dat');
+		}
+		
+		if (true)//$numberoffiles!==count(scandir('./z')))
+		{
+			$files=scandir('./z');
+			$albums=Array();
+			foreach ($files as $file){
+				if ((! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format)))||$file=='.timestamp'){
+					$albums[filectime('./z/'.$file)]=filectime('./z/'.$file);
+			
+				}
+			}
+			krsort($albums);
+			
+			if (count($albums)==intval($numberoffiles)){
+				if ($currentfreshness==intval(array_keys($albums)[0])){
+					$moved_freshness=true;
+				
+				}
+				
+				file_put_contents('./l2-numberoffiles.dat', count($albums));
+				if (file_exists('audio-freshness.dat')){
+					if (!unlink('audio-freshness.dat')){
+						rename ('audio-freshness.dat', 'audio-freshness-TRASH.dat');
+						
+						}
+						
+					}
+				}
+				else //count($albums) has moved
+				{	
+					file_put_contents('./l2-numberoffiles.dat', count($albums));
+				
+					unlink('apicache.dat');
+					
+					
+					if (file_get_contents('./audio-freshness.dat')){
+						
+						$currentfreshness = file_get_contents('./audio-freshness.dat');
+						
+					}
+					else {
+						
+						$currentfreshness=time();
+						if (!file_put_contents('./audio-freshness.dat', $freshness)){
+							if (!unlink('./audio-freshness.dat')){
+								rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+							}
+						}
+					}
+					
+					
+				}
+		}
+			if (file_exists('./apicache.dat')){
+				$cachedfreshness=0;
+				$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+				if ($cachedoutput!==false){
+					foreach ($cachedoutput as $put){
+						if (floatval($put['freshness'])>floatval($cachedfreshness)){
+								$cachedfreshness=floatval($put['freshness']);
+							
+						}
+					}	
+					
+				}
+				else {
+					unlink('./apicache.dat');
+					$cachedfreshness=0;
+				}
+			}
+			else
+			{
+				$cachedfreshness=0;
+				
+			}
+
+
+
+
+		if (file_exists('./apicache.dat')){
+				$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+			}
+		else{
+				$cachedoutput=array();
+		}
+
+
+		if (((intval($cachedfreshness)==intval($currentfreshness)))&&!$moved_freshness){
+			echo json_encode($cachedoutput[$id]['data']);
+			
 		}
 		else {
 			
-			$cachedfreshness=0;
+				//outdated cache
 			
-		}
-	}
-	else
-	{
-		$cachedfreshness=0;
-		
-	}
-	if (true!==scandir('./z')&&$numberoffiles!==count(scandir('./z')))
-	{
-		$files=scandir('./z');
-		$albums=Array();
-		foreach ($files as $file){
-			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-				$albums[filemtime('./z/'.$file)]=filemtime('./z/'.$file);
-		
-			}
-		}
-		krsort($albums);
+				//outdated cache
 
-		$currentfreshness=intval(array_keys($albums)[0]);
-		file_put_contents('./numberoffiles.dat', count(scandir('./z')));
-		file_put_contents('./storedfreshness.dat', $currentfreshness);
-		
-	}
-	else if (true!==scandir('./z'));
-	{
-			$currentfreshness=time();
+
+
+
+			$artists=$_GET['listallalbums2'];
+			$files=scandir('./z');
+			$albumlist=Array();
 			
-			file_put_contents('./numberoffiles.dat', '0');
-				
+			foreach ($files as $file){
 			
-			file_put_contents('./storedfreshness.dat', $currentfreshness);
-		
-	}
-	if ($cachedfreshness>=$currentfreshness){
-		echo json_encode(unserialize($cachedoutput[$id]['data']));
-		
-	}
-	else {
-		
-			//outdated cache
 
-
-
-
-		$artists=$_GET['listallalbums2'];
-		$files=scandir('./z');
-		$albumlist=Array();
-		
-		foreach ($files as $file){
-		
-
-			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-				
-					$getID3 = new getID3;
-					$info = $getID3->analyze('z/'.$file);
-					getid3_lib::CopyTagsToComments($info); 
-					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
-							
-							
-							
-							$albumlist[filemtime('z/'.$file)]=$info['comments_html']['album'][0];
-							
-							$year=$info['comments_html']['date'][0];
-							
-							$year=array_reverse(explode('-', $year))[0];
-							
-							$content[$year.'.'.filemtime('z/'.$file)]['album']=$info['comments_html']['album'][0];
-							$content[$year.'.'.filemtime('z/'.$file)]['artist']=$info['comments_html']['artist'][0];
-							
-							
-							//bogus; do not use !
-							if (!isset($content[$year.'.'.filemtime('z/'.$file)]['artists'])){
-								$content[$year.'.'.filemtime('z/'.$file)]['artists']=Array();
-							}
-							//end of bogus
-							
-							array_push($content[$year.'.'.filemtime('z/'.$file)]['artists'],$info['comments_html']['artist'][0]);
-							
+				if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
 					
+						$getID3 = new getID3;
+						$info = $getID3->analyze('z/'.$file);
+						getid3_lib::CopyTagsToComments($info); 
+						if(in_array($info['comments']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
+								
+								
+								
+								$albumlist[filemtime('z/'.$file)]=$info['comments_html']['album'][0];
+								
+								$year=$info['comments_html']['date'][0];
+								
+								$year=array_reverse(explode('-', $year))[0];
+								
+								$content[$year.'.'.filemtime('z/'.$file)]['album']=$info['comments_html']['album'][0];
+								$content[$year.'.'.filemtime('z/'.$file)]['artist']=$info['comments_html']['artist'][0];
+								
+								
+								//bogus; do not use !
+								if (!isset($content[$year.'.'.filemtime('z/'.$file)]['artists'])){
+									$content[$year.'.'.filemtime('z/'.$file)]['artists']=Array();
+								}
+								//end of bogus
+								
+								array_push($content[$year.'.'.filemtime('z/'.$file)]['artists'],$info['comments_html']['artist'][0]);
+								
+						
+						
+						}
 					
-					}
+				}
 				
 			}
-			
-		}
-		echo json_encode($content);
-		//storing the cache
-		$cachedoutput[$id]['freshness']=time();
-		$cachedoutput[$id]['data']=serialize($content);
-		if($cachedoutput[$id]['data']!==false){	
+			$cachedoutput[$id]['freshness']=$currentfreshness;
+			$cachedoutput[$id]['data']=$content;
+			if($cachedoutput[$id]['data']!==false){	
+				file_put_contents('./apicache.dat', serialize($cachedoutput));
+			}
 			file_put_contents('./apicache.dat', serialize($cachedoutput));
+			file_put_contents('./apicache-timestamp.dat', $currentfreshness);
+				
+			echo json_encode($content);
+			//storing the cache
+
 		}
 	}
 }

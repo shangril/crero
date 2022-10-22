@@ -1,14 +1,15 @@
 <?php 
 chdir ('..');
-include ('./config.php');
+require_once ('./config.php');
 chdir ('./network');
 if (!$activatechat){
 	exit(0);
 }
 if (isset($_GET['logout'])){
-	session_unset();
+	//session_unset();
+	unset($mysession['nick']);
 	$mysession['logout']=true;
-	echo '<html><head><meta http-equiv="refresh" content="0"></head></html>';
+	echo '<!DOCTYPE html><html><head><script>setTimeout(function(window.location.href=\'./?fromajax=1\'){}, 0);</script></head><body>Redirection<a href="./?fromajax=1">...</a></body></html>';
 	die();
 
 	
@@ -137,31 +138,36 @@ echo '<a style="float:right;margin-bottom:0px;padding-bottom:0px;margin-top:0px;
 <div id="meepcontent"></div>
 		<script>
 
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 
  
 var syncLock=false;	
-//var attempt=0;
-	
+var attempt=0;
+var xshttp;	
 function resync() {
-			//attempt++;
+			attempt++;
+			if (attempt>10){
+				
+			  xshttp.abort;
+			  syncLock=false;
+			  attempt=0;	
+			}
 			//document.getElementById("content").innerHTML+="<br/>Attempt: "+attempt;
 			if (!syncLock){
 			  syncLock=true;
-			  
-			  var xhttp = new XMLHttpRequest();
-			  xhttp.onreadystatechange = function(){
-				  if (xhttp.readyState==4) {
+			  xshttp = new XMLHttpRequest();
+			  xshttp.onreadystatechange = function(){
+				  if (xshttp.readyState==4) {
 						syncLock=false;
 						
-						if (xhttp.status==200) {
+						if (xshttp.status==200) {
 							
-							document.getElementById("meepcontent").innerHTML= xhttp.responseText;
+							document.getElementById("meepcontent").innerHTML= xshttp.responseText;
 							}
 					}
 				  
 				  };
-			  xhttp.open("GET", "./index.php?meep=meeponly", true);
-			  xhttp.send();
+			  xshttp.open("GET", "./index.php?meep=meeponly", true);
+			  xshttp.send();
 			}
 		}
 

@@ -8,7 +8,7 @@ if (!$activatechat){
 include ('site_variables.php');
 if (!isset($_GET['ajaxx'])){
 ?>
-<html>
+<!DOCTYPE html><html>
 <head>
 <!--<meta http-equiv="refresh" content="3">-->
 <style>a link 

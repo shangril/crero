@@ -60,24 +60,19 @@ function listFormats() {
 	$toks=explode ('.', $sample);
 	$extension=array_reverse($toks)[0];
 	
-	$formats=array();
-	
-	$formats[$extension]=$extension;
 	
 	$supported=array('.flac', '.ogg', '.mp3');
 	
-	$result=$formats;
+	$result=array();
 	
 	
-	
-	foreach ($formats as $format){
-			foreach ($supported as $tested){
-				if (file_exists('./audio/'.str_replace('.'.array_reverse($toks)[0], $tested, $sample))){
-						$result[str_replace('.', '', $tested)]=str_replace('.', '', $tested);
-						
-				}
-			}
-	}	
+
+	foreach ($supported as $tested){
+		if (file_exists('./audio/'.str_replace('.'.$extension, $tested, $sample))){
+				$result[str_replace('.', '', $tested)]=str_replace('.', '', $tested);
+				
+		}
+	}
 	ksort($result);
 	$return='';
 	foreach ($result as $line) {
@@ -141,7 +136,71 @@ else if (isset($_GET['freshness'])){
 	$albums=Array();
 	foreach ($files as $file){
 		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+			$albums[filectime('./audio/'.$file)]=filectime('./audio/'.$file);
+	
+		}
+	}
+	
+	if (count($albums)>0){
+		
+		krsort($albums);
+		$oldfreshness=file_get_contents('freshness.dat');
+		if ($oldfreshness===false){
+			$oldfreshness=time();
+		}
+			
+		if ($oldfreshness>array_keys($albums)[0]){
+					$freshness=$oldfreshness;
+					}
+			else {
+				$freshness = array_keys($albums)[0];
+		    }
+		file_put_contents('freshness.dat', $freshness);
+		
+		if (!unlink('./audio-freshness.dat')){
+			rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+		}
+	
+	}
+	else {
+		if (file_get_contents('./audio-freshness.dat')){
+			
+			$freshness = file_get_contents('./audio-freshness.dat');
+			
+		}
+		else {
+			
+			$freshness=time();
+			if (!file_put_contents('./audio-freshness.dat', $freshness)){
+				if (!unlink('./audio-freshness.dat')){
+					rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	echo $freshness;
+}
+else if (isset($_GET['listformats'])){
+	//returns the list of available audio formats for the current catalog
+	//it is expected that the whole catalog is coherent : if one format is available
+	//each file of the catalog has to have it provided
+
+	header('Content-Type: text/plain; charset=utf-8');
+	echo listformats();
+}
+
+else if (isset($_GET['freshness'])){
+header('Content-Type: text/plain; charset=utf-8');
+	//DONE : case of emptied ./audio : once a freshness is obtained, store in ./audio-freshness.dat ; after foreach, if $albums is empty, echo content of this .dat file instead of usual return. If no freshness was obtained, echo, and store in .dat, current time() 
+	$files=scandir('./z');
+	$albums=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))||$file=='.timestamp'){
+			$albums[filectime('./audio/'.$file)]=filectime('./audio/'.$file);
 	
 		}
 	}
@@ -179,62 +238,6 @@ else if (isset($_GET['freshness'])){
 	
 	
 	echo $freshness;
-}
-else if (isset($_GET['listformats'])){
-	//returns the list of available audio formats for the current catalog
-	//it is expected that the whole catalog is coherent : if one format is available
-	//each file of the catalog has to have it provided
-
-	header('Content-Type: text/plain; charset=utf-8');
-	echo listformats();
-}
-
-else if (isset($_GET['freshness'])){
-	header('Content-Type: text/plain; charset=utf-8');
-
-	$files=scandir('./audio');
-	$albums=Array();
-	foreach ($files as $file){
-		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
-	
-		}
-	}
-	krsort($albums);
-
-	echo array_keys($albums)[0];
-}
-
-else if (isset($_GET['listalbums'])) {
-header('Content-Type: text/plain; charset=utf-8');
-
-
-	//returns the list of albums for a specified artist
-	$artist=$_GET['listalbums'];
-	$files=scandir('./audio');
-	$albums=array();
-	foreach ($files as $file){
-		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			
-				$getID3 = new getID3;
-				$info = $getID3->analyze('audio/'.$file);
-				getid3_lib::CopyTagsToComments($info); 
-				if($info['comments_html']['artist'][0]===$artist){
-					if(strlen(trim($info['comments_html']['album'][0]))>0&&$info['comments_html']['album'][0]){
-						$albums[$info['comments_html']['album'][0]]=array_reverse(explode('-', $info['comments_html']['year'][0]))[0].'.'.filemtime('audio/'.$file).$info['comments_html']['album'][0];
-					}
-				}
-			
-		}
-		
-		
-	}
-	array_multisort($albums);
-	$albums = array_reverse($albums, true);
-	foreach ($albums as $album){
-		echo array_keys($albums, $album)[0]."\n";
-		
-	}
 }
 else if (isset($_GET['getmtime'])) {
 header('Content-Type: text/plain; charset=utf-8');
@@ -365,7 +368,7 @@ else if (isset($_GET['listallalbums'])||isset($_GET['l'])) {
 header('Content-Type: application/x-httpd-php; charset=utf-8');
 	//TODO : introduce listallalbums2 and l2 which would do exactly the same thing but with JSON output instead of serialized PHP data
 	//to prevent auto-execution of malicious code at client-side deserialization if the audio tier is rogue (maybe public, offering free storage...)
-	//until now no public audio tier never born execpting the one operated by the author of this line. 
+	//until now no public audio tier never born exepting the one operated by the author of this line. 
 
 	//returns a serialized array of all albums for a specified array of artists
 	//keys are mtime of the albums
@@ -390,7 +393,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 	
 	
 	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
-	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
+	//if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
 
 	
 	$cachedoutput=Array();
@@ -415,7 +418,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		$files=scandir('./audio');
 		$albums=Array();
 		foreach ($files as $file){
-			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			if ((! is_dir('./audio/'.$file)&&(strpos($file, $format)===(strlen($file)-strlen($format))))||file=='.timestamp'){
 				$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
 		
 			}
@@ -427,7 +430,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 		file_put_contents('./storedfreshness.dat', $currentfreshness);
 		
 	}
-	if ($cachedfreshness>=$currentfreshness){
+	if ($cachedfreshness==$currentfreshness){
 		echo $cachedoutput[$id]['data'];
 		
 	}
@@ -450,7 +453,7 @@ header('Content-Type: application/x-httpd-php; charset=utf-8');
 					$getID3 = new getID3;
 					$info = $getID3->analyze('audio/'.$file);
 					getid3_lib::CopyTagsToComments($info); 
-					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
+					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
 							
 							
 							
@@ -515,111 +518,197 @@ header('Content-Type: application/json; charset=utf-8');
 	foreach ($artists as $artist) {
 		$id.=$artist."\n";
 	}
-	
-	$numberoffiles=0;
-	$currentfreshness=0;
-	
-	
-	if (file_exists('./numberoffiles.dat')){$numberoffiles=file_get_contents('./numberoffiles.dat');}
-	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
-
-	
-	$cachedoutput=Array();
-
-	if (file_exists('./apicache.php')){
-		rename('./apicache.php', 'apicache.dat');
-	}
-
-
+	$cachedfreshness=0;
+				
 	if (file_exists('./apicache.dat')){
-		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
-		if ($cachedoutput!==false){
-			$cachedfreshness=intval($cachedoutput[$id]['freshness']);
-		}
-		else {
-			$cachedfreshness=0;
-		}
+				$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+				if ($cachedoutput!==false){
+					if (array_key_exists($id, $cachedoutput)&&array_key_exists('freshness', $cachedoutput[$id])&&is_numeric($cachedoutput[$id]['freshness'])){
+						
+						$cachedfreshness=floatval($cachedoutput[$id]['freshness']);
+					}	
+					
+				}
+			}
+	
+	if(file_exists('./apicache-timestamp.dat')&&file_get_contents('./apicache-timestamp.dat')!==false&&$cachedfreshness>=floatval(file_get_contents('./apicache-timestamp.dat'))){
+	
+		echo json_encode($cachedoutput[$id]['data']);
+	
 	}
 	else
-	{
-		$cachedfreshness=0;
+	{//outdated cache
+		$numberoffiles=0;
+		$currentfreshness=0;
+		$cachedfresshness=0;
+		$moved_freshness=false;
+			
 		
-	}
-	if ($numberoffiles!==count(scandir('audio')))
-	{
-		$files=scandir('./audio');
-		$albums=Array();
-		foreach ($files as $file){
-			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-				$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+		if (file_exists('./l2-numberoffiles.dat')){$numberoffiles=intval(file_get_contents('./l2-numberoffiles.dat'));}
+		if (file_exists('./storedfreshness.dat')){$currentfreshness=floatval(file_get_contents('./storedfreshness.dat'));}
+
 		
-			}
+		$cachedoutput=Array();
+
+		if (file_exists('./apicache.php')){
+			rename('./apicache.php', 'apicache.dat');
 		}
-		krsort($albums);
-
-		$currentfreshness=intval(array_keys($albums)[0]);
-		file_put_contents('./numberoffiles.dat', count(scandir('./audio')));
-		file_put_contents('./storedfreshness.dat', $currentfreshness);
-		
-	}
-	if ($cachedfreshness>=$currentfreshness){
-		echo json_encode(unserialize($cachedoutput[$id]['data']));
-		
-	}
-	else {
-		
-			//outdated cache
-
-
-
-
-		$artists=$_GET['listallalbums2'];
-		$files=scandir('./audio');
-		$albumlist=Array();
-		
-		foreach ($files as $file){
 		
 
-			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-				
-					$getID3 = new getID3;
-					$info = $getID3->analyze('audio/'.$file);
-					getid3_lib::CopyTagsToComments($info); 
-					if(in_array($info['comments_html']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){
-							
-							
-							
-							$albumlist[filemtime('audio/'.$file)]=$info['comments_html']['album'][0];
-							
-							$year=$info['comments_html']['date'][0];
-							
-							$year=array_reverse(explode('-', $year))[0];
-							
-							$content[$year.'.'.filemtime('audio/'.$file)]['album']=$info['comments_html']['album'][0];
-							$content[$year.'.'.filemtime('audio/'.$file)]['artist']=$info['comments_html']['artist'][0];
-							
-							
-							//bogus; do not use !
-							if (!isset($content[$year.'.'.filemtime('audio/'.$file)]['artists'])){
-								$content[$year.'.'.filemtime('audio/'.$file)]['artists']=Array();
-							}
-							//end of bogus
-							
-							array_push($content[$year.'.'.filemtime('audio/'.$file)]['artists'],$info['comments_html']['artist'][0]);
-							
-					
-					
+		if (true)//$numberoffiles!==count(scandir('audio')))
+		{
+			$files=scandir('./audio');
+			$albums=Array();
+			foreach ($files as $file){
+				if ((! is_dir('./audio/'.$file)&&(strpos($file, $format)===(strlen($file)-strlen($format))))||$file=='.timestamp'){
+					$albums[filectime('./audio/'.$file)]=filectime('./audio/'.$file);
+			
+				}
+			}
+			krsort($albums);
+			if (count($albums)==intval($numberoffiles)){
+				if ($currentfreshness<=intval(array_keys($albums)[0])){
+					$moved_freshness=true;
+					$currentfreshness=intval(array_keys($albums)[0]);
+					file_put_contents('./storedfreshness.dat', $currentfreshness);
+
+				}
+				file_put_contents('./l2-numberoffiles.dat', count($albums));
+				if (file_exists('audio-freshness.dat')){
+					if (!unlink('audio-freshness.dat')){
+						rename ('audio-freshness.dat', 'audio-freshness-TRASH.dat');
+						
+						}
+						
 					}
+				}
+				else //count($albums) has moved
+				{	
+					file_put_contents('./l2-numberoffiles.dat', count($albums));
+				
+					unlink('apicache.dat');
+					
+					
+					if (file_get_contents('./audio-freshness.dat')){
+						
+						$currentfreshness = file_get_contents('./audio-freshness.dat');
+						
+					}
+					else {
+						
+						$currentfreshness=time();
+						if (!file_put_contents('./audio-freshness.dat', $freshness)){
+							if (!unlink('./audio-freshness.dat')){
+								rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+							}
+						}
+					}
+					
+					
+				}
+		}
+			if (file_exists('./apicache.dat')){
+				$cachedfreshness=0;
+				$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+				if ($cachedoutput!==false){
+					foreach ($cachedoutput as $put){
+						if (floatval($put['freshness'])>floatval($cachedfreshness)){
+								$cachedfreshness=floatval($put['freshness']);
+							
+						}
+					}	
+					
+				}
+				else {
+					unlink('./apicache.dat');
+					$cachedfreshness=0;
+				}
+			}
+			else
+			{
+				unlink('./apicache.dat');
+				$cachedfreshness=0;
 				
 			}
+
+
+
+
+		if (file_exists('./apicache.dat')){
+				$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+			}
+		else{
+				$cachedoutput=array();
+		}
+
+
+		if (((intval($cachedfreshness)>=intval($currentfreshness)))&&!$moved_freshness){
+			echo json_encode($cachedoutput[$id]['data']);
 			
 		}
-		echo json_encode($content);
-		//storing the cache
-		$cachedoutput[$id]['freshness']=time();
-		$cachedoutput[$id]['data']=serialize($content);
-		file_put_contents('./apicache.dat', serialize($cachedoutput));
+		else {
+			
+				//outdated cache
 
+
+
+
+			$artists=$_GET['listallalbums2'];
+			$files=scandir('./audio');
+			$albumlist=Array();
+			
+			foreach ($files as $file){
+			
+
+				if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+					
+						$getID3 = new getID3;
+						$info = $getID3->analyze('audio/'.$file);
+						getid3_lib::CopyTagsToComments($info); 
+						if(in_array($info['comments']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
+								
+								
+								
+								$albumlist[filemtime('audio/'.$file)]=$info['comments_html']['album'][0];
+								
+								$year=$info['comments_html']['date'][0];
+								
+								$year=array_reverse(explode('-', $year))[0];
+								
+								$content[$year.'.'.filemtime('audio/'.$file)]['album']=$info['comments_html']['album'][0];
+								$content[$year.'.'.filemtime('audio/'.$file)]['artist']=$info['comments_html']['artist'][0];
+								
+								
+								//bogus; do not use !
+								if (!isset($content[$year.'.'.filemtime('audio/'.$file)]['artists'])){
+									$content[$year.'.'.filemtime('audio/'.$file)]['artists']=Array();
+								}
+								//end of bogus
+								
+								array_push($content[$year.'.'.filemtime('audio/'.$file)]['artists'],$info['comments_html']['artist'][0]);
+								
+						
+						
+						}
+					
+				}
+				
+			}
+			$cachedoutput[$id]['freshness']=$currentfreshness;
+			$cachedoutput[$id]['data']=$content;
+
+			if($cachedoutput[$id]['data']!==false){	
+				file_put_contents('./apicache.dat', serialize($cachedoutput));
+			}
+
+			file_put_contents('./apicache.dat', serialize($cachedoutput));
+			file_put_contents('./apicache-timestamp.dat', $currentfreshness);
+			
+			echo json_encode($content);
+			
+			//storing the cache
+			
+		}
 	}
 }
 
@@ -952,7 +1041,7 @@ header('Content-Type: application/json; charset=utf-8');
 					$getID3 = new getID3;
 					$info = $getID3->analyze('audio/'.$file);
 					getid3_lib::CopyTagsToComments($info); 
-					if(!in_array($info['comments_html']['album'][0],$albumlist)){
+					if(!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
 							
 							
 							
@@ -993,6 +1082,7 @@ else if (isset($_GET['listartists'])) {
 header('Content-Type: text/plain; charset=utf-8');
 //basic cachign mechanism, reading. Will simply compare cache content with the mtime of the newest file in ./audio
 	$id='noartist';
+	$currentfreshness=0;
 	$numberoffiles=file_get_contents('./numberoffile.dat');
 	$currentfreshness=file_get_contents('./storedfreshness.dat');
 	
@@ -1026,7 +1116,7 @@ header('Content-Type: text/plain; charset=utf-8');
 		
 	}
 	
-	if ($cachedfreshness>=$currentfreshness){
+	if (floatval($cachedfreshness)>=floatval($currentfreshness)){
 		echo $cachedoutput[$id]['data'];
 		
 	}
@@ -1043,7 +1133,7 @@ header('Content-Type: text/plain; charset=utf-8');
 						$getID3 = new getID3;
 						$info = $getID3->analyze('audio/'.$file);
 						getid3_lib::CopyTagsToComments($info);
-						if (!isset($info['comments_html']['artist'][0])&&strlen($info['comments_html']['artist'])>=1){
+						if (!isset($info['comments_html']['artist'][0])&&strlen($info['comments_html']['artist'])>=1){ //'comments_html']['artist'][0])){
 									$art=$info['comments_html']['artist'];
 									$info['comments_html']['artist']=array($art);
 								}

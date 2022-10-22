@@ -8,24 +8,30 @@ class creroHtmlCache {
 			$this::$cachedat=unserialize(file_get_contents('./htmlcache/cached.dat'));
 		}
 		
-	//cleanup old pages
-	
-	$cachedkeys=array_keys($this::$cachedat);
-	
-	foreach ($cachedkeys as $cachedkey){
-		
-		$cachedpage=$this::$cachedat[$cachedkey];
-		
-		if ((floatval($cachedpage['expires'])
-				+floatval($this::$htmlcacheexpires*3600))
-				<floatval(microtime(true))){
-					unlink('./htmlcache/cached/'.$cachedpage['expires'].'.html');
-					unset($this::$cachedat[$cachedkey]);
-				}
-		
+		if ($this::$cachedat===false){
+			unlink('./htmlcache/cached.dat');
 		}
-	$this->saveCacheDatToDisk();
+	//cleanup old pages
+	if (is_array($this::$cachedat)){
+		$cachedkeys=array_keys($this::$cachedat);
 	
+		foreach ($cachedkeys as $cachedkey){
+			
+			$cachedpage=$this::$cachedat[$cachedkey];
+			
+			if ((floatval($cachedpage['expires'])
+					+floatval($this::$htmlcacheexpires*3600))
+					<floatval(microtime(true))){
+						unlink('./htmlcache/cached/'.$cachedpage['expires'].'.html');
+						unset($this::$cachedat[$cachedkey]);
+					}
+			
+			}
+		
+		$this->saveCacheDatToDisk();
+	
+		}
+			
 	}
 	public function hasPageExpired($cachedkey){
 		if (array_key_exists($cachedkey, $this::$cachedat))
@@ -74,13 +80,15 @@ class creroHtmlCache {
 	}
 	public function purgeCache(){
 		unlink ('./htmlcache/cached.dat');
-		$cachedfilez=array_diff(scandir('./htmlcache/cached'), array('..', '.'));
-		foreach ($cachedfilez as $cachedfile){
-			unlink ('./htmlcache/cached/'.$cachedfile);
-			
-		}
-		unlink ('./htmlcache/cached.dat');
+		if(scandir('./htmlcache/cached')!==false){
+			$cachedfilez=array_diff(scandir('./htmlcache/cached'), array('..', '.'));
 		
+			foreach ($cachedfilez as $cachedfile){
+				unlink ('./htmlcache/cached/'.$cachedfile);
+				
+			}
+		//unlink ('./htmlcache/cached.dat');
+		}
 	}
 	public function purgePage($key){
 		$page=$this::$cachedat[$key];

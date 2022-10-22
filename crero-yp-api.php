@@ -25,11 +25,19 @@ $version=0;
 $cache=true;
 if (!file_exists('./crero-yp-api-cache')){
 		mkdir('./crero-yp-api-cache');
-
+		
 	}
 else if (!is_dir('./crero-yp-api-cache')){
 	$cache=false;
 }
+
+if (!file_exists('./crero-yp-api-cache/.htaccess')||filectime('./crero-yp-api-cache/.htaccess')<filemtime('./d/.htaccess')){
+	$hta=file_get_contents('./d/.htaccess');
+	if ($hta!==false){
+		file_put_contents('./crero-yp-api-cache/.htaccess', $hta);
+	}
+}
+
 
 function readCache(string $version='0', string $action='void', string $actionvalue='', string $target='', bool $cache=false, float $windowT=0, string $additionnal_parameters='' ) {
 	
@@ -156,15 +164,16 @@ switch ($_GET['a']) {
 	case 'streaming_albums':
 		//
 		
-		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
-			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true);
+		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
+			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true);
 			break;
 		}
 		
-		$ret=file_get_contents('http://'.$server.'/api.php?listalbums='.urlencode(htmlentities($_GET[$_GET['a']])));
+		$ret=file_get_contents($serverapi.'?listalbums='.urlencode(htmlentities($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
-			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $ret); 
+			$ret=html_entity_decode($ret);
+			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $ret); 
 			echo $ret;
 		}
 		
@@ -180,6 +189,7 @@ switch ($_GET['a']) {
 		$ret = file_get_contents($clewnapiurl.'?listalbums='.urlencode(htmlentities($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
+			$ret=html_entity_decode($ret);
 			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $ret); 
 			echo $ret;
 		}
@@ -194,25 +204,20 @@ switch ($_GET['a']) {
 	case 'album_streaming':
 		//
 		
-		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
-			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true);
+		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
+			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true);
 			break;
 		}
 		
-		$ret=file_get_contents('http://'.$server.'/api.php?gettracks='.urlencode(strval($_GET[$_GET['a']])));
+		$ret=file_get_contents($serverapi.'?gettracks='.urlencode(strval($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
-			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $ret); 
+			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $ret); 
 			echo $ret;
 		}
 		
 		
 		break;
-
-
-
-//		echo file_get_contents('http://'.$server.'/api.php?gettracks='.urlencode(strval($_GET['album_streaming'])));
-//		break;
 	case 'album_download':
 		//
 		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
@@ -223,38 +228,31 @@ switch ($_GET['a']) {
 		$ret = file_get_contents($clewnapiurl.'?gettracks='.urlencode(strval($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
+			
 			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $ret); 
 			echo $ret;
 		}
 		
 		
 		break;
-
-		
-//		echo file_get_contents($clewnapiurl.'?gettracks='.urlencode(strval($_GET['album_download'])));
-//		break;
 	case 'title_streaming':
 		//
 		
-		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
-			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true);
+		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
+			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true);
 			break;
 		}
 		
-		$ret=file_get_contents('http://'.$server.'/api.php?gettitle='.urlencode(strval($_GET[$_GET['a']])));
+		$ret=file_get_contents($serverapi.'?gettitle='.urlencode(strval($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
-			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $ret); 
+			$ret=html_entity_decode($ret);
+			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $ret); 
 			echo $ret;
 		}
 		
 		
 		break;
-
-
-
-//		echo file_get_contents('http://'.$server.'/api.php?gettitle='.urlencode(strval($_GET['title_streaming'])));
-//		break;
 	case 'title_download':
 		//
 		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
@@ -265,38 +263,31 @@ switch ($_GET['a']) {
 		$ret = file_get_contents($clewnapiurl.'?gettitle='.urlencode(strval($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
+			$ret=html_entity_decode($ret);
 			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $ret); 
 			echo $ret;
 		}
 		
 		
 		break;
-
-
-//		echo file_get_contents($clewnapiurl.'?gettitle='.urlencode(strval($_GET['title_download'])));
-//		break;
 	case 'track_artist_streaming':
 		//
 				
-		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
-			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true);
+		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
+			echo readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true);
 			break;
 		}
 		
-		$ret=file_get_contents('http://'.$server.'/api.php?getartist='.urlencode(strval($_GET[$_GET['a']])));
+		$ret=file_get_contents($serverapi.'?getartist='.urlencode(strval($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
-			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),'http://'.$server.'/api.php', true, $ret); 
+			$ret=html_entity_decode($ret);
+			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $ret); 
 			echo $ret;
 		}
 		
 		
 		break;
-
-		
-		
-//		echo file_get_contents('http://'.$server.'/api.php?getartist='.urlencode(strval($_GET['track_artist_streaming'])));
-//		break;
 	case 'track_artist_download':
 		//
 			if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
@@ -307,17 +298,13 @@ switch ($_GET['a']) {
 		$ret = file_get_contents($clewnapiurl.'?getartist='.urlencode(strval($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
+			$ret=html_entity_decode($ret);
 			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $ret); 
 			echo $ret;
 		}
 		
 		
 		break;
-
-		
-		
-//		echo file_get_contents($clewnapiurl.'?getartist='.urlencode(strval($_GET['track_artist_download'])));	
-//		break;
 	case 'artist_info':
 		echo file_get_contents('./d/highlight-artist-list.txt');
 			//returns additionnal info for some artists of the label
@@ -338,24 +325,18 @@ switch ($_GET['a']) {
 		$ret = file_get_contents($clewnapiurl.'?listartists=1');
 		
 		if ($ret!==false){
+			$ret=html_entity_decode($ret);
 			writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $ret); 
 			echo $ret;
 		}
-		
-		
 		break;
-
-		
-		
-		
-		//echo html_entity_decode(trim(file_get_contents($clewnapiurl.'?listartists=1')));
-		//todo : requires testing. 
-		//break;
 	//Here should go the API V2 commands
 	//(...)
 	//Then the API V3 commands
 	//(...)
 	//And so on
+		
+	
 	default: 
 		echo 'Unsupported api action';
 		$version++;

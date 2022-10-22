@@ -245,7 +245,7 @@ function loginpanel($activateaccountcreation){
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="shortcut icon" href="/favicon.png" />
+<link rel="shortcut icon" href="../<?php echo $favicon;?>" />
 <link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -291,7 +291,7 @@ function loginpanel($activateaccountcreation){
 	}
 	?>
 <a name="menu"></a><div id="mainmenu" style="display:block;">	
-	<span style=""><img style="float:left;width:3%;" src="/favicon.png"/></span>
+	<span style=""><img style="float:left;width:3%;" src="../favicon.png"/></span>
 		
 	<h1 id="title" style="display:inline;"><?php echo $radioname; ?></h1>
 	<h2 style="clear:both;"><em><?php echo htmlspecialchars($radiodescription);?></em> <br/><a href="../">Home</a></h2>

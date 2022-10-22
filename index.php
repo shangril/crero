@@ -11,7 +11,54 @@ require_once('./config.php');
 
 require_once('./crero-lib.php');
 //error_reporting(E_WARNING|E_NOTICE|E_ERROR|E_PARSE);
-//error_reporting(E_ALL);
+error_reporting(0);
+
+$myhtmlcache=null;
+
+
+
+//Whoever you are, you deserve a cleaning
+//LOCKING 			 
+			if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)<microtime(true)){
+				unlink('./recently_ping_callback.lock');
+			}
+			
+
+			while (file_exists('./recently_ping_callback.lock')){
+				if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)>microtime(true)){
+					unlink('./recently_ping_callback.lock');
+					
+				}
+				sleep(1);
+			}
+			touch ('./recently_ping_callback.lock');
+			 
+//LOCKED			 
+
+$recentsjailed=Array();
+if (file_exists('./d/recent.dat')){
+	$recentsjailed=unserialize(file_get_contents('./d/recent.dat'));
+	
+}
+$recentsfinal=Array();
+if ($recentjailed){
+	foreach ($recentsjailed as $recent){
+		if($recent['jailed']===false||(($recent['jailed']===true)&&(floatval($recent['date'])+90.0)>floatval(time()))){
+			array_push($recentsfinal, $recent);
+			
+		}//if jailed && jailtime < 90 secondes OR not jailed
+		}
+	file_put_contents('./d/recent.dat', serialize($recentsfinal));
+}
+unlink('./recently_ping_callback.lock');
+//UNLOCKED
+
+
+if (array_key_exists('void', $_GET)){
+	echo '<!DOCTYPE html><html><body>Initializing...</body></html>';
+	throw new SystemExit();
+}
+
 
 function checkOverload ($apiResponse) {
 	if ($apiResponse===false){
@@ -20,7 +67,7 @@ function checkOverload ($apiResponse) {
 	}
 	
 }
-if (filemtime('./ypservices.lock')+60<time()){
+if ((filectime('./ypservices.lock')+intval(60))>time()){
 	unlink ('./ypservices.lock');
 }
 if (array_key_exists('ypservices', $_GET)){
@@ -180,12 +227,27 @@ if (array_key_exists('ypservices', $_GET)){
 if (isset($_GET['embed'])){
 	$embed=$_GET['embed'];
 }else{$embed=false;}
+/**********************************************************************
+ * IMPORTANT NOTICE ABOUT $embed
+ * Embed can be of two types ! Either a String, or a Boolean
+ * So never write <?php if ($embed) ?> of <?php if (!$embed) ?> !!!!!!
+ * Instead, write <?php if (((true==$embed)||(false!==$embed)))
+ * or <?php if (!((true==$embed)||(false!==$embed))) ?>
+ * 
+ * Otherwise, if the embed string contains the name of an artist who
+ * has for name "0", it will evaluate as false
+ * and will not embed properly
+ * so a strict double check is necessary
+ * firstly without strict type checking for normal name artists
+ * secondary with an OR (||) with strict type checking
+ * to be sure it's not strictly a boolean that has its value "false"
+ * ********************************************************************/
 
-
-$sessionstarted=session_start();
+//$sessionstarted=session_start();
 header("Content-Type: text/html; charset=utf-8");
-
-
+if (!array_key_exists('crero_uid', $_SESSION)){
+	$_SESSION['crero_uid']=microtime(true).'-'.random_int(1, 1000000);
+}
 ob_start();
 
 
@@ -200,63 +262,101 @@ if (isset($_SESSION['random'])&&$_SESSION['random']){
 	$_GET['twist']='random';//necessary if cache enabled
 	
 }
-
-
-
+if (array_key_exists('noscript', $_GET)&&$_GET['noscript']=='footer'){
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="shortcut icon" href="./<?php echo $favicon;?>" />
+<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="charset" value="utf-8" />
+<meta charset="UTF-8"/>
+<title><?php echo htmlspecialchars($sitename).' - '.htmlspecialchars($footerReadableName); ?></title>
+<meta name="description" content="<?php echo htmlspecialchars($title.' - '.$description); ?>" />
+</head>
+<body>
+<a href="./"><?php echo htmlspecialchars($sitename); ?></a> &gt; <?php echo htmlspecialchars($footerReadableName); ?><br/>
+<?php echo $footerhtmlcode; ?> 
+</body>
+</html>
+<?php
+	throw new SystemExit();
+}
 
 $willhavetocache=false;
+if ($activatehtmlcache){
+$myhtmlcache=new creroHtmlCache($htmlcacheexpires);
 
+}
 $cachingkey='key:';
 
 $get_keys=array_keys($_GET);
 
-$whitelist= array ('artist', 'album', 'track', 'offset', 'autoplay', 'vid', 'twist', 'embed');
+$whitelist= array ('artist', 'album', 'track', 'offset', 'autoplay', 'vid', 'twist', 'embed', 'body', 'target[]');
 
 foreach ($get_keys as $get_key){
+	//EXPECT crazy behaviors if target[] count more than one single elements. For now this is not a problem, cause the the sole target[] is array ('radio') and has only one element
 	if (in_array($get_key, $whitelist)){
-		$cachingkey.=$get_key.':'.$_GET[$get_key];
+		$cachingkey.=$get_key."\n".$_GET[$get_key];
 		}
 }
-$myhtmlcache=new creroHtmlCache($htmlcacheexpires);
+if ($activatehtmlcache){
+if (isset($_GET['purge'])){
+		$myhtmlcache->purgeCache();
+		echo '<html><body>Cache purged. <a href="./">Proceed</a></body></html>';
+		throw new SystemExit();
 
+	}
+}
 if (isset($_POST['page_purge'])&&$activatehtmlcache){
 	$pseudoget=json_decode(base64_decode($_POST['page_purge']),true);
 	
 	$cachingkey='key:';
 
-	$get_keys=array_keys($pseudoget);
+	$get_keys=array_intersect(array_keys($pseudoget), $whitelist);
 
 	foreach ($get_keys as $get_key){
-		$cachingkey.=$get_key.':'.$pseudoget[$get_key];
+		$cachingkey.=$get_key."\n".$pseudoget[$get_key];
 	
 	}
 
 	
 	$myhtmlcache->purgePage($cachingkey);
+	
+	$redirect_proto='http';
+	
+	if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
+		$redirect_proto='https';
+	}
+	$querystring='?';
+	$get_keys=array_keys($pseudoget);
+	foreach ($get_keys as $get_key){
+		if ($get_key!='body'&&$get_key!='no-infinite-loop-please'){
+		$querystring.=urlencode($get_key).'='.rawurlencode($pseudoget[$get_key]).'&';
+		}
+	}
+	if ($querystring='?'){
+		$querystring='';
+	}
+	
+	header("Location: ".$redirect_proto.'://'.$_SERVER['SERVER_NAME'].str_replace ('index.php', '', $_SERVER['PHP_SELF']).$querystring, true, 302);
+	
+	
 	echo '<html><head><title>Cache page purging</title></head><body style="font-size:700%;">The page was purged from the cache.<br/>
 	
 	
-	<a href="./?';
-	$get_keys=array_keys($pseudoget);
-	foreach ($get_keys as $get_key){
-		echo urlencode($get_key).'='.urlencode($pseudoget[$get_key]).'&';
+	<a onload="this.click();" href="./'.$querystring;
+
 	
-	}
-	
-	echo '">Continue</a></body></html>';
+	echo '">Continue...</a></body></html>';
 	throw new SystemExit();
 
 }
 
 
 
-$myhtmlcache=new creroHtmlCache($htmlcacheexpires);
-if (isset($_GET['purge'])){
-	$myhtmlcache->purgeCache();
-	echo '<html><body>Cache purged. <a href="./">Proceed</a></body></html>';
-	throw new SystemExit();
-
-}
 
 
 if (isset($_GET['getinfo'])){
@@ -272,57 +372,88 @@ if (isset($_GET['getinfo'])){
 //Out of the log
 //And polite bots are not wished as well
 //thanks to them for being polite
-if (!isset($_GET['listall'])&&isset($_GET['album'])&&$recentplay&&$sessionstarted
+if ((array_key_exists('recently_callback', $_GET)&&isset($_GET['album']))&&!isset($_GET['listall'])&&$recentplay&&$sessionstarted&&array_key_exists('HTTP_USER_AGENT', $_SERVER)
+		&&(null!==$_SERVER['HTTP_USER_AGENT']
 		&&!strstr('+', $_SERVER['HTTP_USER_AGENT'])
 		&&!strstr('bot ', $_SERVER['HTTP_USER_AGENT'])
 		&&!strstr('crawl', $_SERVER['HTTP_USER_AGENT'])
 		&&(''!==$_SERVER['HTTP_USER_AGENT'])
-		&&(null!==$_SERVER['HTTP_USER_AGENT'])
-		
-		) {
+		)
+		)
+		 {
+//LOCKING 			 
+			if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)<microtime(true)){
+				unlink('./recently_ping_callback.lock');
+			}
+			
+
+			while (file_exists('./recently_ping_callback.lock')){
+				if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)<microtime(true)){
+					unlink('./recently_ping_callback.lock');
+					
+				}
+				sleep(1);
+			}
+			touch ('./recently_ping_callback.lock');
+			 
+//LOCKED			 
+			 
+			 
+			 
+			 
 	$recent=Array();
 	$recent['album']=$_GET['album'];
 	$recent['date']=microtime(true); 
 	$recent['who']['color']=$_SESSION['color'];
 	$recent['who']['nick']=$_SESSION['nick'];
+	$recent['uid']=$_SESSION['crero_uid'];
 	$recent['jailed']=true;
 	$_SESSION['jailtime']=$recent['date'];
-	if (file_exists('./d/recent.dat')){
+	if (!file_exists('./d/recent.dat')){
+		$recents= Array();
+	}
+	else {
 		$recents=unserialize(file_get_contents('./d/recent.dat'));
 		
 	}
-	else
-	{ $recents= Array(); }  
 	
-	if (count($recents)>=10000){//hey guys, let's store 1000 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 0.1% of our list that is valid visitors. 
-		
-		$recents=array_slice($recents, 1, 9999);
+	$tobepushed=false;
+	foreach ($recents as $st_recent){
+		if ($st_recent['album']==$recent['album']){
+			if ($st_recent['uid']==$_SESSION['crero_uid']&&(!array_key_exists('pushed', $_SESSION)||(array_key_exists('pushed', $_SESSION)&&$_SESSION['pushed']!=$recent['album'].$recent['date']))){
+					$tobepushed=true;
+					$_SESSION['pushed']=$recent['album'].$recent['date'];
+				
+				
+			}
+			
+		}
 		
 	}
-	array_push($recents, $recent);
-	$dat=serialize($recents);
-	file_put_contents('./d/recent.dat', $dat);
-	
-	
-	/*  OUTDATED. We no longer want to display in the chatroom
-	 * who played an album
-	 * note that
-	 * if it is needed to reintroduce
-	 * the feature
-	 * in the meanwhile
-	 * the data will have been moved
-	 * to a .dat file
-	 * 
-		$data['long']=$_SESSION['long'];
-		$data['lat']=$_SESSION['lat'];
-		$data['nick']=$_SESSION['nick'];
-		$data['range']=$_SESSION['range'];
-		$data['message']=' is playing '.html_entity_decode($item['album']).' *';
-		$data['color']=$_SESSION['color'];
-		$dat=serialize($data);
-		file_put_contents('./network/d/'.microtime(true).'.php', $dat);
+	if ($tobepushed){	
+		if (count($recents)>=10000){//hey guys, let's store 1000 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 0.1% of our list that is valid visitors. 
+			
+			$recents=array_slice($recents, 1, 9999);
+			
+		}
 
-	*/
+		array_push($recents, $recent);
+		$dat=serialize($recents);
+		if ($dat!==false){
+			file_put_contents('./d/recent.dat', $dat);
+		}
+		if ($activatechat&&array_key_exists('nick', $_SESSION)){
+			$data['long']=$_SESSION['long'];
+			$data['lat']=$_SESSION['lat'];
+			$data['nick']=$_SESSION['nick'];
+			$data['range']=$_SESSION['range'];
+			$data['message']=' is playing '.html_entity_decode($recent['album']).' *';
+			$data['color']=$_SESSION['color'];
+			$dat=serialize($data);
+			file_put_contents('./network/d/'.microtime(true).'.dat', $dat);
+		}
+	}
+	
 	
 	
 	
@@ -346,13 +477,27 @@ foreach ($recentsjailed as $recent){
 }
 file_put_contents('./d/recent.dat', serialize($recentsfinal));
 
+unlink ('./recently_ping_callback.lock');
+//UNLOCKED 
+
+
+
+
+
+
+
+
+
+if (array_key_exists('recently_callback', $_GET)){
+	throw new SystemExit();
+}
 
 //*************PRE CACHING ENDS**************
 //* caching of htmlpage ; here we are
 
 
 if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'])){
-
+	
 	
 	if ($myhtmlcache->hasPageExpired($cachingkey)){
 		$willhavetocache=true;
@@ -485,23 +630,26 @@ else if (isset($_GET['artist'])||isset($_GET['listall'])){
 }
 
 
-
 if (isset($_GET['artist'])) {
-	$favicon='//'.$server.'/favicon.png';
+	//$artist=$_GET['artist'];
+
+	//$favicon='//'.$server.'/favicon.png';
 	$arturl='&artist='.urlencode($_GET['artist']);
-	$title='<a href="./?artist='.urlencode($_GET['artist']).'">'.htmlspecialchars(html_entity_decode($_GET['artist'])).'</a> - A '.htmlspecialchars($sitename).' artist';
+	//$title=htmlspecialchars($_GET['artist']).' - A '.htmlspecialchars($sitename).' artist';
 	$artists_file=trim(file_get_contents('./d/artists.txt')); 
 
 	$artists=explode("\n", $artists_file);
-	if (!in_array(html_entity_decode(html_entity_decode($_GET['artist'])), $artists)&&(file_exists('./d/artists.txt')&&count($artists)>0)) {
-		echo 'ooops... Invalid artist !';
+	if (!in_array($_GET['artist'], $artists)&&(file_exists('./d/artists.txt')&&count($artists)>0)) {
+		echo 'ooops... Invalid artist ! <a href="./">Browse the site, maybe?</a>';
 		throw new SystemExit();
 	}
 
 }
 else {
-	$favicon='/favicon.png';
+	//$favicon='/favicon.png';
 	$arturl='';
+	$artist='';
+
 }
 
 if (!isset($_GET['artist'])){
@@ -572,6 +720,52 @@ function featuredvids(){
 
 
 	}
+function cacheTracklist($album_entitified, $myserverapi) {
+	if (!file_exists('./d/albums_track_counter.dat')){
+		file_put_contents('./d/albums_track_counter.dat', serialize(array()));
+	}
+	$data=unserialize(file_get_contents('./d/albums_track_counter.dat'));
+	if ($data!==false){
+		$localfreshness=filectime('./d/albums_track_counter.dat');
+		$remotefreshness=file_get_contents($myserverapi.'?freshness=1');
+		if ($remotefreshness!==false){
+			if (floatval($localfreshness)>=floatval(trim($remotefreshness))){
+				if (array_key_exists($album_entitified, $data)){
+					return $data[$album_entitified];
+					}
+				}
+			
+			}
+			
+		}
+		
+	
+	/////NOT IN CACHE, QUERYING
+	$remotedat=file_get_contents($myserverapi.'?gettracks='.urlencode($album_entitified));
+	if ($remotedat!==false){
+		$data=unserialize(file_get_contents('./d/albums_track_counter.dat'));
+		if ($data!==false){
+			if (array_key_exists($album_entitified, $data)&&(strlen($data[$album_entitified])<=strlen($remotedat))){
+				$data[$album_entitified]=$remotedat;
+				file_put_contents('./d/albums_track_counter.dat', serialize($data));
+				return $remotedat;	
+			}
+			else if (array_key_exists($album_entitified, $data)){
+				return $data[$album_entitified];	
+			}
+			else if (!array_key_exists($album_entitified, $data)){
+				$data[$album_entitified]=$remotedat;
+				file_put_contents('./d/albums_track_counter.dat', serialize($data));
+				return $remotedat;	
+			
+			}
+			else {
+				return false;
+			}
+		}
+	}
+	return false;
+	}
 	
 function loginpanel($activateaccountcreation){
 	if (!$activateaccountcreation) {
@@ -595,7 +789,7 @@ function loginpanel($activateaccountcreation){
 		 	
 	}
 	else if (isset($_GET['createaccount'])) {
-		echo 'Please enter a <em>valid</em> email adress. You will receive a link to set your password and activate your account. <br/>';
+		echo 'ease enter a <em>valid</em> email adress. You will receive a link to set your password and activate your account. <br/>';
 		echo '<form id="orderform" style="display:inline;" method="POST" action="./">Your email address : <input type="text" name="validateemail"/><input type="submit"/></form>';
 		
 	}
@@ -632,7 +826,7 @@ function outputArtistSiteLink($artistHTML, $albumHTML, $ArtistSites){
 		$returnLink='';
 	
 		if (is_array($ArtistSites)&&count($ArtistSites)>0&&array_key_exists(html_entity_decode($artistHTML), $ArtistSites)){
-			$returnlink='Also available on <a target="new" href="'.$ArtistSites[html_entity_decode($artistHTML)].'?album='.urlencode(html_entity_decode($albumHTML)).'">'.$artistHTML.'</a> site';
+			$returnlink='Also available on <a target="_blank" href="'.$ArtistSites[html_entity_decode($artistHTML)].'?album='.rawurlencode(html_entity_decode($albumHTML)).'">'.$artistHTML.'</a> site';
 		
 			
 		}
@@ -644,7 +838,9 @@ function outputArtistSiteLink($artistHTML, $albumHTML, $ArtistSites){
 
 function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl) {
 	//let's see if there is a video available
-	
+					if ($videoapiurl===false){
+						return;
+					}	
 					
 	
 	
@@ -736,46 +932,48 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 		$i=0;
 		$url=null;
 		while ($i<count($coverslines)){
-			if ($coverslines[$i]===html_entity_decode($album)){
-				$url=$coverslines[$i+1];
-				
+			if ($coverslines[$i]==html_entity_decode($album)){
+				if (array_key_exists($i+1, $coverslines)){
+					$url=$coverslines[$i+1];
+				}
 			}
 			$i++;
 			$i++;
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'"/>';
+			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, '."'".str_replace("'","\\'",'./covers/'.rawurlencode($url))."'".', get_size(), '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
 		
-			$output.='<script>
+			/*$output.='<script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-			var size;
-			if (document.documentElement.clientWidth>=document.documentElement.clientHeight){
-				size=document.documentElement.clientHeight;
+			//var onload="if(!get_page_init()){;
+			/*if (document.documentElement.clientWidth>=document.documentElement.clientHeight){
+				onload="if(!get_page_init()){=document.documentElement.clientHeight;
 			}
 			else
 			{
-				size=document.documentElement.clientWidth;
-			}				 ';
-			$output.='document.getElementById('."'".$param.'_'.str_replace("'","\\'",$album)."'".').src='."'".'./thumbnailer.php?target='."'".'+encodeURI('."'".str_replace("'","\\'",'./covers/'.$url)."'".')+'."'".'&viewportwidth='."'".'+encodeURI(size)+'."'".'&ratio='."'".'+encodeURI('."'".str_replace("'","\\'",$ratio)."'".');';
+				onload="if(!get_page_init()){=document.documentElement.clientWidth;
+			}//				 ';
+			$output.='document.getElementById('."'".$param.'_'.str_replace("'","\\'",$album)."'".').src='."'".'./thumbnailer.php?target='."'".'+encodeURI('."'".str_replace("'","\\'",'./covers/'.$url)."'".')+'."'".'&viewportwidth='."'".'+encodeURI(onload="if(!get_page_init()){)+'."'".'&ratio='."'".'+encodeURI('."'".str_replace("'","\\'",$ratio)."'".');';
 							 
 			$output.='
  // @license-end 
  </script>';
-			
+			*/
 			return $output;
 		}
 		else {
-			return '';
+			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
 		}
 	
 	
 	
 	}
 	else{
-		return '';
+			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
 	}	
 }
+if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -785,115 +983,229 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 	
 	
 	
-<link rel="shortcut icon" href="<?php echo $favicon;?>" />
+<link rel="shortcut icon" href="./<?php echo $favicon;?>" />
 <link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
 <meta charset="UTF-8"/>
 
-<title><?php echo strip_tags($title); 
-
-if (isset($_GET['artist'])){
-	echo ' - '.htmlspecialchars(html_entity_decode($_GET['artist']));
-}
-if (isset($_GET['album'])){
-	echo ' - '.htmlspecialchars(html_entity_decode($_GET['album']));
-}
-if (isset($_GET['track'])){
-	echo ' - '.htmlspecialchars(html_entity_decode($_GET['track']));
-}
-
+<title id="main_title"><?php echo htmlspecialchars($sitename.' - '.strip_tags($title)); 
 ?></title>
-<meta name="description" content="<?php echo htmlspecialchars($description); ?>" />
-<?php 
-if ($mosaic&&$artisthighlighthomepage)
-{
-//if the highlight artist is on, we got to change the css
-?>
-	<style>
-	body {
-		margin-left:0%;
-		margin-right:0%;
-		padding-left:0%;
-		padding-right:0%;
-		}
-	
-	</style>
-	
-<?php }?> 
+<meta id="main_description" name="description" content="<?php echo htmlspecialchars($description); ?>" />
+ 
 <script src="./crero-script.js">
 </script>
+
 <script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-var infoselected=null;
+var server='<?php echo str_replace("'", "\\'", $server).'/';?>';
 
-<?php 
+var proto='<?php
+if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
+		echo 'https';
+	}
+	else {
+		echo 'http';
+	}
+?>';
+//WARNING: This value is set for indicative purpose only. Since it is gonna be cached, it can be one, or other, and
+//doesn't really reflect the protocol really active for the current page
+//it will simply be the one of the request when the page was cached
+//so please don't use this value for absolutely anything
+//we are going to use it for parsing request URL upon ajax calls
+//so it is not really important
+//because we just need GET parameters
+//and nothing more
+//so then whatever is indicated, don't trust
+//TODO: include a client side AJAX Request
+//that will query the server for its supported protocol
+//upon landing on any page
+//and pass full series of GET parameter and possible # anchor fragment
+//(I.E. will pass as a GET parameter the full content of window.locaction.href)
+//and introduce an $server_forces_HTTPS option in admin panel
+//that if set will indicate https regardless of the currently in use
+//protocol (and if unset https), and the response will also be besides
+//protocol, the full, actual path passed as the query)
+//and then on client side
+//if the reply is not exactly the same than window.location.href
+//which would mean the server indicates _forces_https for proto
+//move window.location.href to absolute https 
+//url provided as the reply
+//IMPORTANT this WILL have to be done inside init_page() JS function
+//and ONLY after the sanitization of displayed url in address bar is done
+//(the window.history.replaceState() thing)
 
+var bodyvoid='';
 
-
-echo 'var dl_audiourl='."'".$clewnaudiourl."';\n";
-echo 'var str_audiourl='."'//".$server."/z/';\n";
-$api_dl_formats=file_get_contents($clewnapiurl.'?listformats=1');
-$api_str_formats=file_get_contents('http://'.$server.'/api.php/?listformats=1');
-
-if ($api_dl_formats!==false&&strlen($api_dl_formats)>2){
-	echo 'var dlformats='."'".str_replace("\n", ' ', $api_dl_formats)."'".'.split(" ");';
-}
-else {//we revert to mp3 as a default. How ugly is this, indeed ? 
-	
-	echo 'var dlformats=["mp3"];';
-	
-}
-if ($api_str_formats!==false&&strlen($api_str_formats)>2){
-
-	echo 'var strformats='."'".str_replace("\n", ' ',  $api_str_formats)."'".'.split(" ");';
-}
-else {//we revert to mp3 as a default. How ugly is this, indeed ? 
-	
-	echo 'var strformats=["mp3"];';
-	
+<?php if (array_key_exists('body', $_GET) && $_GET['body']=='void'){
+echo 'bodyvoid=\'./?body=void\';';	
 }	
+?>
+
+
+
 	
-	echo "var target_album='".urlencode(htmlentities($_GET['target_album'], ENT_COMPAT))."';
-";
-//if we are here to generate a page to be embeded, we will set a JS var to allow script.js to trigger continous play
-if (isset($_GET['embed']))
-	{echo "var embed=true;
-		";
-	 } 
-	else
-	{echo "var embed=false;
-		";
-	 } 
-//done for embed		
+;(function(){
+			
+        
+    window.addEventListener('popstate', function() {
+        if (window.history.state!=null){
+			window.history.go();
+		}
+		else {
+			set_page_init(false);
+			//window.history.go();
+		}
+        window.dispatchEvent(new Event('locationchange'));
+       
+    });
 
 
 
 
-	if ($enableDownloadCart) {?>
-function addFullAlbumToCart(album_cart)
-		{
-		 var xhttpcartalb = new XMLHttpRequest();
-		  xhttpcartalb.onreadystatechange = function() {
+
+})();
+	
+		
+	
+	
+function displayRecentlyPlayed(){
+	var wwwxhttprecalb = new XMLHttpRequest();
+		  wwwxhttprecalb.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-			 document.getElementById("ajax_splash").style.display="block";
-			 document.getElementById("ajax_splash_message").innerHTML = this.responseText;
-			 update_cart();
+			 document.getElementById("recently_played").innerHTML = this.responseText;
 			}
 		  };
-		  xhttpcartalb.open("GET", "add_album_to_cart.php?album="+album_cart, true);
-		  xhttpcartalb.send();
+		  wwwxhttprecalb.open("GET", "recently_played.php", true);
+		  wwwxhttprecalb.send();
+	
+}
+
+
+ //@license-end 
+ </script>
+<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+<?php if (((true==$embed)||(false!==$embed))){
+		echo 'var embed=\''.str_replace('\'', "\\'",$embed).'\';';
+}
+?>
+
+function delegate()  {
+	
+	if (yprun&&!stall){
+		
+		var xhttpyp = new XMLHttpRequest();
+		  if (ypcurrentindexretries!=ypindex){
+		  
+			ypcurrentindexretries=ypindex;
+			ypretries=0;
+			}
+			
+		  xhttpyp.onreadystatechange = function() {
+			
+			if (this.readyState == 4 && this.status == 200) {
+			 if (document.getElementById('yp-services-content').innerHTML.startsWith('Loading ')) {
+				 document.getElementById('yp-services-content').innerHTML='';
+			 }
+			 
+			 if (yparrvalidated[ypindex]!=true){
+			 //juste to make sure we don't add duplicate entries
+			 //over slow internet connexions
+				document.getElementById('yp-services-content').innerHTML = document.getElementById('yp-services-content').innerHTML+this.responseText;
+				yparrvalidated[ypindex]=true;
+			 }
+			 ypretries=0;
+			 ypindex++;
+			 stall=false;
+			 if (this.responseText.trim() == ''){
+				 yprun=false;
+				 clearInterval(myfunc);
+			 }
+			}
+			else if (this.status != 200){
+				ypretries++;
+				stall=false;
+			}
+		  };
+		  
+		  
+		  
+		  if (ypping){
+			  appendypreq='&ping=ping';
+		  }
+		  xhttpyp.open("GET", './?ypservices='+encodeURI(ypindex)+appendypreq, true);
+		  stall=true;
+		  xhttpyp.send();
+		 
+		  if (ypretries>9){
+			  document.getElementById('yp-services-content').innerHTML=document.getElementById('yp-services-content').innerHTML+' (no reply for YP index: '+parseInt(ypindex)+', skipping) '; 
+			  yparrvalidated[ypindex]=true;
+			  ypindex++;
+		  }
+	
+	   }//if yprun
+	
+	}//function delegate()
+
+
+
+<?php	if ($enableDownloadCart) {?>
+function addFullAlbumToCart(album_cart,target)
+		{
+			
+		var ourtarget_fullalbum=target;
+			
+		 var qxhttpcartalb = new XMLHttpRequest();
+		  qxhttpcartalb.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			 /*document.getElementById("ajax_splash").style.display="block";
+			 document.getElementById("ajax_splash").style.position="absolute";
+			 document.getElementById("ajax_splash").style.height="100%";
+			 document.getElementById("ajax_splash_message").innerHTML = this.responseText;*/
+			 if (this.responseText.startsWith('FAILURE')){
+				ourtarget_fullalbum.innerHTML="Failure, sorry. Please click to retry";
+			 }
+			 else {
+				ourtarget_fullalbum.href="javascript:void(0);";
+				ourtarget_fullalbum.onclick="void(0);";
+				ourtarget_fullalbum.innerHTML=this.responseText;
+				 
+			 }
+			 update_cart();
+			 
+			}
+		  };
+		  qxhttpcartalb.open("GET", "add_album_to_cart.php?album="+album_cart, true);
+		  qxhttpcartalb.send();
 
 		}
-function addTrackToCart(track_title, track_album, track_basefile, track_artist)
+function addTrackToCart(track_title, track_album, track_basefile, track_artist, target)
 		{
+			
+		 var ourtarget_track=target;	
+			
 		 var xhttpcarttrk = new XMLHttpRequest();
 		  xhttpcarttrk.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-			 document.getElementById("ajax_splash").style.display="block";
-			 document.getElementById("ajax_splash_message").innerHTML = this.responseText;
+			 /*document.getElementById("ajax_splash").style.display="block";
+			 document.getElementById("ajax_splash").style.position="absolute";
+			 document.getElementById("ajax_splash").style.height="100%";
+			 
+			 document.getElementById("ajax_splash_message").innerHTML = this.responseText;*/
+			 if (this.responseText.startsWith('FAILURE')){
+				ourtarget_fullalbum.innerHTML="Failure, sorry. Please click to retry";
+			 }
+			 else {
+				ourtarget_track.href="javascript:void(0);";
+				ourtarget_track.onclick="void(0);";
+				ourtarget_track.innerHTML=this.responseText;
+				 
+			 }
+			 
 			 update_cart();
 			}
 		  };
@@ -903,6 +1215,10 @@ function addTrackToCart(track_title, track_album, track_basefile, track_artist)
 		}
 
 <?php }?>
+
+
+
+
 
  //@license-end 
  </script>
@@ -915,9 +1231,9 @@ function addTrackToCart(track_title, track_album, track_basefile, track_artist)
 	  
 function stats(){
 	  
-	  var xhttp = new XMLHttpRequest();
-	  xhttp.open("GET", "./?pingstat=true", true);
-	  xhttp.send();
+	  var xstathttp = new XMLHttpRequest();
+	  xstathttp.open("GET", "./?pingstat=true", true);
+	  xstathttp.send();
 
 }
 
@@ -940,53 +1256,7 @@ function stats(){
  ?>
 <style>
 </style>
-</head>
-<body 
-
-<?php if ($activatestats){?>
-onLoad="stats();"
-<?php }?>
-
->
-<!--overcapacity splash-->
-<div id="overload_splash" style="z-index:128;position:absolute; top:0; left:0;width:100%;height:100%;margin-bottom:100%;display:none;background-color:white;">
-	<span id="overload_splash_message"></span>
-	<h1 style="text-align:center;">Sorry, something went wrong</h1>
-	<span style="text-align:center;">
-	It seems that this version of this page as stored in the site's cache has been generated while the media storage tier was suffering an overload.<br/>As a consequence, the tracklisting for this page is empty. 
-	<br/>
-	You can try to clear the cache for this particular page and see if it can solve this error. 
-	<form id="overload_form" method="POST">
-	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode(array_diff($_GET, array($_GET['listall']))));?>"/>
-	<span id="overload_button">
-	</span>
-	</form>
-	</span>
-	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document_getElementById_overload_splash__style_display('none');">X Close</a>
-</div>
-
-<script>
-
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-var overload_track_counter=0;
-
- //@license-end 
- </script>
-
-
-
-<!-- volume controler code -->
-<span style="position: fixed; left:0px; top:0px; font-size:140%; border:solid 1px; border-radius:5px">
-<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()-0.1;">-</a>
-<span style="font-size:108%;background-color:black;">🔈</span>
-<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()+0.1;">+</a>
-<!--end volume controler code -->
-
-</span>	
-	<?php
-	if ($enableDownloadCart)
-	{
-	?>
+<?php if ($enableDownloadCart){?>
 	<script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
@@ -1008,7 +1278,790 @@ var overload_track_counter=0;
 	
  //@license-end 
  </script>
-	<div style="width:100%;text-align:right">In your download cart: <a href="./view_cart.php"><span id="dlcartcounter"></span> items</a></div>
+ <?php } ?>
+</head>
+<?php
+
+
+
+
+
+?>
+<body id="crerobody"
+>
+<?php } 
+}//if body=ajax
+catch (SystemExit $e) { ob_flush(); exit(0); }
+
+try {
+//if !$_GET['body']=='ajax';?>
+<script>
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
+var page_init=false;
+var album_displayed=0;
+var page_init=false;
+var overload_track_counter=undefined;
+var infoselected=null;
+var infoselected=null;
+var size;
+
+var dl_audiourl='';
+var str_audiourl='';
+var dlformats='';
+var strformats=''
+var target_album='';
+var embed=null;
+var overloadindexchecked=false;
+
+//yp stuff
+var ypping=true;
+
+var myfunc;	
+var yprun=true;
+var ypindex=0;
+var appendypreq='';
+var ypretries=0;
+var ypcurrentindexretries=0;
+var stall=false;
+var yparrvalidated=[];
+var nosocialupdate=false;	  
+//ping recently played
+var xhttpingprecalb=null;
+var titleSite="<?php 
+echo htmlspecialchars($title);
+?>";
+var artist;
+var album;
+var track;
+var offset;
+var isindex=undefined;
+var overloadtimer=null;
+var embed_value='';
+var isplaying;
+var isautoplay;
+var str_album_count;
+var dl_album_count;
+
+
+function autoplay (mycurrenttarget, mycurrentid, mycurrentclewn, mycurrentautoplay){
+	play(mycurrenttarget, mycurrentid, mycurrentclewn, mycurrentautoplay);
+}
+function get_isindex(){
+	if (isindex==undefined){
+		return false;
+	}
+	
+	return isindex;
+}
+function set_isindex(par){
+	isindex=par;
+}
+//var overloadindexchecked=false;
+function get_overloadindexchecked(){
+	return overloadindexchecked;
+}
+function set_overloadindexchecked(ckpar){
+	overloadindexchecked=ckpar;
+}
+
+
+
+
+
+function update_isindex(){
+	if (document.getElementById('isindex')!=null){
+		if (document.getElementById('isindex').value=='true'){
+			set_isindex(true);
+		}
+		else {
+			set_isindex(false);
+		}
+	}
+	else {
+		set_isindex(false);
+	}
+	
+	
+}
+function update_embed(){
+	if (document.getElementById('embed')!=null){
+		if (document.getElementById('embed').value=='true'){
+			set_embed(true);
+		}
+		else {
+			set_embed(false);
+		}
+	}
+	else {
+		set_embed(false);
+	}
+	
+	
+}
+function update_embed_value(){
+	if (document.getElementById('embed_value')!=null){
+		set_embed_value(document.getElementById('embed_value').value);
+		
+	}
+
+}
+function update_offset(){
+	if (document.getElementById('offset')!=null){
+		return parseInt(document.getElementById('offset').value);
+		}
+		else {
+			return 0;
+		}
+	
+	
+	
+}
+function update_album(){
+	if (document.getElementById('album')!=null){
+		return decodeURI(document.getElementById('album').value);
+		}
+		else {
+			return '';
+		}
+}
+function update_artist(){
+	if (document.getElementById('artist')!=null){
+		return decodeURI(document.getElementById('artist').value);
+		}
+		else {
+			return '';
+		}
+}
+function update_track(){
+	if (document.getElementById('track')!=null){
+		return decodeURI(document.getElementById('track').value);
+		}
+		else {
+			return '';
+		}
+}
+function update_autoplay(){
+	if (document.getElementById('bodyajax_autoplay')!=null){
+		if(document.getElementById('bodyajax_autoplay').value=='true'){
+			set_autoplay(true);
+
+	
+
+			if (document.getElementById('autoplay')!=null){
+				document.getElementById('autoplay').click();
+			}
+		}
+		else
+		{
+			set_autoplay(false);
+		}
+	}
+	else
+		{
+			set_autoplay(false);
+		}
+}
+
+function update_album_count(){
+	if (document.getElementById('dl_album_count')!=null){
+		set_dl_album_count(parseInt(document.getElementById('dl_album_count').value));
+		}
+		else {
+			set_dl_album_count(parseInt('-2'));
+		}
+	if (document.getElementById('str_album_count')!=null){
+		set_str_album_count(parseInt(document.getElementById('str_album_count').value));
+		}
+		else {
+			set_str_album_count(parseInt('-2'));
+		}
+	
+	
+}
+
+
+var inc_stall=undefined;
+
+function get_inc_stall(){
+	if (inc_stall==undefined){
+		return false;
+	}
+	
+	return inc_stall;
+}
+function set_inc_stall(argst){
+	inc_stall=argst;
+}
+var toincrement=undefined;
+function increment_overload_track_counter(){
+	if (overload_track_counter=undefined){
+		set_overload_track_counter(0);
+	}
+	if (!get_page_init()){
+		if (toincrement==undefined){toincrement=0;}
+		
+		if (!get_inc_stall()){
+			set_inc_stall(true);
+						
+			var overload_counter_interval=window.setInterval(function(){
+				if (get_page_init()){
+					set_inc_stall(false);
+					
+					window.clearInterval(overload_counter_interval);
+					for (i=0;i<toincrement;i++){
+						set_overload_track_counter(parseInt(get_overload_track_counter())+parseInt(1));
+						
+					}
+				}
+			}, 500);
+		}
+		toincrement++;
+		
+	}
+	else
+	{
+		set_inc_stall(false);
+		
+		set_overload_track_counter(parseInt(get_overload_track_counter())+parseInt(1));
+	}
+}
+
+
+function get_overload_track_counter(){
+	if (isNaN(parseInt(overload_track_counter))){
+		return 0;
+	}
+	return parseInt(overload_track_counter);
+	
+}
+function set_overload_track_counter(otca){
+	overload_track_counter=parseInt(otca);
+	
+}
+function get_album(){
+	return album;
+}
+
+function get_autoplay(){
+	return isautoplay;
+}
+function set_autoplay(auartarg){
+	isautoplay=auartarg;
+}
+
+function get_init_page(){
+	if (init_page==undefined){
+		return false;
+	}
+	
+	return init_page;
+}
+function set_init_page(onld){
+	init_page=onld;
+	}
+
+function get_artist(){
+	return artist;
+}
+function set_artist(artarg){
+	artist=artarg;
+}
+function get_track(){
+	return track;
+}
+function set_track(trarg){
+	track=trarg;
+}
+
+
+function get_offset(){
+	return offset;
+}
+function get_embed(){
+	return embed;
+	
+}
+function set_embed(earg){
+	embed=earg;
+}
+function get_embed_value(){
+	return embed_value;
+	
+}
+function set_embed_value(evarg){
+	embed_value=evarg;
+}
+function get_str_album_count(){
+	return str_album_count;
+	
+}
+function set_str_album_count(cevarg){
+	str_album_count=cevarg;
+}
+function get_dl_album_count(){
+	return dl_album_count;
+	
+}
+function set_dl_album_count(dcevarg){
+	dl_album_count=dcevarg;
+}
+function set_offset(offarg){
+	offset=offarg;
+}
+function set_album(aoffarg){
+	album=aoffarg;
+}
+function set_page_init(piarg){
+	page_init=piarg;
+}
+function get_page_init(){
+	return page_init;
+}
+function set_size(spiarg){
+	size=spiarg;
+}
+function get_size(){
+	return size;
+}
+
+var albumerror=undefined;
+
+function get_album_error(){
+	return albumerror;
+}
+function set_album_error(argerr){
+	albumerror=argerr;
+}
+
+function init_page() {
+	
+	set_album_error=false;
+	set_inc_stall(false);
+	
+	set_overloadindexchecked(false);
+	if (overload_track_counter==undefined){
+	
+		set_overload_track_counter(0);
+	}
+	set_isplaying('-1');
+	
+	update_album_count();
+	
+	update_embed;
+	
+
+	update_embed_value();
+	
+	set_offset(update_offset());
+	
+	set_album(update_album());
+	set_track(update_track());
+	set_artist(update_artist());
+	
+	update_title();
+
+	update_isindex();
+	
+	if (!get_isindex()){
+		document.getElementById('splash').style.display='none';
+	}
+
+
+
+	var alb_willhavetoping=true;
+	if (!get_isindex()&&get_album()!=''){
+		var recentretries=0;
+		var oprpretries=0;
+				 
+		var current_recent_album=get_album();
+		var xhttzzpingprecalb=[];
+		var xhttzzpingprecalb_index=0;
+		timer=0;
+		while (recentretries < 1) {
+			recentretries++;
+			setTimeout(function(){
+				tryindex=xhttzzpingprecalb_index-1;
+				
+				while(xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();tryindex--;}
+				
+				
+				
+				
+				xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest(function(){
+
+
+				if (this.readyState == 4 && this.status == 200) {
+						for (i=0;i<xhttzzpingprecalb.length;i++){
+							xhttzzpingprecalb[i].abort();
+						}
+						recentretries=10;
+						var oxhttozzypingprecalb; 
+						oxhttozzypingprecalb = new XMLHttpRequest(function(){
+							if (this.readyState == 4 && this.status == 200) {
+									
+									oprpretries=10;
+								}
+							
+							});
+						stimer=500;
+							
+						while(oprpretries<10){
+							oprpretries++;
+							setTimeout(function(){
+							oxhttozzypingprecalb.abort();
+							
+							oxhttozzypingprecalb = new XMLHttpRequest(function(){
+							if (this.readyState == 4 && this.status == 200) {
+									alb_willhavetoping=false;
+							
+									oprpretries=10;
+								}
+							
+							});
+							
+							
+							oxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
+							oxhttozzypingprecalb.send();
+							},stimer);
+							stimer=stimer+500;
+						}
+						
+					}
+				
+				});
+				xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURI(current_recent_album), true);
+				xhttzzpingprecalb[xhttzzpingprecalb_index].send();
+				xhttzzpingprecalb_index++;
+			},timer);
+			timer=timer+3800;
+		}
+	
+	
+	}
+
+
+	
+	//monthly donation
+	var monthly=false;
+	
+	//ping recently played
+	if (!get_isindex()&&alb_willhavetoping){
+		var prpretries=0;
+		
+		var prpxhttozzypingprecalb = new XMLHttpRequest(function(){
+			if (this.readyState == 4 && this.status == 200) {
+					prpretries=10;
+				}
+			
+			});
+		ttimer=500;
+		while(prpretries<10){
+			prpretries++;
+			setTimeout(function(){
+				prpxhttozzypingprecalb.abort();
+				prpxhttozzypingprecalb = new XMLHttpRequest(function(){
+					if (this.readyState == 4 && this.status == 200) {
+							prpretries=10;
+						}
+					
+					});
+				prpxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
+			prpxhttozzypingprecalb.send();
+			},ttimer);
+			ttimer=ttimer+500;
+		}
+	}
+
+	//getting most out of url passed for internal use purposes
+	const url=new URL(proto+'://'+server+'/'+document.getElementById('bodyajax').value);
+	<?php /*
+	$mythings = array ('artist', 'track', 'album');
+	foreach ($mythings as $thing){
+		echo 'if ('.$thing.'!=\'\'){';
+		echo "\n";
+		echo 'search'.$thing.'=url.searchParams.get(\''.$thing.'\');'."\n";
+		?>
+			arg='';
+			jsonsuccess=false;
+			try {
+					arg=JSON.parse(search<?php echo $thing;?>)[0];
+					if (arg!=null){
+						jsonsuccess=true;
+					}
+					else {
+						throw new SyntaxError();
+					}
+			}
+			catch (e) {
+				if (search<?php echo $thing;?>!=null){
+						arg=search<?php echo $thing;?>;
+					}
+					else {
+						arg='';
+					}
+				}
+		
+		<?php
+		echo 'temp'.$thing.'=arg;'."\n";
+		echo ' '.$thing.'=';
+		echo 'temp'.$thing;
+		echo ';';
+		echo "\n}";
+	}
+*/?>
+	//override album by server-passed param
+	
+	//yp stuff
+	ypping=true;
+	nosocialupdate=false;	  
+
+	myfunc=null;	
+	yprun=true;
+	ypindex=0;
+	appendypreq='';
+	ypretries=0;
+	ypcurrentindexretries=0;
+	stall=false;
+	yparrvalidated=[];
+	//end yp stuff
+
+	album_displayed=0;
+	set_size(computeSize(document.documentElement.clientWidth, document.documentElement.clientHeight));
+	
+	infoselected=null;
+	document.getElementById('noscripters').style.display='none';
+	document.getElementById('noscripters_footer').style.display='none';
+	if (document.getElementById('infiniteloop')!=null){
+		document.getElementById('bodyajax_autoplay').value='false';
+	}
+	
+//initial stuff
+<?php if ($activatestats){?>
+ echo "stats();\n"
+<?php }?>
+	
+<?php if ($artisthighlighthomepage)
+{ ?>
+	
+if (get_isindex()){	
+document.getElementById('crerobody').style.marginLeft="0px";
+document.getElementById('crerobody').style.marginRight="0px";
+document.getElementById('crerobody').style.paddingLeft="0px";
+document.getElementById('crerobody').style.paddingRight="0px";
+} else {
+if (document.documentElement.clientWidth>800){
+	document.getElementById('crerobody').style.paddingLeft="8%";
+	document.getElementById('crerobody').style.paddingRight="8%";
+	}
+}
+<?php }//restoration of maring/pading(left/right) is finished
+//fortunately enough, these things will never change
+//from one page to antoher
+
+
+echo 'dl_audiourl='."'".$clewnaudiourl."';\n";
+echo 'str_audiourl='."'//".$server."/z/';\n";
+$api_dl_formats=file_get_contents($clewnapiurl.'?listformats=1');
+$api_str_formats=file_get_contents($serverapi.'?listformats=1');
+
+if ($api_dl_formats!==false&&strlen($api_dl_formats)>2){
+	echo 'dlformats='."'".str_replace("\n", ' ', $api_dl_formats)."'".'.split(" ");';
+}
+else {//we revert to mp3 as a default. How ugly is this, indeed ? 
+	
+	echo 'dlformats=["mp3"];';
+	
+}
+if ($api_str_formats!==false&&strlen($api_str_formats)>2){
+
+	echo 'strformats='."'".str_replace("\n", ' ',  $api_str_formats)."'".'.split(" ");';
+}
+else {//we revert to mp3 as a default. How ugly is this, indeed ? 
+	
+	echo 'strformats=["mp3"];';
+	
+}	
+	
+	echo "target_album='".urlencode(htmlentities($_GET['target_album'], ENT_COMPAT | ENT_HTML401 ))."';
+";
+
+?>
+
+
+<?php if (count($creroypservices)>0){ ?>
+//yp stuff		
+myfunc=setInterval (delegate, 1000);	
+
+<?php } ?>
+
+<?php if($enableDownloadCart) {?>
+update_cart();
+
+<?php } ?>
+
+//then, sanitize the display URL with something accurate
+
+
+
+if (document.getElementById('bodyajax')!==null){//this should never happen
+		
+		titleSiteObj={  title:'',  url:''};
+		
+		titleSiteObj.title=document.getElementById('main_title').innerHTML;
+		if ( //this is the most common case ; an GET album, or more GET, are set, and it's an ajax call, and it's not an ajax call to call the homepage
+				(get_album()!=''||
+				get_artist()!=''||
+				(get_track()!=''&&get_album()!='')
+				)
+			&&	(document.getElementById('bodyajax').value!='./?body=void'&&document.getElementById('bodyajax').value!='')
+			){
+			ourURL='./?';
+			needamp=false;
+			if (get_album()!=''){	
+				ourURL=ourURL+'album='+encodeURI(get_album());
+				needamp=true;
+				}
+			if (get_artist()!=''){	
+				if (needamp) {ourURL=ourURL+'&';}
+				ourURL=ourURL+'artist='+encodeURI(get_artist());
+				needamp=true;
+				}
+			if (get_track()!=''){	
+				if (needamp)  {ourURL=ourURL+'&';}
+				ourURL=ourURL+'track='+encodeURI(get_track());
+				needamp=true;
+				}	
+			
+			titleSiteObj.url=ourURL;
+			window.history.pushState(titleSiteObj, '', ourURL);
+				
+			
+			
+			}
+				
+		
+		else if (document.getElementById('bodyajax').value!='./?body=void'&&document.getElementById('bodyajax').value.startsWith('?body=ajax&')){//this will happen on anything but indexpage, which does not requires sanitization
+			ourURL=document.getElementById('bodyajax').value;
+			ourURL=ourURL.replace('?body=ajax&', '?');
+			
+			titleSiteObj.url='./'+ourURL;
+			window.history.pushState(titleSiteObj, '', './'+ourURL);
+			
+			
+			
+		}
+		else if (document.getElementById('bodyajax').value=='./?body=void'){
+			titleSiteObj.url='./';
+			
+			window.history.pushState(titleSiteObj, '', './');
+
+			//window.location.href='./';//going back to index page
+		}
+		else if (get_isindex()) {
+			titleSiteObj.url='./';
+			
+			window.history.replaceState(titleSiteObj, '', './');
+
+			
+		}
+	}
+	
+	//playback stuff
+	setplayerstall(false);
+
+	if (document.getElementById('digolder')!=null&&get_album()!=''&&(parseInt(get_offset())==parseInt('-1'))||get_offset==''){
+		document.getElementById('digolder').innerHTML='Dig what\'s new...';
+	}
+
+	
+	update_autoplay();
+
+	if (document.getElementById('infiniteloop')!=null){
+		document.getElementById('infiniteloop').click();
+	}
+		<?php if ($activatehtmlcache)
+	 		echo 'if(get_isindex()){window.setTimeout(function(){increment_overload_track_counter();checkOverload(true)}, 5000);}else{window.setTimeout(function () {while(!get_page_init()){};checkOverload(false);}, 8000);}';
+		?>
+
+	set_page_init(true);
+}//function initpage
+
+// @license-end
+</script>
+
+<span id="noscripters"  onLoad="if (!get_page_init()){init_page();}"
+>
+<noscript >Dear noscripter, <br/> as of most of music-featured website, this website relies heavily on Javascript, especially to allow continuous playing album after album, because nowadayas browsers won't allow an autoplay upon page load. AJAX is required. <br/>
+We suggest you to look at the LibreJS javascript extension, which blocks javascripts, and allows, and unblock, Javascript which is free software and human readable and therefore checked for safety and privacy compliance. It is edited by the Free Software Foundation (fsf.org). </noscript>
+</span>
+<input type="hidden" id="bodyajax" value="" onload="if (bodyvoid!=''){this.value=bodyvoid;};"/>
+<input type="hidden" id="bodyajax_autoplay" value="false"/>
+<input type="hidden" id="bodyajax_arttruc" value=""/>
+
+
+
+
+
+<!-- tons of script than used to be in header and are moved here for ajax body -->
+
+
+
+
+<!--ends of ton of script-->
+<?php if ($activatehtmlcache) { ?>
+<!--overcapacity splash-->
+<div id="overload_splash" style="z-index:128;position:absolute; top:0; left:0;width:100%;height:100%;margin-bottom:100%;display:none;background-color:white;">
+	<span id="overload_splash_message"></span>
+	<h1 style="text-align:center;">Sorry, something went wrong</h1>
+	<hr/>
+	<?php if (array_key_exists('body', $_GET)&&$_GET['body']=='ajax'){
+		echo '<h1 style="text-align:center;">Overload autorepair. Step 1 / 2</h1>';
+	}
+	else {
+		echo '<h1 style="text-align:center;">Overload autorepair Step 1 effective. Now step 2 / 2</h1>';
+	
+	}
+	?>
+	<hr/>
+	<span style="text-align:center;">
+	It seems that this version of this page as stored in the site's cache has been generated while the media storage tier was suffering an overload, or that the content of the tier as changed since the caching.<br/> 
+	<br/>
+	We will try to clear the cache for this particular page and see if it can solve this error. 
+	<form id="overload_form" method="POST">
+	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode(array_diff($_GET, array($_GET['listall'], $_GET['no_infinite_loop_please']))));?>"/>
+	
+	<span id="overload_countdown">This page will try to autorepair in <span id="overload_countdown_seconds">6</span> seconds...<a href="javascript:void(0);" onclick="cr_window_overloadtime();">Cancel</a></span>
+	<span id="overload_button">
+	</span>
+	</form>
+	</span>
+	<hr/>Note for site administrator: your CMS is not able to handle the deletion of a particular track. If you want to remove a track from an album, you <strong>must</strong> manually delete the file named <em>./d/albums_track_counter.dat</em> at the root of your CMS install to get rid of this error.<br/>
+	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document_getElementById_overload_splash__style_display('none');">X Close</a>
+</div>
+<?php } ?>
+
+
+<!-- volume controler code -->
+<span onload="if(!get_page_init()){init_page();}" style="position: fixed; left:0px; top:0px; font-size:140%; border:solid 1px; border-radius:5px;z-index:127;background-color:grey;" >
+<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()-0.1;">-</a>
+<span style="font-size:108%;background-color:black;">🔈</span>
+<a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()+0.1;">+</a>
+<a style="" href="javascript:void(0);" onclick="player=get_player();if (get_isindex()){page_init=false;update_ajax_body('./?offset=0&autoplay=true');} else if (player.paused){if (get_isplaying()!=-1){set_isplaying(player.play());}else{cr_document_autoplay().click();};this.style.backgroundColor='white';this.style.color='green';}else{player.pause();this.style.backgroundColor='black';this.style.color='red';}">⏯</a>
+<a href="javascript:void(0);" onclick="controler_prev();">⏴|</a>
+<span id="playerclock"></span>
+<a href="javascript:void(0);" onclick="controler_next();">|⏵</a><br/>
+<span style="font-size:72%;" id="controler_nowplaying">Nothing playing</span>
+<!--end volume controler code -->
+
+</span>	
+<a name="top"><div name="spacer" style="margin-top:85px;"/></a>
+
+	<?php
+	if ($enableDownloadCart)
+	{
+	?>
+
+	<div style="width:100%;text-align:right">In your download cart: <a target="blank" onclick="get_player().pause();" href="./view_cart.php"><span id="dlcartcounter"></span> items</a></div>
 	<?php
 	}
 	?>
@@ -1031,20 +2084,20 @@ var overload_track_counter=0;
 
  ?>
 	
-<a name="top"><audio id="player" onEnded="playNext();">
+<a><audio id="player" onEnded="playNext();">
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio></a>
 
 	
 	
-<?php if (!$embed) { //IF NOT EMBED ********************* STARTS?>	
+<?php if (!((true==$embed)||(false!==$embed))) { //IF NOT EMBED ********************* STARTS?>	
 	
 <?php
-
+echo '<span id="splash">';
 if (file_exists('./splash.php')){
 	include ('./splash.php');
 }
-
+echo '</span>';
 if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
 	echo '<div style="color:red;background-color:black;width:100%;text-align:center;"><span><strong>'.$message[$_GET['message']].'</strong><a href="./" style="color:black;background-color:red;text-decoration:underline;float:right;text-align:right;">X</a></span></div>';
@@ -1106,30 +2159,6 @@ else {
 ?>;"><hr/>
 
 
-<script>
-
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-var xhttpingprecalb = new XMLHttpRequest();
-xhttpingprecalb.open("GET", "ping_recently_played.php", true);
-xhttpingprecalb.send();
-		
-	
-	
-function displayRecentlyPlayed(){
-	var xhttprecalb = new XMLHttpRequest();
-		  xhttprecalb.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-			 document.getElementById("recently_played").innerHTML = this.responseText;
-			}
-		  };
-		  xhttprecalb.open("GET", "recently_played.php", true);
-		  xhttprecalb.send();
-	
-}
-
-
- //@license-end 
- </script>
 
 <span id="recently_played"><a href="javascript:void(0);" onClick="displayRecentlyPlayed();">Recently played?</a><br/>
 
@@ -1140,18 +2169,18 @@ function displayRecentlyPlayed(){
 
 <?php
 if (isset ($_GET['track'])) {
-	echo '<a href="./">../</a><br/>';
+	echo '<a href="javascript:void(0);" onclick="page_init=false;update_ajax_body(\'./?body=void\');">Home</a> &gt; '.htmlspecialchars($_GET['track']).' <em>on</em> '.htmlspecialchars($_GET['album']).'<br/>';
 }
 
 else if (isset ($_GET['artist'])) {
-	echo '<a href="//'.$server.'/">../</a><br/>';
+	echo '<a href="javascript:void(0);" onclick="page_init=false;update_ajax_body(\'./?body=void\');">Home</a> &gt; '.htmlspecialchars($_GET['artist']).'<br/>';
 }
 
 ?>
 
 
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
-	<span style=""><img style="float:left;width:3%;" src="<?php echo $favicon ;?>"/></span>
+	<span style=""><img style="float:left;width:3%;" src="./<?php echo $favicon ;?>"/></span>
 		
 	<h1 id="title" style="display:inline;"><?php echo $title; ?></h1>
 	<?php if (!isset($_GET['listall'])){
@@ -1159,7 +2188,7 @@ else if (isset ($_GET['artist'])) {
 		
 	}
 	?>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="//<?php echo $server;?>">Home</a></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="javascript:void(0);" onclick="page_init=false;update_ajax_body('./?body=void');">Home</a></h2>
 
 	<?php
 	//artist list
@@ -1181,18 +2210,18 @@ else if (isset ($_GET['artist'])) {
 		}
 
 		sort($artists);
-		echo '<span style="margin-top:4px;marging-bottom:4px;"><a style="float:left;padding:2px;" href="./">Artists : </a> ';
+		echo '<span style="margin-top:4px;marging-bottom:4px;"><a style="float:left;padding:2px;" >Artists : </a> ';
 
 		foreach ($artists as $artist) {
-			echo '<a style="float:left;border:solid 1px;background-color:#A0A0A0;padding:2px;" href="//'.$server.'/?artist='.urlencode($artist).'"> '.htmlspecialchars($artist).' </a> ';
-			
-			
+			echo '<a style="float:left;border:solid 1px;background-color:#A0A0A0;padding:2px;" onclick="page_init=false;arr2=[encodeURIComponent(\''.str_replace("'", "\\'", html_entity_decode($artist)).'\')];update_ajax_body(\'./?artist=\'+encodeURI(JSON.stringify(arr2)));" href="javascript:void(0);">';
+			echo htmlspecialchars($artist);
+			echo '</a>';
 		}
 		echo '</span><br style="clear:both;"/>';
 	}
 ?>
 </div>
-<div><a href="#menu" onclick="mainmenu=cr_document_menu_getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo strip_tags($title);?></a></div>
+<div><a href="javascript:void(0);" onclick="mainmenu=cr_document_menu_getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo htmlspecialchars($title);?></a></div>
 
 <span id="loginpanel" style="float:right;text-align:right;margin-bottom:2%;">
 	<?php
@@ -1294,7 +2323,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 	
 		if (!file_exists('./d/artists.txt')||count($artists)==0)
 		{
-			$artists=explode("\n", trim(html_entity_decode(file_get_contents($clewnapiurl.'?listartists=true'), ENT_COMPAT)));
+			$artists=explode("\n", trim(html_entity_decode(file_get_contents($clewnapiurl.'?listartists=true'), ENT_COMPAT | ENT_HTML401 )));
 			
 			
 		}
@@ -1306,7 +2335,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 		$querystring='';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='l2[]='.urlencode(htmlentities($artist)).'&';
+			$querystring.='l2[]='.urlencode($artist).'&';
 			
 			
 		}
@@ -1328,30 +2357,69 @@ $artists_file=file_get_contents('./d/artists.txt');
 		$overloadmove=$timeout+2;
 
 
-		$ch = curl_init();
-
-		curl_setopt($ch, CURLOPT_URL,$clewnapiurl.'?l2=true');
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $querystring);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
-		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-		$albums_file_json= curl_exec ($ch);
-
-		curl_close ($ch);
-		$albums_file=$albums_file_json;
 
 
 
 		//$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
+			
+			$fresh=file_get_contents($clewnapiurl.'?freshness=true');
+								
+			if ($fresh!==false){
+				$fresh=floatval($fresh);
+				if (floatval($fresh)>=floatval(filemtime('./remoteapicache-v2.dat'))){
+							
+							
+							unlink('./remoteapicache-v2.dat');
+					
+						}
+			    
+			
+			}
+			$cache_dl_count=file_get_contents($server.'/gimme_dl_album_count.php');
+			if ($cache_dl_count===false){
+				unlink('./remoteapicache-v2.dat');
+			}
+			else {
+				$remoteapicache=unserialize(file_get_contents('./remoteapicache-v2.dat'));
+				if (isset($remoteapicache[$querystring])){
+					$albums_file=$remoteapicache[$querystring];
+					$albums=json_decode($albums_file, true);
 
-		if ($albums_file_json===false){
+					if (!is_array($albums)){$albums=Array();}
+					if (count($albums)!=intval($cache_dl_count)){
+							unlink('./remoteapicache-v2.dat');
+					}
+				}
+				
+				
+				
+			}
 			if (!file_exists('./remoteapicache-v2.dat')){
-			
+				$ch = curl_init();
+
+				curl_setopt($ch, CURLOPT_URL,$clewnapiurl.'?l2=true');
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $querystring);
+				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
+				curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+				$albums_file_json= curl_exec ($ch);
+
+				curl_close ($ch);
+				$albums_file=$albums_file_json;
+
+				
+				if ($albums_file_json===false){
 				echo '<h2><strong>Sorry ! </strong>It seems that the free albums host, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. ';
+				}
+				$cache=Array();
 			
+			
+				$cache[$querystring]=$albums_file_json;
+				file_put_contents('./remoteapicache-v2.dat', serialize($cache));
+
 			}
 			else {
 				$remoteapicache=unserialize(file_get_contents('./remoteapicache-v2.dat'));
@@ -1367,17 +2435,9 @@ $artists_file=file_get_contents('./d/artists.txt');
 			
 			}
 			$overloadmove=$timeout-2;
-		}
-		else {
-			$cache=Array();
+		
 			
-			if (file_exists('./remoteapicache-v2.dat')){
-				$cache=unserialize(file_get_contents('./remoteapicache-v2.dat'));
-			}
-			$cache[$querystring]=$albums_file;
-			file_put_contents('./remoteapicache-v2.dat', serialize($cache));
-
-		}
+		
 		
 		
 		if ($overloadmove<=0){
@@ -1398,7 +2458,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 $querystring = '';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='&listallalbums2[]='.urlencode(htmlentities($artist));
+			$querystring.='&listallalbums2[]='.urlencode($artist);
 			
 			
 		}
@@ -1433,27 +2493,25 @@ if ($_SESSION['random']){
 if (isset($_GET['offset'])&&is_numeric($_GET['offset'])) {
 	$offset=intval($_GET['offset']);
 	$embedurl='';
-	if ($embed) {
+	if (((true==$embed)||(false!==$embed))) {
 		$embedurl='&embed='.urlencode($embed);
 	}
 	
 	if ($offset!==0&&!$_SESSION['random']&&!isset($_GET['listall'])){
 	
-		echo '<a href="./?offset='.($offset-1).$arturl.$embedurl.'">Dig newer</a><br/>';
+		echo '<a id="dignewer" style="float:right;" href="javascript:void(0);" onclick="try{page_init=false;digolder(get_offset()-1);}catch(e){player=get_player();if(player.paused){page_init=false;digolder(get_offset()-1);};player.addEventListener(\'pause\', function(){page_init=false;digolder(get_offset()-1);});player.addEventListener(\'canplay\', function(){page_init=false;digolder(get_offset()-1);});player.addEventListener(\'loadedmetadata\', function(){page_init=false;digolder(get_offset()-1);});while(!player.paused){player.pause();};player.addEventListener(\'canplaythrough\', function(){page_init=false;digolder(get_offset()-1);});player.addEventListener(\'error\', function(){page_init=false;digolder(get_offset()-1);});player.addEventListener(\'abort\', function(){page_init=false;digolder(get_offset()-1);})};" name="./?offset='.intval($offset-1).$arturl.$autourl.$embedurl.'">Dig newer...</a><br/>';;
 	
 	}
 
 }
 else {
 	$offset=0;
+	if (array_key_exists('artist', $_GET)){
+		$_GET['offset']=0;
+	}
 	
 }
-echo '<script>
 
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-var offset='.$offset.';
- //@license-end 
- </script>';
 if ($_SESSION['random']){
 	echo '<a href="./?random=random">Skip this album</a>';
 	
@@ -1488,7 +2546,10 @@ if ($mosaic&&$artisthighlighthomepage){
 	echo '<table><tr>';
 	foreach ($hlartists as $hlart){
 		echo '<td><span class="colTranslate" style="float:left;width:100%;background-color:white;padding:2%;text-align;center;border:solid 3px; border-radius:8px;"><span style="font-size:120%;"><strong>';
-		echo '<a href="./?artist='.urlencode(htmlentities($hlart['name'])).'">'.htmlspecialchars($hlart['name']).'</a><br/>';
+		//echo '<a href="./?artist='.urlencode(htmlentities($hlart['name'])).'">'..'</a><br/>';
+		echo '<a onclick="page_init=false;arr2=[encodeURIComponent(\''.str_replace("'", "\\'", $hlart['name']).'\')];update_ajax_body(\'./?artist=\'+encodeURI(JSON.stringify(arr2)));" href="javascript:void(0);">';
+		echo htmlspecialchars($hlart['name']);
+		echo '</a><br/>';
 				echo '</strong></span>';
 		echo '<em>'.htmlspecialchars($hlart['styles']).'</em>';
 		echo '<br/>';
@@ -1527,7 +2588,7 @@ foreach ($contentlocal as $item){
 	if ($counter>$offset && $secondcounter==0 || isset($_GET['listall'])) {
 	$running=true;
 	
-	if ((isset($_GET['album'])&&$_GET['album']!==$item['album'])||(isset($_GET['listall'])&&$_GET['listall']==='material')) {
+	if ((isset($_GET['album'])&&$_GET['album']!=html_entity_decode($item['album']))||(isset($_GET['listall'])&&$_GET['listall']==='material')) {
 		$running=false;
 		
 	}
@@ -1551,9 +2612,25 @@ foreach ($contentlocal as $item){
 		
 		if (!$mosaic) {
 			
-			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
+			if (!((true==$embed)||(false!==$embed))){
+				echo '<a onclick="page_init=false;arr=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($item['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr)));" href="javascript:void(0);">';
+			}
 			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.42).'</div>';
+			echo $item['album'];
+			
+			
+			if (!((true==$embed)||(false!==$embed))){
+			
+				echo '</a>';
+			}
+			
+			echo '</h1>';
+			if (array_key_exists('track', $_GET)){
+				echo '<h2>Track: '.htmlspecialchars($_GET['track']).'</h2>';
+			}
+
+			
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.65).'</div>';
 
 			}
 		else  {
@@ -1575,7 +2652,7 @@ foreach ($contentlocal as $item){
 				if (file_exists('./d/covers.txt')){
 					$coversfile=trim(file_get_contents('./d/covers.txt'));
 					$coverslines=explode("\n", $coversfile); 
-					if (!in_array(html_entity_decode($item['album'], ENT_COMPAT), $coverslines)){
+					if (!in_array(html_entity_decode($item['album'], ENT_COMPAT  | ENT_HTML401 ), $coverslines)){
 							$displaythatcover=false;
 					}
 				}
@@ -1607,9 +2684,9 @@ foreach ($contentlocal as $item){
 				}
 				else {
 				
-					echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
+					echo '<a href="javascript:page_init=false;arr=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($item['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&autoplay=true\');" title="'.$item['album'].'">';
 				}
-				
+			
 				echo displaycover($item['album'], $streaming_albums_ratio, 'cover', $AlbumsToBeHighlighted, $highlightcounter);
 				$highlightcounter++;
 
@@ -1626,7 +2703,9 @@ foreach ($contentlocal as $item){
 				 }
 				
 				echo '<div>Controls / tracklisting<br/><span id="tracklist" ';
-			
+				if (array_key_exists('offset', $_GET)){
+					$_GET['album']=html_entity_decode($item['album']);
+				}
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&!isset($_GET['track'])){
 					echo 'style="display:inline;"';
 				}
@@ -1638,59 +2717,66 @@ foreach ($contentlocal as $item){
 			
 			
 			//here we go, query local API for track list
-			$tracks_file=file_get_contents($serverapi.'?gettracks='.urlencode($item['album']));
-
+			$tracks_file=cacheTracklist($item['album'],$serverapi);//.'?gettracks='.urlencode($item['album']));
+			if ($tracks_file===false){
+				$tracks_file=array();
+			}
 			$tracks=explode("\n", $tracks_file);
 			$trackcounter=0;
 			$hasntautoplayed=true;
 			$track_artist='';
+			$weactuallydisplayedatrack=false;
+			$eachtrackwasdisplayedok=true;
 			foreach ($tracks as $track) {
 			if ($track!==''){
-			
+				$weactuallydisplayedatrack=true;
 				//we want its name and the artist name as well
 				$track_name=trim(file_get_contents($serverapi.'?gettitle='.urlencode($track)));
 		
 				$track_artist=trim(file_get_contents($serverapi.'?getartist='.urlencode($track)));
+
+			
+				if ($track_name==''||$track_artist==''){
+					$eachtrackwasdisplayedok=false;
+				}
+
 				
 				if (!isset($_GET['track'])||$_GET['track']==$track_name)
 				{
 					if (in_array(html_entity_decode($track_artist), $artists)){
 											?>
-					<script>
-
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- 
-					overload_track_counter++;
-					
- //@license-end 
- </script>
-					<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT)); ?>', <?php echo $trackcounter; ?>, false);" id="<?php echo $trackcounter; ?>"><span style="size:475%;">▶</span></a>
+					<span onload="if(!get_page_init()){init_page();};increment_overload_track_counter();">* </span> 
+					<a href="javascript:void(0);" onClick="set_isplaying(play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT  | ENT_HTML401 )); ?>', <?php echo $trackcounter; ?>, false));" id="<?php echo $trackcounter; ?>"><span style="font-size:125%;">▶</span></a>
 					 
-					 <?php if (!$embed){ ?>
+					 <?php if (!((true==$embed)||(false!==$embed))){ ?>
 					 
 					 
-					 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
+					 <!--<a href="./?artist=<?php echo urlencode (html_entity_decode($track_artist)); ?>">-->
+					 <?php
+					 echo '<a onclick="page_init=false;arr2=[encodeURIComponent(\''.str_replace("'", "\\'", html_entity_decode($track_artist)).'\')];update_ajax_body(\'./?artist=\'+encodeURI(JSON.stringify(arr2)));" href="javascript:void(0);">';
+					 ?>
 					 
 					 <?php } ?>
 					 <?php echo  $track_artist; ?>
-					 
-					 
-					 <?php if (!$embed){?></a> - <?php } ?>
+					 <input type="hidden" id="track_artist<?php echo $trackcounter;?>" value="<?php echo $track_artist;?>"/>
+					 <input type="hidden" id="track_name<?php echo $trackcounter;?>" value="<?php echo $track_name;?>"/>
+					 <?php if (!((true==$embed)||(false!==$embed))){?></a> - <?php } ?>
 					 <?php 
-					 if (!$embed){
-					 echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">';
+					 if (!((true==$embed)||(false!==$embed))){
+					 echo '<a onclick="page_init=false;arr3=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($track_name)).'\')];arr=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($item['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&track=\'+encodeURI(JSON.stringify(arr3)));" href="javascript:void(0);">'; 
+					 //echo  '<a href="./?track='.urlencode(html_entity_decode($track_name)).'&album='.urlencode(html_entity_decode($item['album'])).'">';
 					 }
 					 echo $track_name;
-					 if (!$embed) {
+					 if (!((true==$embed)||(false!==$embed))) {
 					 echo '</a>'; 
 					 
 					}
 					 ?>
 					 <div style="background-color:#F0F0F0;text-align:right;">
 						 <?php
-						 if (isset($streamingAlbumsInfoNotice[$item['album']])){
+						 if (isset($streamingAlbumsInfoNotice[html_entity_decode($item['album'])])){
 						 
-							echo $streamingAlbumsInfoNotice[$item['album']];
+							echo $streamingAlbumsInfoNotice[html_entity_decode($item['album'])];
 						 }
 						 else {
 						?> 
@@ -1718,14 +2804,10 @@ foreach ($contentlocal as $item){
 					?>
 					
 					<?php
-					if (isset($_GET['autoplay'])&&$hasntautoplayed){
+					if ($hasntautoplayed){
 						?>
-						<script>
+						<span id="autoplay" onclick="set_isplaying(autoplay('<?php echo str_replace ("'", "\\'", $track); ?>', <?php echo $trackcounter; ?>, false, true));" ></span>
 
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- play('<?php echo str_replace("'", "\\'", htmlspecialchars($track, ENT_COMPAT)); ?>', <?php echo $trackcounter; ?>, false, true);
- //@license-end 
- </script>
 						<?php
 						$hasntautoplayed=false;
 					}
@@ -1735,10 +2817,23 @@ foreach ($contentlocal as $item){
 			}
 		}
 			echo '</span>';
+
 			?>
 			<!--Artist site external url should go here **************************************************************-->
 			<?php
-			if (!$mixed&&!$embed&&!$material&&!$mosaic){
+			if (!$eachtrackwasdisplayedok||!$weactuallydisplayedatrack){
+					?>
+					<div style="background-color:red;width:100%;" onload="if (!get_page_init()){init_page()};set_album_error(true);<?php if ($activatehtmlcache){echo 'checkOverload(false);';} ?>">
+					An error was encountered, due to overcapacity. 
+					<?php if ($activatehtmlcache){echo 'Please wait will the website tries to auto-recover...' ; }?>
+					</div>
+					<?php
+				}
+
+
+
+
+			if (!$mixed&&!((true==$embed)||(false!==$embed))&&!$material&&!$mosaic){
 				
 				echo outputArtistSiteLink($track_artist, $item['album'], $ArtistSites);
 				
@@ -1821,7 +2916,7 @@ foreach ($content as $item){
 	if ($counter>$offset && $secondcounter==0||isset($_GET['listall'])) {
 	$running=true;
 	
-	if (isset($_GET['album'])&&$_GET['album']!==$item['album']) {
+	if (isset($_GET['album'])&&$_GET['album']!=html_entity_decode($item['album'])) {
 		$running=false;
 		
 	}
@@ -1838,55 +2933,24 @@ foreach ($content as $item){
 		$float=true;
 
 
-		if (!isset($_GET['listall'])&&!$mosaic&&isset($_SESSION['nick'])){
-			echo '<h1>Album : ';
-			if (!$material) {
-				$recent=Array();
-				$recent['album']=$item['album'];
-				$recent['date']=time();
-				$recent['who']['color']=$_SESSION['color'];
-				$recent['who']['nick']=$_SESSION['nick'];
-				if (file_exists('./d/recent.dat')){
-					$recents=unserialize(file_get_contents('./d/recent.dat'));
-					
-				}
-				else
-				{ $recents= Array(); }  
-				
-				if (count($recents)>=10){
-					
-					$recents=array_slice($recents, 1, 9);
-					
-				}
-				array_push($recents, $recent);
-				$dat=serialize($recents);
-				file_put_contents('./d/recent.dat', $dat);
-				
-					$data['long']=$_SESSION['long'];
-					$data['lat']=$_SESSION['lat'];
-					$data['nick']=$_SESSION['nick'];
-					$data['range']=$_SESSION['range'];
-					$data['message']=' is playing '.html_entity_decode($item['album']).' *';
-					$data['color']=$_SESSION['color'];
-					$dat=serialize($data);
-					file_put_contents('./network/d/'.microtime(true).'.php', $dat);
-
-				
-				
-				
-				
-			}
-
-		}
-		else if (!$mosaic){
-			echo '<h1>';
-		}
+		
 		
 		
 		
 		if (!$mosaic) {
+			if (!((true==$embed)||(false!==$embed))){
+				echo '<a onclick="page_init=false;arr=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($item['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr)));" href="javascript:void(0);">';
+			}
 			
-			echo '<a href="./?album='.urlencode($item['album']).'">'.$item['album'].'</a></h1>';
+			echo '<h1>'.$item['album'].'</h1>';
+			if (array_key_exists('track', $_GET)){
+				echo '<h2>Track: '.htmlspecialchars($_GET['track']).'</h2>';
+			}
+			
+			if (!((true==$embed)||(false!==$embed))){
+			
+				echo '</a>';
+			}
 			echo '<div style="margin-left:auto;margin-right:auto;';
 			if ($mixed){
 				echo 'float:left;';
@@ -1919,7 +2983,7 @@ foreach ($content as $item){
 				if (file_exists('./d/covers.txt')){
 					$coversfile=trim(file_get_contents('./d/covers.txt'));
 					$coverslines=explode("\n", $coversfile); 
-					if (!in_array(html_entity_decode($item['album'], ENT_COMPAT), $coverslines)){
+					if (!in_array(html_entity_decode($item['album'], ENT_COMPAT  | ENT_HTML401 ), $coverslines)){
 							$displaythatcover=false;
 					}
 				}
@@ -1955,8 +3019,8 @@ foreach ($content as $item){
  var anim=\'anim\'
  //@license-end 
  </script>';
-
-				echo '<a href="./?album='.urlencode($item['album']).'" title="'.$item['album'].'">';
+				
+				echo '<a href="javascript:page_init=false;arr=[encodeURIComponent(\''.str_replace("'", "\\'", html_entity_decode($item['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&autoplay=true\');" title="'.$item['album'].'">';
 				echo displaycover($item['album'], 0.1, 'cover', $AlbumsToBeHighlighted, $highlightcounter);
 				$highlightcounter++;
 
@@ -2059,7 +3123,7 @@ foreach ($content as $item){
 
 			
 		if (in_array($item['artist'], $material_artists)&&!in_array($item['album'], $material_blacklist)&&!$material&&!$mosaic){
-			echo 'available on material support at our <a href="//'.$server.'/?listall=material">physical releases shop</a><br/>';
+			echo 'available on material support at our <a target="_blank" href="//'.$server.'/?listall=material">physical releases shop</a><br/>';
 			
 		}
 		
@@ -2077,8 +3141,8 @@ foreach ($content as $item){
 				
 				if ($enableDownloadCart)
 				{
-					echo '<a name="top"></a><div id="ajax_splash" style="position:absolute; top:0; left:0;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="#top" style="text-align:right;width:100%;" onclick="cr_c_document_getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
-					echo '<a href="#top" onclick="addFullAlbumToCart(\''.str_replace("'", "\\'", urlencode($item['album'])).'\');">Add full album to download cart</a><br/>';	
+					echo '<div id="ajax_splash" style="z-index:126;width:100%;height:100%;display:none;background-color:white;"><span id="ajax_splash_message"></span><br/><a href="javascript:void(0);" style="text-align:right;width:100%;" onclick="cr_c_document_getElementById(\'ajax_splash\').style.display=\'none\';">X Close</a></div>';
+					echo '<a href="javascript:void(0);" onclick="addFullAlbumToCart(\''.str_replace("'", "\\'", urlencode($item['album'])).'\',this);">Download full album</a><br/>';	
 					
 				}
 					
@@ -2091,6 +3155,9 @@ foreach ($content as $item){
 				
 				
 				echo '<div>Controls / tracklisting</div><span id="tracklist" ';
+				if(array_key_exists('offset', $_GET)){
+					$_GET['album']=html_entity_decode($item['album']);
+				}
 			
 				if ((isset($_SESSION['random'])&&$_SESSION['random'])||isset($_GET['autoplay'])&&isset($_GET['track'])){
 					echo 'style="display:inline;"';
@@ -2113,20 +3180,32 @@ foreach ($content as $item){
 			}
 			
 			//here we go, query Clewn API for track list
-			$tracks_file=file_get_contents($clewnapiurl.'?gettracks='.urlencode($item['album']));
-
+			//$tracks_file=file_get_contents($clewnapiurl.'?gettracks='.urlencode($item['album']));
+			$tracks_file=cacheTracklist($item['album'],$clewnapiurl);//.'?gettracks='.urlencode($item['album']));
+			if ($tracks_file===false){
+				$tracks_file="\n";
+			}
 			$tracks=explode("\n", $tracks_file);
 			$trackcounter=0;
 			$hasntautoplayed=true;
 			$track_artist='';
+			$weactuallydisplayedatrack=false;
+			$eachtrackwasdisplayedok=true;
 			foreach ($tracks as $track) {
 				if ($track!==''){
+					$weactuallydisplayedatrack=true;
 					//we want its name and the artist name as well
 					$track_name=trim(file_get_contents($clewnapiurl.'?gettitle='.urlencode($track)));
 			
 					$track_artist=trim(file_get_contents($clewnapiurl.'?getartist='.urlencode($track)));
 					
-					if ($enableDownloadCart&&in_array($track_artist, $artists))
+					if ($track_name==''||$track_artist==''){
+						$eachtrackwasdisplayedok=false;
+					}
+					
+					
+					
+					if ($enableDownloadCart&&in_array(html_entity_decode($track_artist), $artists))
 					{
 						$mypair=array();
 						
@@ -2143,32 +3222,33 @@ foreach ($content as $item){
 					
 					
 					
-					if (!isset($_GET['track'])||$_GET['track']==$track_name)
+					if (!isset($_GET['track'])||$_GET['track']==html_entity_decode($track_name))
 					{
 						if (in_array(html_entity_decode($track_artist), $artists)){
 						?>
-						<script>
-
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- 
-						overload_track_counter++;
-						
- //@license-end 
- </script>
-						<a href="javascript:void(0);" onClick="play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT)); ?>', <?php echo $trackcounter; ?>, true);" id="<?php echo $trackcounter; ?>">▶</a>
-						 <?php if (!$embed) {?>
+						<span onload="if(!get_page_init()){init_page();};increment_overload_track_counter();">* </span> 
+						<a href="javascript:void(0);" onClick="set_isplaying(play('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT  | ENT_HTML401 )); ?>', <?php echo $trackcounter; ?>, true));" id="<?php echo $trackcounter; ?>">▶</a>
+						 <?php if (!((true==$embed)||(false!==$embed))) {?>
 							 
-							 <a href="./?artist=<?php echo urlencode ($track_artist); ?>">
+							<!-- <a href="./?artist=<?php echo urlencode (html_entity_decode($track_artist)); ?>">-->
+							<?php
+					 echo '<a onclick="page_init=false;arr2=[encodeURIComponent(\''.str_replace("'", "\\'", html_entity_decode($track_artist)).'\')];update_ajax_body(\'./?artist=\'+encodeURI(JSON.stringify(arr2)));" href="javascript:void(0);">';
+					 ?>
+					 
 						 <?php echo  $track_artist; ?></a> - <?php } ?>
 						 <?php 
-						 if (!$embed){
-						 
-						 echo  '<a href="./?track='.urlencode($track_name).'&album='.urlencode($item['album']).'">';
+						 if (!((true==$embed)||(false!==$embed))){
+						 echo '<a onclick="page_init=false;arr3=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($track_name)).'\')];arr=[encodeURIComponent(\''.str_replace ("'", "\\'", html_entity_decode($item['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&track=\'+encodeURI(JSON.stringify(arr3)));" href="javascript:void(0);">'; 
+
+						 //echo  '<a href="./?track='.urlencode(html_entity_decode($track_name)).'&album='.urlencode(html_entity_decode($item['album'])).'">';
 						}
 						 
 						 echo $track_name;
-						 
-						 if (!$embed){
+						 ?>
+						 <input type="hidden" id="track_artist<?php echo $trackcounter;?>" value="<?php echo $track_artist;?>"/>
+						 <input type="hidden" id="track_name<?php echo $trackcounter;?>" value="<?php echo $track_name;?>"/>
+						 <?php
+						 if (!((true==$embed)||(false!==$embed))){
 						 
 						 echo '</a>';
 						
@@ -2201,11 +3281,11 @@ foreach ($content as $item){
 							}
 						else if (!$mixed&&$enableDownloadCart){
 								?>
-							 <div style="background-color:#F0F0F0;text-align:left;"><a href="#top" onclick="addTrackToCart('<?php 
+							 <div style="background-color:#F0F0F0;text-align:left;"><a href="Javascript:void(0);" onclick="addTrackToCart('<?php 
 							 echo str_replace("'", "\\'", urlencode($track_name));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode($item['album']));?>', '<?php 
-							 echo str_replace("'", "\\'", urlencode(htmlentities($track, ENT_COMPAT)));?>', '<?php 
-							 echo str_replace("'", "\\'", urlencode ($track_artist));?>' );">Add to download cart</a> 
+							 echo str_replace("'", "\\'", urlencode(htmlentities($track, ENT_COMPAT  | ENT_HTML401 )));?>', '<?php 
+							 echo str_replace("'", "\\'", urlencode ($track_artist));?>' ,this);">Download track</a> 
 							 
 							 <?php
 								}
@@ -2213,7 +3293,7 @@ foreach ($content as $item){
 							?>
 							 -<a href="javascript:void(0);" 
 							 style="text-align:right;float:right;" 
-							 onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT))?>');">|info+|</a>
+							 onclick="infoselected=cr_info_document_getElementById('info<?php echo $trackcounter;?>');loadInfo('<?php echo str_replace ("'", "\\'", htmlspecialchars($track, ENT_COMPAT | ENT_HTML401 ))?>');">|info+|</a>
 							 
 							 </div>
 							<?php
@@ -2228,28 +3308,49 @@ foreach ($content as $item){
 							echo '<br/>';
 							
 						}
-						if (isset($_GET['autoplay'])&&$hasntautoplayed){
+						if ($hasntautoplayed){
 							?>
-							<script>
+							
+							<span id="autoplay" onclick="set_isplaying(autoplay('<?php echo str_replace ("'", "\\'", $track); ?>', <?php echo $trackcounter; ?>, true, true));" ></span>
 
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- play('<?php echo htmlspecialchars($track); ?>', <?php echo $trackcounter; ?>, true, true);
- //@license-end 
- </script>
 							<?php
 							$hasntautoplayed=false;
 						}
 					}
 				}
+				if (!$eachtrackwasdisplayedok||!$weactuallydisplayedatrack){
+					?>
+									<?php
+				}
+
+
 				$trackcounter++;
 				}
 			
 			}
 			echo '</span>';
+			
 			?>
 			<!--Artist site external url should go here **************************************************************-->
 			<?php
-			if (!$mixed&&!$embed&&!$material&&!$mosaic){
+			if (!$eachtrackwasdisplayedok||!$weactuallydisplayedatrack){
+					?>
+					<div style="background-color:red;width:100%;" onload="if (!get_page_init()){init_page()};set_album_error(true);<?php if ($activatehtmlcache){echo 'checkOverload(false);';} ?>">
+					An error was encountered, due to overcapacity. 
+					<?php if ($activatehtmlcache){echo 'Please wait will the website tries to auto-recover...';} ?>
+					</div>
+					<?php
+				}
+
+			
+			
+			
+			
+			
+			
+			
+			
+			if (!$mixed&&!((true==$embed)||(false!==$embed))&&!$material&&!$mosaic){
 				
 				echo outputArtistSiteLink($track_artist, $item['album'], $ArtistSites);
 				
@@ -2289,8 +3390,8 @@ foreach ($content as $item){
 				<br/>I want to pay <?php echo htmlspecialchars($material_currency);?> <input type="text" size="4" name="amount" value="2.50" />
 				<input type="hidden" name="shipping" value="0" />
 				<input type="hidden" name="cancel_return" value="http://<?php echo htmlspecialchars($server);?>" />
-				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode(htmlentities($_GET['album'], ENT_COMPAT));?>" />
-				<input type="submit" name="submit" value="Buy now !" /> or <a href="//<?php echo $server?>/?album=<?php echo urlencode(htmlentities($_GET['album'], ENT_COMPAT));?>">get it for free</a></span>
+				<input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/?album=<?php echo urlencode(($_GET['album']));?>" />
+				<input type="submit" name="submit" value="Buy now !" /> or <a href="//<?php echo $server?>/?album=<?php echo urlencode(($_GET['album']));?>">get it for free</a></span>
 								<?php
 				
 				
@@ -2385,25 +3486,42 @@ if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall']
 	
 	$embedurl='';
 	
-	if ($embed) {
+	if (((true==$embed)||(false!==$embed))) {
 		$embedurl='&embed='.urlencode($embed);
 	}
-	
-	echo '<a id="digolder" style="float:right;" href="./?offset='.intval($offset+1).$arturl.$autourl.$embedurl.'">Dig older...</a><br/>';
+	/* <a href="javascript:page_init=false;arr=[\''.urlencode(html_entity_decode($item['album'])).'\'];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr)));" */
+	?>
+
+	<?php
+	echo '<a id="digolder" style="float:right;" href="javascript:void(0);" onclick="try{page_init=false;digolder(get_offset()+1);}catch(e){player=get_player();if(player.paused){page_init=false;digolder(get_offset()+1);};player.addEventListener(\'ended\', function(){page_init=false;digolder(get_offset()+1);});player.addEventListener(\'loadedmetadata\', function(){page_init=false;digolder(get_offset()+1);});player.addEventListener(\'pause\', function(){page_init=false;digolder(get_offset()+1);});player.addEventListener(\'canplay\', function(){page_init=false;digolder(get_offset()+1);});while(!player.paused){player.pause();};player.addEventListener(\'canplaythrough\', function(){page_init=false;digolder(get_offset()+1);});player.addEventListener(\'error\', function(){page_init=false;digolder(get_offset()+1);});player.addEventListener(\'abort\', function(){page_init=false;digolder(get_offset()+1);});}" name="./?offset='.intval($offset+1).$arturl.$autourl.$embedurl.'">Dig older...</a><br/>';
 	
 	}
 	else {
-	
-	echo '<a id="digolder" style="float:right;" href="./?album='.urlencode(htmlentities($_GET['target_album'], ENT_COMPAT)).$arturl.$autourl.'">Dig more...</a><br/>';
+	//Never used
+	echo '<a id="digolder" style="float:right;" href="javascript:void(0);" name="./?album='.urlencode(($_GET['target_album'])).$arturl.$autourl.'">Dig more...</a><br/>';
 	
 	}
 }
 if (!$weactuallydisplayedsomething){
+	/****
+	 * 
+	 * 	if (document.getElementById('infiniteloop')!=null){
+		if (document.getElementById('bodyajax_arttruc').value!=''){
+			set_artist(document.getElementById('bodyajax_arttruc').value);
+			}
+		page_init=true;
+		document.getElementById('infiniteloop').click();
+	 **********************************************************/
+	unset($_GET['album']);
+	unset($_GET['artist']);
+	unset($_GET['offset']);
+	$_GET['listall']='failed';
 	
-	echo 'Yeah ! You reached the bottom... There is nothing older.<br/>';
 	
+	echo '<img src="favicon.png" onload="if(!get_page_init()){init_page();};"/> <a  href="javascript:void(0);" onclick="page_init=false;if (document.getElementById(\'bodyajax_arttruc\').value!=\'\'){set_artist(document.getElementById(\'bodyajax_arttruc\').value);};digolder(0);" id="infiniteloop">Yeah! You reached the bottom... There is nothing older...Continuing to newer</a><br/>';
+	}
 	
-}
+
 echo '</div>';
 if($material) {
 	
@@ -2415,11 +3533,11 @@ if($material) {
 if ($mosaic) {
 	echo '<br style="clear:both;"/>';
 }
-if (!$embed){// IF NOT EMBED STARTS **************************************************
+if (!((true==$embed)||(false!==$embed))){// IF NOT EMBED STARTS **************************************************
 echo $pageFooterSplash;
 ?>
 
-<a href="#bottommenu" style="border:solid 1px;" onclick="bottommenu=cr_document_menu_getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='+';}">+</a>
+<a href="javascript:void(0);" style="border:solid 1px;" onclick="bottommenu=cr_document_menu_getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='<?php echo str_replace("'", "\\'", htmlspecialchars($footerReadableName));?>';}"><?php echo htmlspecialchars($footerReadableName);?></a>
 <a name="bottommenu"></a>
 
 
@@ -2427,28 +3545,24 @@ echo $pageFooterSplash;
 
 <?php
 echo $footerhtmlcode;
-echo '</div>';
-if (!isset($_GET['album'])&&!isset($_GET['artist'])&&!isset($_GET['track'])&&$activatehtmlcache){
+echo '</div>';?>
+<span id="noscripters_footer" onload="if(!get_page_init()){init_page();}?>">
+<noscript> <a href="./?noscript=footer"><?php echo htmlspecialchars($footerReadableName);?> for noscripters</a></noscript>
+</span>
 
 
-echo '<script>
-
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-  overload_track_counter++;
- //@license-end 
- </script>';
-
-
-}// IF NOT EMBED ENDS ** ** *  * ** * ** * * *** * *
-
-?>
 
 <?php
 
-}
+}// IF NOT EMBED ENDS ** ** *  * ** * ** * * *** * *
 ?>
+<script>
 
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+var album_counter=<?php echo $counter;?>;
 
+// @license-end
+</script>
 <?php 
 
 if ($activatehtmlcache){
@@ -2457,13 +3571,87 @@ if ($activatehtmlcache){
 <script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
- 
-if (overload_track_counter==0){
-	document.getElementById('overload_splash').style.display='block';
-	document.getElementById('overload_form').action='./';
-	document.getElementById('overload_button').innerHTML='<input type="submit" value="Clear the cache for this page"></input>';
-}
+//var album_counter=<?php echo $secondcounter;?>;
 
+
+function checkOverload(allowRecursive){
+	
+	if ((get_isindex()==true)&&allowRecursive){
+		var dl_queried=-1;
+		var str_queried=-1;
+		
+		  dlwwwxhttprecalb = new XMLHttpRequest();
+		  dlwwwxhttprecalb.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			 dl_queried = parseInt(this.responseText);
+			
+			 if ((dl_queried!==parseInt(-1))&&(parseInt(get_dl_album_count())!==dl_queried)){
+					set_overload_track_counter(0);
+					
+					set_dl_album_count(dl_queried);
+					
+					checkOverload(false);
+				}
+			
+			
+			}
+		  };
+		  dlwwwxhttprecalb.open("GET", "gimme_dl_album_count.php", true);
+		  dlwwwxhttprecalb.send();
+		  
+		  
+		  
+		  
+		  strwwwxhttprecalb = new XMLHttpRequest();
+		  strwwwxhttprecalb.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			 str_queried = parseInt(this.responseText);
+		
+			 if ((str_queried!==parseInt(-1))&&(parseInt(get_str_album_count())!==str_queried)){
+					
+					set_overload_track_counter(0);
+					
+					set_str_album_count(str_queried);
+					
+					checkOverload(false);
+				}
+		
+		
+		
+			}
+		  };
+		  strwwwxhttprecalb.open("GET", "gimme_str_album_count.php", true);
+		  strwwwxhttprecalb.send();
+		
+		  set_overloadindexchecked(true);
+		
+	}
+	
+	if (get_album_error()==true){
+		set_overload_track_counter(0);
+	}
+	
+	
+	if (get_overload_track_counter()==0){
+		document.getElementById('overload_splash').style.display='block';
+		document.getElementById('overload_form').action='./';
+		document.getElementById('overload_button').innerHTML='<input type="submit" value="Try now"></input>';
+		var overloadtimer;
+		
+		overloadtimer=window.setInterval(function(){
+			seconds=parseInt(document.getElementById('overload_countdown_seconds').innerHTML);
+			seconds--;
+			document.getElementById('overload_countdown_seconds').innerHTML=seconds;
+			if (seconds<=0){
+					window.clearInterval(overloadtimer);
+					document.getElementById('overload_form').submit();
+				
+			}
+		},1000);
+		set_overloadtimer(overloadtimer);
+		
+	}
+}
 
 
  //@license-end 
@@ -2473,14 +3661,23 @@ if (overload_track_counter==0){
 
 }
 
-if (!$embed){ //IF NOT EMBED STARTS ******************************************
+if (!((true==$embed)||(false!==$embed))){ //IF NOT EMBED STARTS ******************************************
 ?>
 
 <hr style="clear:both;">
 <?php
 if (!$activatechat===false){
 ?>
-		<a name="social"><object data="./network/index.php" style="width:100%;height:495px;" width="100%" height="495"></object></a>
+<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
+
+ //@license-end 
+ </script>
+
+
+		<a name="social"><object onload="if (!nosocialupdate){updateSocialData(this);nosocialupdate=true;}" data="./?void=void" style="width:100%;height:495px;" width="100%" height="495"></object></a>
 		
 <?php
 }
@@ -2557,78 +3754,89 @@ var ypretries=0;
 var ypcurrentindexretries=0;
 var stall=false;
 var yparrvalidated=[];
-function delegate()  {
-	
-	if (yprun&&!stall){
-		
-		var xhttpyp = new XMLHttpRequest();
-		  if (ypcurrentindexretries!=ypindex){
-		  
-			ypcurrentindexretries=ypindex;
-			ypretries=0;
-			}
-			
-		  xhttpyp.onreadystatechange = function() {
-			
-			if (this.readyState == 4 && this.status == 200) {
-			 if (document.getElementById('yp-services-content').innerHTML.startsWith('Loading ')) {
-				 document.getElementById('yp-services-content').innerHTML='';
-			 }
-			 
-			 if (yparrvalidated[ypindex]!=true){
-			 //juste to make sure we don't add duplicate entries
-			 //over slow internet connexions
-				document.getElementById('yp-services-content').innerHTML = document.getElementById('yp-services-content').innerHTML+this.responseText;
-				yparrvalidated[ypindex]=true;
-			 }
-			 ypretries=0;
-			 ypindex++;
-			 stall=false;
-			 if (this.responseText.trim() == ''){
-				 yprun=false;
-				 clearInterval(myfunc);
-			 }
-			}
-			else if (this.status != 200){
-				ypretries++;
-				stall=false;
-			}
-		  };
-		  
-		  
-		  
-		  if (ypping){
-			  appendypreq='&ping=ping';
-		  }
-		  xhttpyp.open("GET", './?ypservices='+encodeURI(ypindex)+appendypreq, true);
-		  stall=true;
-		  xhttpyp.send();
-		 
-		  if (ypretries>9){
-			  document.getElementById('yp-services-content').innerHTML=document.getElementById('yp-services-content').innerHTML+' (no reply for YP index: '+parseInt(ypindex)+', skipping) '; 
-			  yparrvalidated[ypindex]=true;
-			  ypindex++;
-		  }
-	
-	   }//if yprun
-	
-	}//function delegate()
-	
-myfunc=setInterval (delegate, 1000);	
 
 
 
  //@license-end 
  </script>
 </div>
-<?php } //end of YP Services infos ?>
-<div style="float:right;font-size:76%;">Powered by <a href="http://crero.clewn.org" title="CreRo, the open-source CMS for record labels and webradios">CreRo, the CMS for record labels and webradios</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
+<?php } //end of YP Services infos
+} //IF NOT EMBED ENDS * * ** * * * * ** * * * * ** * * * * ** * * ?>
+<input type="hidden" id="isindex" value="<?php
+	if (($mosaic&&(!(array_key_exists('artist',$_GET)||array_key_exists('track',$_GET)||array_key_exists('album',$_GET))))
+		){
+		echo 'true';
+	}
+	else {
+		echo 'false';
+	}
+	?>"/>
+<input type="hidden" id="offset" value="<?php
+	if (array_key_exists('offset', $_GET)){
+		echo intval($_GET['offset']);
+	}
+	else {
+		echo intval(-1);
+	}
+	?>"/>
+<input type="hidden" id="album" value="<?php
+	if (array_key_exists('album', $_GET)){
+		echo htmlspecialchars(rawurlencode($_GET['album']));
+	}
+	
+	?>"/>
+<input type="hidden" id="dl_album_count" value="<?php require('./gimme_dl_album_count.php'); ?>"/>
+<input  type="hidden" id="str_album_count" value="<?php require('./gimme_str_album_count.php'); ?>"/>
+
+<input  type="hidden" id="site_name" value="<?php echo htmlspecialchars($sitename); ?>"/>
+<input  type="hidden" id="site_title" value="<?php echo htmlspecialchars($title); ?>"/>
+<input  type="hidden" id="site_description" value="<?php echo htmlspecialchars($description); ?>"/>
 
 
-<?php } //IF NOT EMBED ENDS * * ** * * * * ** * * * * ** * * * * ** * * ?>
+
+
+
+<input type="hidden" id="artist" value="<?php
+	if (array_key_exists('artist', $_GET)){
+		echo htmlspecialchars(rawurlencode($_GET['artist']));
+	}
+	
+	?>"/>
+<input type="hidden" id="track" value="<?php
+	if (array_key_exists('track', $_GET)){
+		echo htmlspecialchars(rawurlencode($_GET['track']));
+	}
+	
+	?>"/>
+<input type="hidden" id="embed" value="<?php
+	if ((true==$embed)||(false!==$embed)){
+		echo 'true';
+	}
+	else {
+		echo 'false';
+	}
+	?>"/>
+<input type="hidden" id="embed_value" value="<?php
+	if ((true==$embed)||(false!==$embed)){
+		echo htmlspecialchars($embed);
+	}
+	else {
+		echo '';
+	}
+	?>"/>	
+	
+<div style="float:left;font-size:76%;">Powered by <a href="https://crero.clewn.org" title="CreRo, the open-source CMS for record labels and webradios">CreRo, the CMS for record labels and webradios</a> - AGPL licensed - <a href="http://github.com/shangril/crero">code repo</a></div>
+
+
+<?php  ?>
 <br/><a style="float:right;font-size:76%;" href="./about-js.html" data-jslicense="1" target="_blank">JavaScript license information</a>
-</body>
-</html><?php
+
+<?php if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')){
+echo '</body>
+</html>';
+}
+
+
 //oh, did we generate an album page (caching enabled or not) ?
 //and was it a valid album which displayed a tracklist ?
 //if so, let's store it in the list of currently valid albums
@@ -2646,6 +3854,8 @@ if (isset($_GET['album'])&&$weactuallydisplayedsomething&&$recentplay){
 	if(!in_array($_GET['album'], $recentalbumsbkp)){//only useful to write to disk if the array has changed
 		file_put_contents('./d/recently_generated_albums.dat', serialize($recentalbums));
 	}
+	
+
 }
 
 

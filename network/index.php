@@ -1,12 +1,14 @@
 <?php
+error_reporting(0);
+session_start();
 chdir ('..');
-include ('./config.php');
+require_once ('./config.php');
 chdir ('./network');
 if (!$activatechat){
 	exit(0);
 }
 
-session_start();
+
 include('site_variables.php');
 
 if (!array_key_exists('meep_ppl', $_SESSION))
@@ -65,12 +67,7 @@ $files=scandir('./e');
 		}
 		
 		
-		$meepenabled=$_SESSION['meep_ppl'];
-		$mus_meepenabled=$_SESSION['meep_mus'];
 		
-		
-		$havetomeep=false;
-		$mus_havetomeep=false;
 
 
 
@@ -98,14 +95,20 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 			
 			
 		}
-		$onlinepeople=count($nicklist);
-		$onlinemusicians=count($musicianlist);
+		$onlinepeople=intval(count($nicklist));
+		$onlinemusicians=intval(count($musicianlist));
 		
-		if (!$activate_musician_accounts){
+		if (!(isset($activate_musician_accounts)&&$activate_musician_accounts)){
 			$onlinemusicians=intval('-1');
 		}
+		$meepenabled=boolval($_SESSION['meep_ppl']);
+		$mus_meepenabled=boolval($_SESSION['meep_mus']);
 		
-		if ($onlinepeople!==file_get_contents('./onlinepeople.dat')){
+		
+		$havetomeep=false;
+		$mus_havetomeep=false;
+		
+		if ($onlinepeople!==intval(file_get_contents('./onlinepeople.dat'))){
 			file_put_contents('./onlinepeople.dat', $onlinepeople);
 		
 			if (file_get_contents('./oldonlinepeople.dat')!==file_get_contents('./onlinepeople.dat')){
@@ -118,15 +121,15 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 			}
 		}
 		
-		if ($onlinemusicians!==file_get_contents('./mus_onlinepeople.dat')){
+		if ($onlinemusicians!==intval(file_get_contents('./mus_onlinepeople.dat'))){
 			file_put_contents('./mus_onlinepeople.dat', $onlinemusicians);
 		
 			if (file_get_contents('./mus_oldonlinepeople.dat')!==file_get_contents('./mus_onlinepeople.dat')){
 				if (intval(file_get_contents('./mus_oldonlinepeople.dat'))< $onlinemusicians){
 					$mus_havetomeep=true;
-					
+				
 				}
-				file_put_contents('./musoldonlinepeople.dat', $onlinemusician);
+				file_put_contents('./mus_oldonlinepeople.dat', $onlinemusician);
 			
 			}
 		}
@@ -135,18 +138,18 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if ($onlinemusicians==intval('-1')){
 			$mus_txt='an unknown number of';
 		}
-		if ($havetomeep){
-			echo '<audio autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
+		if ($havetomeep==true&&$mus_meepenabled==true){
+			echo '<audio onload="this.play();" autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
 		}
-		if ($mus_havetomeep){
-			echo '<audio autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
+		if ($mus_havetomeep==true&&$meepenabled==true){
+			echo '<audio onload="this.play();" autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
 		}
 
 
 		if (isset($_GET['ajaxx'])){
 			echo '
 		
-			<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' people online including '.$mus_txt.' label musicians)<form method="get" style="display:inline;" action="./"><input type="hidden" name="login" value="login"/><input type="submit" value="Connect!"/></form>
+			<h4 style="display:inline;">'.$sitename.' Fan Network &gt; </h4> ('.$onlinepeople.' people online including '.$mus_txt.' label musicians)<form method="post" style="display:inline;" action="./?login=login"><input type="hidden" name="reallogin" value="reallogin"/><input type="submit" value="Connect!"/></form>
 			';
 		} 
 		
@@ -194,7 +197,7 @@ if (!$_SESSION['logged']&&!isset($GET['ajaxx'])){
 	<html>
 		<head>
 			<!--<meta http-equiv="refresh" content="20">-->
-			<link rel="stylesheet" href="//style.css" type="text/css" media="screen"/>
+			
 		<script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
@@ -272,8 +275,14 @@ window.setInterval(resync, 3000);
 		</head>
 		
 		<body>
-		<span id="content">Loading fan network...</span>
+		<a href="#" style="display:';
+		if (in_array('fromajax', array_keys($_GET)))
+			echo 'none;';
+		else
+			echo 'block;';
 		
+		echo '" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>
+		<span id="content">Loading fan network...</span>
 		
 		
 		
@@ -283,7 +292,7 @@ window.setInterval(resync, 3000);
 	
 	
 	
-	
+		die();
 	
 	
 }
@@ -293,8 +302,8 @@ include('site_variables.php');
 
 include ('header_functs.php');
 
-
-
+if (isset($_POST['reallogin']))
+		$_SESSION['reallogin']=true;
 
 if (isset($_GET['norange'])){
 	unset($mysession['lat']);
@@ -306,7 +315,25 @@ if (isset($_GET['norange'])){
 if (isset($_GET['login'])){
 	unset($mysession['logout']);
 }
+if (isset($_GET['logout'])){
+	//session_unset();
+	unset($mysession['nick']);
+	unset($mysession['color']);
+	unset($mysession['long']);
+	unset($mysession['lat']);
+	unset($mysession['range']);
+	unset($mysession['norange']);
+	unset($mysession['zero']);
+	unset($mysession['seen_private']);
+	unset($mysession['logout']);
+	unset($_SESSION[$seedroot]);
+	unset($_SESSION['logged']);
+	
+	echo '<!DOCTYPE html><html><head></head><body><script>/* @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0 */ setTimeout(function(){window.location.href=\'./?fromajax=1\';}, 1); /* @license-end */</script>Redirection<a href="./?fromajax=1">...</a></body></html>';
+	die();
 
+	
+}
 if (((!isset($mysession['nick'])&&!isset($mysession['logout']))&&!(strstr($_SERVER['HTTP_USER_AGENT'], 'http'))&&!(strstr($_SERVER['HTTP_USER_AGENT'], 'bot'))&&$_SERVER['HTTP_USER_AGENT']!=='')||isset($_GET['login'])){
 	
 	$mysession['long']=3000;
@@ -363,6 +390,12 @@ echo generate_header($site_name.' - '.$site_slogan,$site_description);
 
 if (isset($mysession['lat'])&&isset($mysession['long'])&&isset($mysession['nick']))
 {
+	if (!(in_array('fromajax', array_keys($_GET)))&&isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
+		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>';
+		
+		
+	}
+	
 	include ('chat.php');
 	 }
 	 

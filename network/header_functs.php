@@ -6,7 +6,6 @@ return '<!DOCTYPE html>
 <head>
 
 <!--link rel="shortcut icon" href="//'.$_SERVER['SERVER_NAME'].'/favicon.png" /-->
-<link rel="stylesheet" href="/style.css" type="text/css" media="screen" />
 <style>
 body {
 	padding-left:1%;

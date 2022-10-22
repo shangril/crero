@@ -2,7 +2,7 @@
 include ('./config.php');
  $thumbz=array_diff(scandir('./thumbcache'), Array ('..', '.'));
  foreach ($thumbz as $thumb){
-	 if (filectime('./thumbcache/'.$thumb)+60*60*24*7<=microtime(true)){
+	 if (floatval(filectime('./thumbcache/'.$thumb)+intval(60*60*24*7))<=microtime(true)){
 		 unlink ('./thumbcache/'.$thumb);
 	 }
 	 
@@ -13,10 +13,10 @@ include ('./config.php');
   }
   
   $file = str_replace('./','',$_GET['target']);
-  $viewportwidth= $_GET['viewportwidth'];
-  $ratio=$_GET['ratio'];
+  $viewportwidth= intval($_GET['viewportwidth']);
+  $ratio=floatval($_GET['ratio']);
   
-  if (file_exists('./'.$file) && strpos(mime_content_type('./'.$file),'image/')==0&&dirname(realpath($file))===realpath('./covers')){ 
+  if ((file_exists('./'.$file) && strpos(mime_content_type('./'.$file),'image/')==0&&(dirname(realpath($file))===realpath('./covers')))||$file=='favicon.png'){ 
 /*	  	  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
     strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= filemtime('./'.$file)
     &&$ratio<0.5)
@@ -32,7 +32,7 @@ include ('./config.php');
 	if (!isset($_GET['hook'])){
 	if (file_exists('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')){
 		  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
-			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) < filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
+			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) < filectime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
 			)
 			{
 				header('HTTP/1.0 304 Not Modified');
@@ -51,8 +51,8 @@ include ('./config.php');
 		}
 		else {
 			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', file_get_contents(
-			'http://'.$server.'/thumbnailer.php?hook=hook&ratio='.urlencode($_GET['ratio']).'&target='.urlencode($_GET['target']).'&viewportwidth='.urlencode($_GET['viewportwidth'])
-			));
+			'http://'.$server.'/thumbnailer.php?hook=hook&ratio='.$ratio.'&target='.$file.'&viewportwidth='.$viewportwidth)
+			);
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			die();
 

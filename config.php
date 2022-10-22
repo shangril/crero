@@ -1,5 +1,24 @@
 <?php
 error_reporting(0);
+$sessionstarted=session_start();
+require_once('./crero-lib.php');
+
+if (isset($_GET['purge'])){
+		if (array_key_exists('loggedadmin', $_SESSION)){
+		
+		$myhtmlcache=new creroHtmlCache(0.2);
+		$myhtmlcache->purgeCache();
+		echo '<!DOCTYPE html><html><body>Cache purged. <a href="./">Proceed</a></body></html>';
+		exit(0);
+
+		}
+		else
+		{
+		echo '<!DOCTYPE html><html><body>You must be logged as admin to purge cache</body></html>';
+		exit(0);
+	
+		}
+	}
 
 //since this config.php is used on every main pages of the main section
 //and also in the ./radio subsection
@@ -39,7 +58,7 @@ error_reporting(0);
 
 if (!array_key_exists('no-infinite-loop-please', $_GET)){
 
-		//here we got
+		//here we go
 		//firstly we check the existence of the shadowed password
 
 		if (!file_exists('./admin/d/pwd.dat')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
@@ -52,21 +71,28 @@ if (!array_key_exists('no-infinite-loop-please', $_GET)){
 		echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, please log in the admin panel at &lt;yourserver.tld/(path/to/crero)/admin&gt; and set up the "server" option</body></html>';
 		exit(0);
 		}
+		if (file_get_contents('./d/server.txt')===false){
+			echo '<!DOCTYPE html><body style="font-size:320%;">General error: ./d/server.txt is not readable. Please check the permission of your www user on your www files. </body></html>';
+				exit(0);
+		}
 		//useful data starting from now
+		
 		$server=trim(file_get_contents('./d/server.txt'));
 		$proto='http';
 		if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
 			$proto='https';
 		}
 		//then we check the consistency of server.tx and also won't die() if the user is admin at the admin panel 
-		else if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
-			if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')===false){
+		if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+			$page=file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1');
+			if ($page==false){
 				echo '<!DOCTYPE html><body style="font-size:320%;">General error: get content replied false, the site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
 				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
 				</ul></body></html>';
 				exit(0);
 			}
-			else if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')!==false&&!strstr($http_response_header[0], ' 200 OK')){
+		}
+	    if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')!==false&&!strstr($http_response_header[0], ' 200 OK')){
 				echo '<!DOCTYPE html><body style="font-size:320%;">General error: http response was not 200 OK, he site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
 				<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
 				</ul></body></html>';
@@ -74,7 +100,7 @@ if (!array_key_exists('no-infinite-loop-please', $_GET)){
 				}
 
 				
-			}
+			
 
 		//Main thing now, check the .htaccess is honored
 
@@ -84,7 +110,10 @@ if (!array_key_exists('no-infinite-loop-please', $_GET)){
 		}
 	}
 
-
+$proto='http';
+if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
+	$proto='https';
+}
 /*** Known bugs
  * 
  * The support for non-ASCII artists, albums, tracks etc is still very partial
@@ -200,15 +229,20 @@ if (!array_key_exists('no-infinite-loop-please', $_GET)){
  * 
  * 
  */
-
+if (!file_exists('./favicon.png')){
+	file_put_contents('./favicon.png', file_get_contents('./media/favicon.png'));
+}
 $favicon = 'favicon.png' ; 
 
 $description = trim(file_get_contents('./d/description.txt'));
 
 $title=trim(file_get_contents('./d/title.txt'));
 
+if (!isset($server)){
 $server=trim(file_get_contents('./d/server.txt'));
 //change this to your server's domain name
+}
+
 
 $sitename=trim(file_get_contents('./d/sitename.txt'));
 
@@ -226,7 +260,10 @@ else {
 $clewnaudiourl=trim(file_get_contents('./d/clewnaudiourl.txt'));
 //and this to http://<your server>/whatever/path/to/free/audio/audio/ ; otherwise you can upload your free audio to clewn and use it as free audio media server tier
 
+if (file_exists('./d/videoapiurl.txt')){
 $videoapiurl=trim(file_get_contents('./d/videoapiurl.txt'));
+}
+else $videoapiurl=false;
 
 //same applies for video, with the difference that Clewn Video doesn't currently support public upload
 $videourl=trim(file_get_contents('./d/videourl.txt'));
@@ -537,7 +574,14 @@ if (file_exists('./d/YP-APIMisconfiguredDateOnHostingToleranceWindow.txt')) {
 $activate_musician_accounts=false;
 //currently it as to be and stay false
 
+$footerReadableName='+';
 
+if (file_exists('./d/footerReadableName.txt')){
+	$my_footerReadableName=file_get_contents('./d/footerReadableName.txt');
+	if($my_footerReadableName!==false){
+		$footerReadableName=$my_footerReadableName;
+	}
+}
 
 
 

@@ -12,29 +12,74 @@ $trkprice=$downloadCartTrackPrice;
 $orderid=microtime(true);
 $_SESSION['cart_id']=$orderid;
 
-if (isset($_GET['delete_album'])){
+if (isset($_GET['delete_album'])&&is_numeric($_GET['delete_album'])){
     unset($_SESSION['cart']['album'][$_GET['delete_album']]);
     $_SESSION['cart']['album']=array_values($_SESSION['cart']['album'] ?? Array());
     }
 
-if (isset($_GET['delete_track'])){
+if (isset($_GET['delete_track'])&&is_numeric($_GET['delete_track'])){
     unset($_SESSION['cart']['track'][$_GET['delete_track']]);
     $_SESSION['cart']['track']=array_values($_SESSION['cart']['track'] ?? Array());
     }
 ?><!DOCTYPE html><html>
 <head>
 <link rel="shortcut icon" href="<?php echo $favicon;?>" />
-<link rel="stylesheet" href="http://<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
-<title><?php echo strip_tags($title); ?> - Your cart</title>
+<title>In your cart</title>
 
 <?php 
 if ($isDownloadCartNameYourPrice){ ?>
 <script>
 	// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
-
+	
+	function initot(){
+		return parseFloat(document.getElementById('init_total').value);
+	}
+	
+	function maxmax(){
+		mytotal=document.getElementById('total');
+		myftotal=parseFloat(mytotal.value);
+		mytotal.value=myftotal+(parseFloat('0.2')*parseFloat(initot()));
+		round_total();
+	}
+	function max_(){
+		mytotal=document.getElementById('total');
+		myftotal=parseFloat(mytotal.value);
+		mytotal.value=myftotal+(parseFloat('0.05')*parseFloat(initot()));
+		round_total();
+	}
+	function minmin(){
+		mytotal=document.getElementById('total');
+		myftotal=parseFloat(mytotal.value);
+		mytotal.value=myftotal-(parseFloat('0.2')*parseFloat(initot()));
+		round_total();
+	}
+	function min_(){
+		mytotal=document.getElementById('total');
+		myftotal=parseFloat(mytotal.value);
+		mytotal.value=myftotal-(parseFloat('0.05')*parseFloat(initot()));
+		round_total();
+	}
+	function round_total(){
+		mytotal=document.getElementById('total');
+		myftotal=parseFloat(mytotal.value);
+		myftotal=parseFloat(myftotal*100);
+		myftotal=parseFloat(Math.round(myftotal));
+		myftotal=parseFloat(myftotal/100);
+		if (myftotal<0){
+			myftotal=0
+		}
+		mytotal.value=myftotal;
+	}
+	function floor_tot(){
+		mytotal=document.getElementById('total');
+		myftotal=parseFloat(mytotal.value);
+		myftotal=Math.floor(myftotal);
+		mytotal.value=myftotal;
+	}
 	function compute_total(){
     if (document.getElementById('total')!=null){
 		if (!isNaN(parseFloat(document.getElementById('total').value))){
@@ -104,11 +149,18 @@ $payment=true;
 if (count($_SESSION['cart']['album'] ?? Array())>0 || count($_SESSION['cart']['track'] ?? Array())>0) {//we got more than 0 item in the cart, let's go
 	
 	if ($isDownloadCartNameYourPrice){
-			echo htmlspecialchars($downloadCartCurrency). ' ';
+			echo 'Choose what you want to pay<br/>';
+			
 
-			echo ' <input id="total" style="text-align:right;" size="7" type="text" value="';
+			echo '<a href="javascript:void(0);" onclick="minmin()">[--]</a> <a href="javascript:void(0);" onclick="min_()">[-]</a>';
+			echo htmlspecialchars($downloadCartCurrency). ' ';
+			echo'  <input id="total" style="text-align:right;" size="7" type="text" readonly value="';
 			echo htmlspecialchars($total);
-			echo '"><br/><span style="float:right;font-size:84%;">Name your price, no minimum</span>';
+			echo '">';
+			
+			echo '<input id="init_total" type="hidden" value="'.htmlspecialchars($total).'"/>';
+			
+			echo '<a href="javascript:void(0);" onclick="max_()">[+]</a> <a href="javascript:void(0);" onclick="maxmax()">[++]</a><br/><span style="float:right;font-size:84%;">Name your price, no minimum <a href="javascript:void(0);" onclick="floor_tot()">remove decimals</a></span>';
 		}
 		else{
 			echo htmlspecialchars($downloadCartCurrency). ' ';
@@ -119,6 +171,12 @@ if (count($_SESSION['cart']['album'] ?? Array())>0 || count($_SESSION['cart']['t
 }
 else {//we got 0 item in the cart, display a warning
 	echo '<strong>You got 0 items in your download cart. Please <a href="./">go back and browse the site</a> to select songs or albums that you want to download, and try again then. </strong>';
+	if ($isDownloadCartNameYourPrice){
+		echo '<h3>The price is only a suggested donation. You pay what you want, including 0. It\'s &quot;<strong>Name your price, no minimum</strong>&quot;.</h3>';
+	}
+	
+	
+	
 	$payment=false;
 
 }
@@ -132,7 +190,7 @@ echo '</span>';
 <input type="hidden" id="cmd" name="cmd" value="_xclick" />
 <input type="hidden" name="custom" value="<?php echo microtime(true);?>"/>
 <input type="hidden" name="business" value="<?php echo htmlspecialchars($downloadCartPaypalAddress);?>" />
-<input type="hidden" name="item_name" value="<?php echo htmlspecialchars($sitename); ?> - Order <?php echo $orderid ?>" />
+<input type="hidden" name="item_name" value="<?php echo htmlspecialchars($sitename); ?> - D/l Order <?php echo $orderid ?>" />
 <input type="hidden" name="currency_code" value="<?php echo htmlspecialchars($downloadCartCurrency);?>" />
 <input type="hidden" id="amount" name="amount" value="<?php echo htmlspecialchars($total);?>" /> 
 <input type="hidden" name="return" value="http://<?php echo htmlspecialchars($server);?>/download-page.php"/>
