@@ -956,7 +956,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, '."'".str_replace("'","\\'",'./covers/'.rawurlencode($url))."'".', get_size(), '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
+			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){increment_overload_track_counter();getCover(this, '."'".str_replace("'","\\'",'./covers/'.rawurlencode($url))."'".', get_size(), '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
 		
 			/*$output.='<script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
@@ -977,14 +977,14 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 			return $output;
 		}
 		else {
-			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
+			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){increment_overload_track_counter();getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
 		}
 	
 	
 	
 	}
 	else{
-			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
+			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="if (!get_page_init()){init_page()};if (album_displayed<=album_counter){increment_overload_track_counter();getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
 	}	
 }
 if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
@@ -1684,7 +1684,9 @@ function init_page() {
 	update_isindex();
 	
 	if (!get_isindex()){
-		document.getElementById('splash').style.display='none';
+		if(document.getElementById('splash')!=null){
+			document.getElementById('splash').style.display='none';
+		}
 	}
 
 <?php if ($recentplay) { ?>
@@ -1862,8 +1864,12 @@ function init_page() {
 	set_size(computeSize(document.documentElement.clientWidth, document.documentElement.clientHeight));
 	
 	infoselected=null;
-	document.getElementById('noscripters').style.display='none';
-	document.getElementById('noscripters_footer').style.display='none';
+	if (document.getElementById('noscripters')!=null){
+		document.getElementById('noscripters').style.display='none';
+	}
+	if (document.getElementById('noscripters_footer')!=null){
+		document.getElementById('noscripters_footer').style.display='none';
+	}
 	if (document.getElementById('infiniteloop')!=null){
 		document.getElementById('bodyajax_autoplay').value='false';
 	}
@@ -1993,7 +1999,7 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 		else if (get_isindex()) {
 			titleSiteObj.url='./';
 			
-			window.history.replaceState(titleSiteObj, '', './');
+			window.history.pushState(titleSiteObj, '', './');
 
 			
 		}
@@ -2764,7 +2770,7 @@ foreach ($contentlocal as $item){
 				$track_artist=trim(file_get_contents($serverapi.'?getartist='.urlencode($track)));
 
 			
-				if ($track_name==''||$track_artist==''){
+				if ($track_name==''||(!((true==$embed)||(false!==$embed)))&&$track_artist==''){
 					$eachtrackwasdisplayedok=false;
 				}
 
@@ -3227,7 +3233,7 @@ foreach ($content as $item){
 			
 					$track_artist=trim(file_get_contents($clewnapiurl.'?getartist='.urlencode($track)));
 					
-					if ($track_name==''||$track_artist==''){
+					if ($track_name==''||((!((true==$embed)||(false!==$embed)))&&$track_artist=='')){
 						$eachtrackwasdisplayedok=false;
 					}
 					
