@@ -112,14 +112,14 @@ function  digolder(customoffset){
 		arralbum=[encodeURIComponent(get_album())];
 		albfrag='&album='+encodeURI(JSON.stringify(arralbum));
 	}*/
-	if (get_embed_value()!=''){
+	if (get_embed_value()!=null&&get_embed_value()!=''){
 		embembed=[encodeURIComponent(get_embed_value())];
 		embfrag='&embed='+encodeURI(JSON.stringify(embembed));
 	}
 	//get_player().pause();
 	//set_isplaying(0);
 	//set_isplaying(NaN);
-	page_init=false;update_ajax_body('./?v=1'+artfrag+embfrag+'&offset='+encodeURI(customoffset)+'&autoplay=true');
+	set_page_init(false);update_ajax_body('./?'+artfrag+embfrag+'&offset='+encodeURI(customoffset)+'&autoplay=true');
 	//setplayerstall(false);
 	//update_autoplay();
 }
@@ -150,6 +150,7 @@ function get_isplaying(){
 	return parseInt(isplaying);
 }
 function autoplay(target, id, isclewn, isautoplay){
+	set_page_load(true);
 	set_isplaying(play(target, id, isclewn, isautoplay));
 	return get_isplaying();
 }
@@ -332,6 +333,7 @@ function computeSize(width, height){
 	return size;
 }
 function update_ajax_body(http_url_target){
+	set_page_load(false);
 	var autoplay='false';
 	var arttruc='';
 	var size=0;
@@ -447,6 +449,7 @@ function update_ajax_body(http_url_target){
 			xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 			 document.getElementById('crerobody').innerHTML = this.responseText;
+			 set_page_load(true);
 			 document.getElementById('bodyajax').value = finalurl ;
 			 document.getElementById('bodyajax_autoplay').value = autoplay;
 			 document.getElementById('bodyajax_arttruc').value = arttruc;
@@ -583,13 +586,24 @@ function twirling(){
 	if (!get_page_init()){
 		baton.style.display='block';
 	}
+	if (!get_page_load()){
+		baton.style.display='block';
+	}
+	if (get_page_load()){
+		baton.style.display='none';
+	}
 
 }
 window.setInterval(clock_tick, 1200);	
 window.setInterval(twirling, 650);	
-		
-	
-	
+
+var loaded;		
+function get_page_load(){
+	return loaded;
+}	
+function set_page_load(argk){
+	loaded=argk;
+}	
 	
 
 // @license-end

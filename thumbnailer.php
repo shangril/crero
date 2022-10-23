@@ -53,6 +53,7 @@ include ('./config.php');
 			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', file_get_contents(
 			'http://'.$server.'/thumbnailer.php?hook=hook&ratio='.$ratio.'&target='.$file.'&viewportwidth='.$viewportwidth)
 			);
+			header('Last-Modified: '.date(DATE_RFC822, filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')));
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			die();
 
