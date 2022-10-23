@@ -111,7 +111,7 @@ if ($mysession['norange']!==true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 	}
 
 ?>"></iframe>
-<iframe style="display:inline;float:left;width:40%;height:358px;border:0px;" src="./who.php<?php 
+<iframe onload="chat_init();" style="display:inline;float:left;width:40%;height:358px;border:0px;" src="./who.php<?php 
 
 	if (isset($_GET['private_nick'])&&isset($_GET['private_sid'])){
 		echo '?private_nick='.urlencode($_GET['private_nick']).'&private_sid='.urlencode($_GET['private_sid']);
@@ -134,26 +134,37 @@ if ($mysession['norange']===true&&!isset($_GET['private_nick'])&&!isset($_GET['p
 }
 echo ' <form style="display:inline;margin-bottom:0px;padding-bottom:0px;margin-top:0px;padding-top:0px;" action="" method="POST">Your nickname : <input type="text" name="nick" value="'.htmlspecialchars($mysession['nick']).'"/><input value="Change" type="submit"/></form>';
 echo '<a style="float:right;margin-bottom:0px;padding-bottom:0px;margin-top:0px;padding-top:0px;" href="./?logout=true">Logout</a>';
+		echo '<audio id="mus_meep"><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
+		echo '<audio id="ppl_meep"><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
+
 ?>
 <div id="meepcontent"></div>
 		<script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 
- 
-var syncLock=false;	
-var attempt=0;
-var xshttp;	
-function resync() {
-			attempt++;
-			if (attempt>10){
-				
-			  xshttp.abort;
-			  syncLock=false;
-			  attempt=0;	
+function chat_init(){
+	window.setInterval(resync, 3000);
+
+}
+function meep(ismusician, targetimg){
+			if (ismusician){
+				document.getElementById('mus_meep').play();
 			}
+			else {
+				document.getElementById('ppl_meep').play();
+			}
+			targetimg.style.display='none';
+			
+		}
+function resync() {
+			
+			var syncLock=false;	
+			var attempt=0;
+			var xshttp;	
+			syncLock=false;
+			
 			//document.getElementById("content").innerHTML+="<br/>Attempt: "+attempt;
 			if (!syncLock){
-			  syncLock=true;
 			  xshttp = new XMLHttpRequest();
 			  xshttp.onreadystatechange = function(){
 				  if (xshttp.readyState==4) {
@@ -166,13 +177,12 @@ function resync() {
 					}
 				  
 				  };
-			  xshttp.open("GET", "./index.php?meep=meeponly", true);
+			  xshttp.open("GET", "./index.php?meep=meeponly&fromajax=1", true);
 			  xshttp.send();
 			}
 		}
 
 
-window.setInterval(resync, 3000);
 
 
 

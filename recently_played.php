@@ -85,7 +85,7 @@ foreach ($recentsr as $recent){
 	
 	if(in_array($recent['album'], $allowedAlbums)&&!$recent['jailed']&&$counter<10){
 		$counter++;
-		echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="javascript:page_init=false;arr=[\''.urlencode(str_replace("'", "\\'", html_entity_decode($recent['album']))).'\'];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&autoplay=true\');">'.displaycover($recent['album'], 10, 'mini'.rand(0,1000)).'</a><br/>';
+		echo '<span style="width:10%;float:left;margin-left:auto;margin-right:auto;"><a href="javascript:page_init=false;arr=[encodeURIComponent(\''.str_replace("'", "\\'", html_entity_decode($recent['album'])).'\')];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr))+\'&autoplay=true\');">'.displaycover($recent['album'], 10, 'mini'.rand(0,1000)).'</a><br/>';
 		echo htmlspecialchars(round((time()-intval($recent['date']))/60));
 		echo ' mn<br/>';
 		//echo ' <a href="#social" style="'.$recent['who']['color'].'">'.htmlspecialchars($recent['who']['nick']).'</a>';

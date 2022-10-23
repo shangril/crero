@@ -26,7 +26,7 @@ $supported_formats_remote=explode("\n", trim(file_get_contents($clewnapiurl.'?li
 <html>
 <head>
 <link rel="shortcut icon" href="<?php echo $favicon;?>" />
-<link rel="stylesheet" href="http://<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />

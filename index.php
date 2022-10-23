@@ -19,22 +19,40 @@ $myhtmlcache=null;
 
 //Whoever you are, you deserve a cleaning
 //LOCKING 			 
-			if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)<microtime(true)){
-				unlink('./recently_ping_callback.lock');
+//By the way, let's remove old locks on callbacks ping recently played
+if (array_key_exists('recently_callback_id' , $_SESSION)){
+	
+	foreach (array_keys($_SESSION['recently_callback_id']) as $stamped){
+			
+			
+			
+			if (floatval($_SESSION['recently_callback_id'][$stamped]['stamp'])+300<microtime(true)){
+				unset($_SESSION['recently_callback_id'][$stamped]);
+			}
+	}
+	
+}
+
+
+
+
+
+
+			if (file_exists('./recently_ping.lock')&&(floatval(filectime('./recently_ping.lock'))+5.0)<microtime(true)){
+				unlink('./recently_ping.lock');
 			}
 			
 
-			while (file_exists('./recently_ping_callback.lock')){
-				if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)>microtime(true)){
-					unlink('./recently_ping_callback.lock');
-					
+			while (file_exists('./recently_ping.lock')){
+				if (file_exists('./recently_ping.lock')&&(floatval(filectime('./recently_ping.lock'))+5.0)>microtime(true)){
+					unlink('./recently_ping.lock');
+					session_reset();
 				}
 				sleep(1);
 			}
-			touch ('./recently_ping_callback.lock');
+			touch ('./recently_ping.lock');
 			 
 //LOCKED			 
-
 $recentsjailed=Array();
 if (file_exists('./d/recent.dat')){
 	$recentsjailed=unserialize(file_get_contents('./d/recent.dat'));
@@ -43,14 +61,18 @@ if (file_exists('./d/recent.dat')){
 $recentsfinal=Array();
 if ($recentjailed){
 	foreach ($recentsjailed as $recent){
-		if($recent['jailed']===false||(($recent['jailed']===true)&&(floatval($recent['date'])+90.0)>floatval(time()))){
+		
+		
+		
+		
+		if($recent['jailed']==false||(($recent['jailed']===true)&&(floatval($recent['date'])+90.0)>floatval(time()))){
 			array_push($recentsfinal, $recent);
 			
 		}//if jailed && jailtime < 90 secondes OR not jailed
 		}
 	file_put_contents('./d/recent.dat', serialize($recentsfinal));
 }
-unlink('./recently_ping_callback.lock');
+unlink('./recently_ping.lock');
 //UNLOCKED
 
 
@@ -372,29 +394,29 @@ if (isset($_GET['getinfo'])){
 //Out of the log
 //And polite bots are not wished as well
 //thanks to them for being polite
-if ((array_key_exists('recently_callback', $_GET)&&isset($_GET['album']))&&!isset($_GET['listall'])&&$recentplay&&$sessionstarted&&array_key_exists('HTTP_USER_AGENT', $_SERVER)
-		&&(null!==$_SERVER['HTTP_USER_AGENT']
-		&&!strstr('+', $_SERVER['HTTP_USER_AGENT'])
-		&&!strstr('bot ', $_SERVER['HTTP_USER_AGENT'])
-		&&!strstr('crawl', $_SERVER['HTTP_USER_AGENT'])
-		&&(''!==$_SERVER['HTTP_USER_AGENT'])
+if (((array_key_exists('recently_callback', $_GET)&&
+array_key_exists('recently_callback_id', $_GET))
+&&isset($_GET['album'])
+&&(((!array_key_exists('recently_callback_id', $_SESSION))||!array_key_exists($_GET['album'], $_SESSION['recently_callback_id']))&&$_SESSION['recently_callback_id'][$_GET['album']]['id']!=$_GET['recently_callback_id']))
+		&&!isset($_GET['listall'])&&$recentplay&&$sessionstarted
 		)
-		)
+		
 		 {
 //LOCKING 			 
-			if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)<microtime(true)){
-				unlink('./recently_ping_callback.lock');
+			if (file_exists('./recently_ping.lock')&&(floatval(filectime('./recently_ping.lock'))+5.0)<microtime(true)){
+				unlink('./recently_ping.lock');
 			}
 			
 
-			while (file_exists('./recently_ping_callback.lock')){
-				if (file_exists('./recently_ping_callback.lock')&&(floatval(filectime('./recently_ping_callback.lock'))+2.0)<microtime(true)){
-					unlink('./recently_ping_callback.lock');
+			while (file_exists('./recently_ping.lock')){
+				if (file_exists('./recently_ping.lock')&&(floatval(filectime('./recently_ping.lock'))+5.0)<microtime(true)){
+					unlink('./recently_ping.lock');
+					session_reset();
 					
 				}
 				sleep(1);
 			}
-			touch ('./recently_ping_callback.lock');
+			touch ('./recently_ping.lock');
 			 
 //LOCKED			 
 			 
@@ -408,7 +430,6 @@ if ((array_key_exists('recently_callback', $_GET)&&isset($_GET['album']))&&!isse
 	$recent['who']['nick']=$_SESSION['nick'];
 	$recent['uid']=$_SESSION['crero_uid'];
 	$recent['jailed']=true;
-	$_SESSION['jailtime']=$recent['date'];
 	if (!file_exists('./d/recent.dat')){
 		$recents= Array();
 	}
@@ -417,20 +438,13 @@ if ((array_key_exists('recently_callback', $_GET)&&isset($_GET['album']))&&!isse
 		
 	}
 	
-	$tobepushed=false;
-	foreach ($recents as $st_recent){
-		if ($st_recent['album']==$recent['album']){
-			if ($st_recent['uid']==$_SESSION['crero_uid']&&(!array_key_exists('pushed', $_SESSION)||(array_key_exists('pushed', $_SESSION)&&$_SESSION['pushed']!=$recent['album'].$recent['date']))){
-					$tobepushed=true;
-					$_SESSION['pushed']=$recent['album'].$recent['date'];
-				
-				
-			}
-			
-		}
-		
+	$_SESSION['jailtime']=$recent['date'];
+	if (!array_key_exists('recently_callback_id', $_SESSION)){
+		$_SESSION['recently_callback_id']=array();
 	}
-	if ($tobepushed){	
+	$_SESSION['recently_callback_id'][$recent['album']]=array( 'id' => $_GET['recently_callback_id'], 'stamp' => microtime(true));
+			
+	if (true){	
 		if (count($recents)>=10000){//hey guys, let's store 1000 times more than we need, just to keep the jailed ones, unjail the legitimates upon validation, and with a certain incertainyty get 0.1% of our list that is valid visitors. 
 			
 			$recents=array_slice($recents, 1, 9999);
@@ -470,14 +484,14 @@ if (file_exists('./d/recent.dat')){
 }
 $recentsfinal=Array();
 foreach ($recentsjailed as $recent){
-	if($recent['jailed']===false||(($recent['jailed']===true)&&(floatval($recent['date'])+90.0)>floatval(time()))){
+	if($recent['jailed']==false||(($recent['jailed']===true)&&(floatval($recent['date'])+90.0)>floatval(time()))){
 		array_push($recentsfinal, $recent);
 		
 	}//if jailed && jailtime < 90 secondes OR not jailed
 }
 file_put_contents('./d/recent.dat', serialize($recentsfinal));
 
-unlink ('./recently_ping_callback.lock');
+unlink ('./recently_ping.lock');
 //UNLOCKED 
 
 
@@ -1048,7 +1062,7 @@ echo 'bodyvoid=\'./?body=void\';';
 
 	
 ;(function(){
-			
+	
         
     window.addEventListener('popstate', function() {
         if (window.history.state!=null){
@@ -1295,6 +1309,11 @@ catch (SystemExit $e) { ob_flush(); exit(0); }
 
 try {
 //if !$_GET['body']=='ajax';?>
+<span id="noscripters" style="position:fixed;top:0px;left:0px;z-index:201;" onLoad="if (!get_page_init()){init_page();}">
+<noscript >Dear noscripter, <br/> as of most of music-featured website, this website relies heavily on Javascript, especially to allow continuous playing album after album, because nowadays' browsers won't allow an autoplay upon page load. AJAX is required. <br/>
+We suggest you to look at the LibreJS javascript extension, which blocks javascripts, and allows, and unblock, Javascript which is free software and human readable and therefore checked for safety and privacy compliance. It is edited by the Free Software Foundation (fsf.org). </noscript>
+</span>
+<div id="twirling" style="position:fixed;top:0px;left:0px;background-color:white;display:block;z-index:200;color:black;font-size:3000%;text-align:center;width:100%;height:100%;">-</div>
 <script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
 var page_init=false;
@@ -1637,7 +1656,9 @@ function init_page() {
 	
 	set_album_error=false;
 	set_inc_stall(false);
-	
+	//monthly donation
+	var monthly=false;
+
 	set_overloadindexchecked(false);
 	if (overload_track_counter==undefined){
 	
@@ -1666,8 +1687,17 @@ function init_page() {
 		document.getElementById('splash').style.display='none';
 	}
 
-
-
+<?php if ($recentplay) { ?>
+	
+	tryindex=10;
+				
+	while(xhttzzpingprecalb!=null&&tryindex>=0){if (xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();}tryindex--;}
+				
+	
+	
+	
+	
+	var callback_id=Math.random();
 	var alb_willhavetoping=true;
 	if (!get_isindex()&&get_album()!=''){
 		var recentretries=0;
@@ -1676,8 +1706,8 @@ function init_page() {
 		var current_recent_album=get_album();
 		var xhttzzpingprecalb=[];
 		var xhttzzpingprecalb_index=0;
-		timer=0;
-		while (recentretries < 1) {
+		timer=1000;
+		while (recentretries < 10) {
 			recentretries++;
 			setTimeout(function(){
 				tryindex=xhttzzpingprecalb_index-1;
@@ -1685,51 +1715,53 @@ function init_page() {
 				while(xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();tryindex--;}
 				
 				
-				
-				
-				xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest(function(){
+				if (alb_willhavetoping)
+					{
+					xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest(function(){
 
 
-				if (this.readyState == 4 && this.status == 200) {
-						for (i=0;i<xhttzzpingprecalb.length;i++){
-							xhttzzpingprecalb[i].abort();
-						}
-						recentretries=10;
-						var oxhttozzypingprecalb; 
-						oxhttozzypingprecalb = new XMLHttpRequest(function(){
-							if (this.readyState == 4 && this.status == 200) {
-									
-									oprpretries=10;
-								}
-							
-							});
-						stimer=500;
-							
-						while(oprpretries<10){
-							oprpretries++;
-							setTimeout(function(){
-							oxhttozzypingprecalb.abort();
-							
+					if (this.readyState == 4 && this.status == 200) {
+							for (i=0;i<xhttzzpingprecalb.length;i++){
+								xhttzzpingprecalb[i].abort();
+							}
+							recentretries=10;
+							var oxhttozzypingprecalb; 
 							oxhttozzypingprecalb = new XMLHttpRequest(function(){
-							if (this.readyState == 4 && this.status == 200) {
-									alb_willhavetoping=false;
+								if (this.readyState == 4 && this.status == 200) {
+										
+										oprpretries=10;
+									}
+								
+								});
+							stimer=1000;
+								
+							while(oprpretries<10){
+								oprpretries++;
+								setTimeout(function(){
+								//oxhttozzypingprecalb.abort();
+								
+								oxhttozzypingprecalb = new XMLHttpRequest(function(){
+								if (this.readyState == 4 && this.status == 200) {
+										alb_willhavetoping=false;
+								
+										oprpretries=10;
+									}
+								
+								});
+								
+								if (alb_willhavetoping){
+									oxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
+									oxhttozzypingprecalb.send();
+									}
+								},stimer);
+								stimer=stimer+1000;
+							}
 							
-									oprpretries=10;
-								}
-							
-							});
-							
-							
-							oxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
-							oxhttozzypingprecalb.send();
-							},stimer);
-							stimer=stimer+500;
 						}
-						
-					}
-				
-				});
-				xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURI(current_recent_album), true);
+					
+					});
+				}
+				xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURIComponent(current_recent_album)+"&recently_callback_id="+encodeURIComponent(callback_id), true);
 				xhttzzpingprecalb[xhttzzpingprecalb_index].send();
 				xhttzzpingprecalb_index++;
 			},timer);
@@ -1741,8 +1773,6 @@ function init_page() {
 
 
 	
-	//monthly donation
-	var monthly=false;
 	
 	//ping recently played
 	if (!get_isindex()&&alb_willhavetoping){
@@ -1754,24 +1784,27 @@ function init_page() {
 				}
 			
 			});
-		ttimer=500;
+		ttimer=1000;
 		while(prpretries<10){
 			prpretries++;
 			setTimeout(function(){
 				prpxhttozzypingprecalb.abort();
 				prpxhttozzypingprecalb = new XMLHttpRequest(function(){
 					if (this.readyState == 4 && this.status == 200) {
+							alb_willhavetoping=false;
 							prpretries=10;
 						}
 					
 					});
-				prpxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
-			prpxhttozzypingprecalb.send();
+				if(alb_willhavetoping){
+					prpxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
+					prpxhttozzypingprecalb.send();
+				}
 			},ttimer);
-			ttimer=ttimer+500;
+			ttimer=ttimer+1000;
 		}
 	}
-
+<?php } ?>
 	//getting most out of url passed for internal use purposes
 	const url=new URL(proto+'://'+server+'/'+document.getElementById('bodyajax').value);
 	<?php /*
@@ -1989,11 +2022,6 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 // @license-end
 </script>
 
-<span id="noscripters"  onLoad="if (!get_page_init()){init_page();}"
->
-<noscript >Dear noscripter, <br/> as of most of music-featured website, this website relies heavily on Javascript, especially to allow continuous playing album after album, because nowadayas browsers won't allow an autoplay upon page load. AJAX is required. <br/>
-We suggest you to look at the LibreJS javascript extension, which blocks javascripts, and allows, and unblock, Javascript which is free software and human readable and therefore checked for safety and privacy compliance. It is edited by the Free Software Foundation (fsf.org). </noscript>
-</span>
 <input type="hidden" id="bodyajax" value="" onload="if (bodyvoid!=''){this.value=bodyvoid;};"/>
 <input type="hidden" id="bodyajax_autoplay" value="false"/>
 <input type="hidden" id="bodyajax_arttruc" value=""/>
@@ -3284,7 +3312,7 @@ foreach ($content as $item){
 							 <div style="background-color:#F0F0F0;text-align:left;"><a href="Javascript:void(0);" onclick="addTrackToCart('<?php 
 							 echo str_replace("'", "\\'", urlencode($track_name));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode($item['album']));?>', '<?php 
-							 echo str_replace("'", "\\'", urlencode(htmlentities($track, ENT_COMPAT  | ENT_HTML401 )));?>', '<?php 
+							 echo str_replace("'", "\\'", urlencode($track));?>', '<?php 
 							 echo str_replace("'", "\\'", urlencode ($track_artist));?>' ,this);">Download track</a> 
 							 
 							 <?php
@@ -3781,7 +3809,7 @@ var yparrvalidated=[];
 	?>"/>
 <input type="hidden" id="album" value="<?php
 	if (array_key_exists('album', $_GET)){
-		echo htmlspecialchars(rawurlencode($_GET['album']));
+		echo htmlspecialchars(($_GET['album']));
 	}
 	
 	?>"/>
@@ -3798,13 +3826,13 @@ var yparrvalidated=[];
 
 <input type="hidden" id="artist" value="<?php
 	if (array_key_exists('artist', $_GET)){
-		echo htmlspecialchars(rawurlencode($_GET['artist']));
+		echo htmlspecialchars(($_GET['artist']));
 	}
 	
 	?>"/>
 <input type="hidden" id="track" value="<?php
 	if (array_key_exists('track', $_GET)){
-		echo htmlspecialchars(rawurlencode($_GET['track']));
+		echo htmlspecialchars(($_GET['track']));
 	}
 	
 	?>"/>

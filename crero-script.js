@@ -568,10 +568,26 @@ function get_playerstall(){
 function setplayerstall(arg){
 	playerstall=arg;
 }
+var twindex=0;
+function twirling(){
+	baton=document.getElementById('twirling');
+	anim= ['(\\)', '(|)', '(/)', '(-)', '(\\)', '(|)', '(/)', '(-)']
+	baton.innerHTML=anim[twindex];
+	twindex++;
+	if (twindex==anim.length){
+		twindex=0;
+	}
+	if (get_page_init()){
+		baton.style.display='none';
+	}
+	if (!get_page_init()){
+		baton.style.display='block';
+	}
 
+}
 window.setInterval(clock_tick, 1200);	
-
-	
+window.setInterval(twirling, 650);	
+		
 	
 	
 	

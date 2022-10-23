@@ -1,14 +1,15 @@
 <?php
 
 if (session_start()){
-	if (file_exists('./recently_ping.lock')&&floatval(filectime('./recently_ping.lock'))+2>microtime(true)){
+	if (file_exists('./recently_ping.lock')&&floatval(filectime('./recently_ping.lock'))+5>microtime(true)){
 		unlink('./recently_ping.lock');
 	}
 	
 
 	while (file_exists('./recently_ping.lock')){
-		if (file_exists('./recently_ping.lock')&&floatval(filectime('./recently_ping.lock'))+2>microtime(true)){
+		if (file_exists('./recently_ping.lock')&&floatval(filectime('./recently_ping.lock'))+5>microtime(true)){
 			unlink('./recently_ping.lock');
+			session_reset();
 		}
 		sleep(1);
 	}

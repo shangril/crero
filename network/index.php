@@ -71,11 +71,11 @@ $files=scandir('./e');
 
 
 
-if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
+if (isset($_GET['ajaxx'])||isset($_GET['meeponly'])||isset($_GET['meep'])){
 	
 		
 		//count()
-		$files=array_diff(scandir ('../network/e/'), Array ('..', '.', '.htaccess'));
+		$files=array_diff(scandir ('./e/'), Array ('..', '.', '.htaccess'));
 		sort($files);
 		
 		$nicklist=Array();
@@ -101,8 +101,8 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if (!(isset($activate_musician_accounts)&&$activate_musician_accounts)){
 			$onlinemusicians=intval('-1');
 		}
-		$meepenabled=boolval($_SESSION['meep_ppl']);
-		$mus_meepenabled=boolval($_SESSION['meep_mus']);
+		$meepenabled=$_SESSION['meep_ppl'];
+		$mus_meepenabled=$_SESSION['meep_mus'];
 		
 		
 		$havetomeep=false;
@@ -111,7 +111,7 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if ($onlinepeople!==intval(file_get_contents('./onlinepeople.dat'))){
 			file_put_contents('./onlinepeople.dat', $onlinepeople);
 		
-			if (file_get_contents('./oldonlinepeople.dat')!==file_get_contents('./onlinepeople.dat')){
+			if (file_get_contents('./oldonlinepeople.dat')!=file_get_contents('./onlinepeople.dat')){
 				if (intval(file_get_contents('./oldonlinepeople.dat'))< $onlinepeople){
 					$havetomeep=true;
 					
@@ -124,7 +124,7 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if ($onlinemusicians!==intval(file_get_contents('./mus_onlinepeople.dat'))){
 			file_put_contents('./mus_onlinepeople.dat', $onlinemusicians);
 		
-			if (file_get_contents('./mus_oldonlinepeople.dat')!==file_get_contents('./mus_onlinepeople.dat')){
+			if (file_get_contents('./mus_oldonlinepeople.dat')!=file_get_contents('./mus_onlinepeople.dat')){
 				if (intval(file_get_contents('./mus_oldonlinepeople.dat'))< $onlinemusicians){
 					$mus_havetomeep=true;
 				
@@ -138,20 +138,7 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		if ($onlinemusicians==intval('-1')){
 			$mus_txt='an unknown number of';
 		}
-<<<<<<< HEAD
-		if ($havetomeep==true&&$mus_meepenabled==true){
-			echo '<audio onload="this.play();" autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
-		}
-		if ($mus_havetomeep==true&&$meepenabled==true){
-			echo '<audio onload="this.play();" autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
-=======
-		if ($havetomeep==true&&$mus_meepenabled){
-			echo '<audio autoplay><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
-		}
-		if ($mus_havetomeep==true&&$meepenabled){
-			echo '<audio autoplay><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
->>>>>>> 106b5ef54a626241e21780dd554859be1634973a
-		}
+		
 
 
 		if (isset($_GET['ajaxx'])){
@@ -171,7 +158,16 @@ if (isset($_GET['ajaxx'])||isset($_GET['meep'])){
 		echo ' name="meep" value="1" /> someone enters | <input onclick="this.form.submit();" type="checkbox" ';
 		if ($mus_meepenabled){echo ' checked ';}
 		echo ' name="mus_meep" value="1"/> a label musician enters</form>';
+		if ($havetomeep==true&&$mus_meepenabled==true){
+			echo '<img src="../favicon.png" onload="meep(false, this);">';
+		}
+		if ($mus_havetomeep==true&&$meepenabled==true){
+			echo '<img src="../favicon.png" onload="meep(true, this);">';
+		}
+		?>
+
 		
+		<?php
 	}
 		
 	exit(0);	
@@ -241,6 +237,18 @@ if (!$_SESSION['logged']&&!isset($GET['ajaxx'])){
  
 var syncLock=false;	
 //var attempt=0;
+
+
+		function meep(ismusician, targetimg){
+			if (ismusician){
+				document.getElementById(\'mus_meep\').play();
+			}
+			else {
+				document.getElementById(\'ppl_meep\').play();
+			}
+			targetimg.style.display=\'none\';
+			
+		}
 	
 function resync() {
 			//attempt++;
@@ -260,7 +268,7 @@ function resync() {
 					}
 				  
 				  };
-			  xhttp.open("GET", "?ajaxx=true&meep=true", true);
+			  xhttp.open("GET", "?ajaxx=true&meep=true&fromajax=1", true);
 			  xhttp.send();
 			}
 		}
@@ -268,7 +276,8 @@ function resync() {
 
 window.setInterval(resync, 3000);
 
-
+		
+	
 
 // @license-end
 </script>
@@ -283,19 +292,18 @@ window.setInterval(resync, 3000);
 		</head>
 		
 		<body>
-<<<<<<< HEAD
-		<a href="#" style="display:';
+		<a href="javascript:void(0);" style="display:';
 		if (in_array('fromajax', array_keys($_GET)))
 			echo 'none;';
 		else
 			echo 'block;';
-=======
-		<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab is currently muted. Click to unmute</a>
-		<span id="content">Loading fan network...</span>
->>>>>>> 106b5ef54a626241e21780dd554859be1634973a
 		
-		echo '" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>
-		<span id="content">Loading fan network...</span>
+		echo '" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>';
+		echo '<audio id="mus_meep"><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
+		echo '<audio id="ppl_meep"><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
+
+		
+		echo '<span id="content">Loading fan network...</span>
 		
 		
 		</body>
@@ -402,13 +410,8 @@ echo generate_header($site_name.' - '.$site_slogan,$site_description);
 
 if (isset($mysession['lat'])&&isset($mysession['long'])&&isset($mysession['nick']))
 {
-<<<<<<< HEAD
 	if (!(in_array('fromajax', array_keys($_GET)))&&isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
 		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>';
-=======
-	if (isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
-		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab is currently muted. Click to unmute</a>';
->>>>>>> 106b5ef54a626241e21780dd554859be1634973a
 		
 		
 	}

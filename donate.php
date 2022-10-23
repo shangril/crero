@@ -43,7 +43,7 @@ function toggleMonthly(){
 // @license-end
 </script>
 <span style="font-size:76%;"><?php echo $trans[$lang]['help'];?>
-<form target="new" name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
+<form target="_blank" name="_xclick" action="https://www.paypal.com/fr/cgi-bin/webscr" method="post" >
 <input type="hidden" id="cmd" name="cmd" value="_xclick" />
 <input type="hidden" name="custom" value="<?php echo microtime(true);?>"/>
 <input type="hidden" name="business" value="<?php echo htmlspecialchars($donationpaypaladdress);?>" />
