@@ -1115,7 +1115,7 @@ function displayRecentlyPlayed(){
 
 function delegate()  {
 	
-	if (yprun&&!stall&&!get_embed()&&document.getElementById('yp-services-content')!=null){
+	if (yprun&&!stall&&document.getElementById('yp-services-content')!=null){
 		
 		var xhttpyp = new XMLHttpRequest();
 		  if (ypcurrentindexretries!=ypindex){
@@ -1340,7 +1340,7 @@ var overloadindexchecked=false;
 //yp stuff
 var ypping=true;
 
-var myfunc;	
+var myfunc=null;	
 var yprun=true;
 var ypindex=0;
 var appendypreq='';
@@ -1853,7 +1853,9 @@ function init_page() {
 	//yp stuff
 	ypping=true;
 	nosocialupdate=false;	  
-
+	if (myfunc!=null){
+		clearInterval(myfunc);	
+	}
 	myfunc=null;	
 	yprun=true;
 	ypindex=0;
@@ -1934,7 +1936,7 @@ else {//we revert to mp3 as a default. How ugly is this, indeed ?
 <?php if ((count($creroypservices)>0)&&(!((true==$embed)||(false!==$embed)))){ ?>
 //yp stuff		
 
-if (!get_embed()&&get_embed_value()!=''){yprun=true;myfunc=setInterval (delegate, 1000);}
+yprun=true;myfunc=setInterval (delegate, 1000);
 
 <?php } ?>
 
