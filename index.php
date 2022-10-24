@@ -1110,7 +1110,7 @@ function displayRecentlyPlayed(){
 
 function delegate()  {
 	
-	if (yprun&&!stall){
+	if (yprun&&!stall&&!get_embed()&&document.getElementById('yp-services-content')!=null){
 		
 		var xhttpyp = new XMLHttpRequest();
 		  if (ypcurrentindexretries!=ypindex){
@@ -1927,9 +1927,10 @@ else {//we revert to mp3 as a default. How ugly is this, indeed ?
 ?>
 
 
-<?php if (count($creroypservices)>0){ ?>
+<?php if ((count($creroypservices)>0)&&(!((true==$embed)||(false!==$embed)))){ ?>
 //yp stuff		
-myfunc=setInterval (delegate, 1000);	
+
+if (!get_embed()&&get_embed_value()!=''){yprun=true;myfunc=setInterval (delegate, 1000);}
 
 <?php } ?>
 

@@ -180,51 +180,59 @@ function play(target, id, isclewn, isautoplay){
 				document.getElementById(id).innerHTML='■';	
 			}
 		}
-	set_isplaying(parseInt(id));
-	player.pause();
-	player.innerHTML='';
-	if (isclewn){
-		if (dlformats[0]=='ogg'||dlformats[1]=='ogg'||dlformats[2]=='ogg'){
-			player.innerHTML+='<source type="application/ogg" src="'+target+'.ogg"/>';
+	if (document.getElementById(id)!=null){
+		set_isplaying(parseInt(id));
+		player.pause();
+		player.innerHTML='';
+		if (isclewn){
+			if (dlformats[0]=='ogg'||dlformats[1]=='ogg'||dlformats[2]=='ogg'){
+				player.innerHTML+='<source type="application/ogg" src="'+target+'.ogg"/>';
+			}
+			if (dlformats[0]=='mp3'||dlformats[1]=='mp3'||dlformats[2]=='mp3')
+			
+			{
+				player.innerHTML+='<source type="audio/mpeg" src="'+target+'.mp3"/>';
+			}
 		}
-		if (dlformats[0]=='mp3'||dlformats[1]=='mp3'||dlformats[2]=='mp3')
-		
+		else {
+			if (strformats[0]=='ogg'||strformats[1]=='ogg'||strformats[2]=='mp3'){
+				player.innerHTML+='<source type="application/ogg" src="'+target+'.ogg"/>';
+			}
+			if (strformats[0]=='mp3'||strformats[1]=='mp3'||strformats[2]=='mp3')
+			
+			{
+				player.innerHTML+='<source type="audio/mpeg" src="'+target+'.mp3"/>';
+			}
+			
+		}
+		if (document.getElementById('track_artist'+id)!=null&&document.getElementById('track_name'+id)!=null){
+			update_controler(document.getElementById('track_artist'+id).value, document.getElementById('track_name'+id).value, false);
+		}
+		else {
+			update_controler('no info', 'no info', true)
+		} 
+		player.load();
+		player.play();
+		setplayerstall(false);
+	}
+	else
 		{
-			player.innerHTML+='<source type="audio/mpeg" src="'+target+'.mp3"/>';
+			set_isplaying(parseInt('-1'));
 		}
-	}
-	else {
-		if (strformats[0]=='ogg'||strformats[1]=='ogg'||strformats[2]=='mp3'){
-			player.innerHTML+='<source type="application/ogg" src="'+target+'.ogg"/>';
-		}
-		if (strformats[0]=='mp3'||strformats[1]=='mp3'||strformats[2]=='mp3')
-		
-		{
-			player.innerHTML+='<source type="audio/mpeg" src="'+target+'.mp3"/>';
-		}
-		
-	}
-	if (document.getElementById('track_artist'+id)!=null&&document.getElementById('track_name'+id)!=null){
-		update_controler(document.getElementById('track_artist'+id).value, document.getElementById('track_name'+id).value, false);
-	}
-	else {
-		update_controler('no info', 'no info', true)
-	} 
-	player.load();
-	player.play();
-	setplayerstall(false);
 	return parseInt(get_isplaying());
 
 	}
 	
 	else {
-	document.getElementById(id).innerHTML='▶';	
-	player.pause();
-	player.currentTime=0;
-	player.innerHTML=null;
-	setplayerstall(false);
-	set_isplaying(parseInt(-1));	
-		
+		if (document.getElementById(id)!=null){
+			document.getElementById(id).innerHTML='▶';	
+		}
+		player.pause();
+		player.currentTime=0;
+		player.innerHTML=null;
+		setplayerstall(false);
+		set_isplaying(parseInt(-1));	
+			
 	}
 	return parseInt(get_isplaying());
 }
