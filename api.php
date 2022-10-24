@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ERROR | E_PARSE);
+error_reporting(0);
 
 /*if (file_exists('./php-getid3/getid3.php')){
 	include('./php-getid3/getid3.php');
