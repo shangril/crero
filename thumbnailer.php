@@ -1,5 +1,5 @@
 <?php
-include ('./config.php');
+//include ('./config.php');
  $thumbz=array_diff(scandir('./thumbcache'), Array ('..', '.'));
  foreach ($thumbz as $thumb){
 	 if (floatval(filectime('./thumbcache/'.$thumb)+intval(60*60*24*7))<=microtime(true)){
@@ -32,7 +32,7 @@ include ('./config.php');
 	if (!isset($_GET['hook'])){
 	if (file_exists('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')){
 		  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
-			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) < filectime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
+			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) <= filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
 			)
 			{
 				header('HTTP/1.0 304 Not Modified');
@@ -45,13 +45,15 @@ include ('./config.php');
 			
 			fpassthru($handle);
 			fclose($handle);*/
+			header('Last-Modified: '.date(DATE_RFC822, filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')));
+
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			exit();
 			
 		}
 		else {
 			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', file_get_contents(
-			'http://'.$server.'/thumbnailer.php?hook=hook&ratio='.$ratio.'&target='.$file.'&viewportwidth='.$viewportwidth)
+			'http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'].'?hook=hook&ratio='.$ratio.'&target='.$file.'&viewportwidth='.$viewportwidth)
 			);
 			header('Last-Modified: '.date(DATE_RFC822, filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')));
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
