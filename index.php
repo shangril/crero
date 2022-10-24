@@ -336,12 +336,13 @@ if (isset($_POST['page_purge'])&&$activatehtmlcache){
 	$pseudoget=json_decode(base64_decode($_POST['page_purge']),true);
 	
 	$cachingkey='key:';
-
-	$get_keys=array_intersect(array_keys($pseudoget), $whitelist);
+	$get_keys=$pseudoget;
 
 	foreach ($get_keys as $get_key){
-		$cachingkey.=$get_key."\n".$pseudoget[$get_key];
-	
+		if (in_array($get_key, $whitelist)){
+
+			$cachingkey.=$get_key."\n".$pseudoget[$get_key];
+		}
 	}
 
 	
@@ -355,14 +356,18 @@ if (isset($_POST['page_purge'])&&$activatehtmlcache){
 	$querystring='?';
 	$get_keys=array_keys($pseudoget);
 	foreach ($get_keys as $get_key){
-		if ($get_key!='body'&&$get_key!='no-infinite-loop-please'){
-		$querystring.=urlencode($get_key).'='.rawurlencode($pseudoget[$get_key]).'&';
+		if (in_array($get_key, $whitelist)){
+
+			if ($get_key!='body'&&$get_key!='no-infinite-loop-please'){
+				$querystring=$querystring.$get_key.'='.urlencode($pseudoget[$get_key]).'&';
+			}
+
 		}
 	}
-	if ($querystring='?'){
+	if ($querystring=='?'){
 		$querystring='';
 	}
-	
+	header_remove(null);
 	header("Location: ".$redirect_proto.'://'.$_SERVER['SERVER_NAME'].str_replace ('index.php', '', $_SERVER['PHP_SELF']).$querystring, true, 302);
 	
 	
@@ -1522,7 +1527,7 @@ function increment_overload_track_counter(){
 		if (!get_inc_stall()){
 			set_inc_stall(true);
 						
-			var overload_counter_interval=window.setInterval(function(){
+				var overload_counter_interval=window.setInterval(function(){
 				if (get_page_init()){
 					set_inc_stall(false);
 					
@@ -1648,13 +1653,12 @@ var albumerror=undefined;
 function get_album_error(){
 	return albumerror;
 }
-function set_album_error(argerr){
-	albumerror=argerr;
+function set_album_error(myargerr){
+	albumerror=myargerr;
 }
 
 function init_page() {
-	set_page_init(false);
-	set_album_error=false;
+	
 	set_inc_stall(false);
 	//monthly donation
 	var monthly=false;
@@ -2858,7 +2862,7 @@ foreach ($contentlocal as $item){
 			<?php
 			if (!$eachtrackwasdisplayedok||!$weactuallydisplayedatrack){
 					?>
-					<div style="background-color:red;width:100%;" onload="if (!get_page_init()){init_page()};set_album_error(true);<?php if ($activatehtmlcache){echo 'checkOverload(false);';} ?>">
+					<div style="background-color:red;width:100%;"><img src="favicon.png" onload="if(!get_page_init()){init_page();};<?php if ($activatehtmlcache){echo 'set_album_error(true);checkOverload(false);';} ?>"/>
 					An error was encountered, due to overcapacity. 
 					<?php if ($activatehtmlcache){echo 'Please wait will the website tries to auto-recover...' ; }?>
 					</div>
@@ -3370,7 +3374,7 @@ foreach ($content as $item){
 			<?php
 			if (!$eachtrackwasdisplayedok||!$weactuallydisplayedatrack){
 					?>
-					<div style="background-color:red;width:100%;" onload="if (!get_page_init()){init_page()};set_album_error(true);<?php if ($activatehtmlcache){echo 'checkOverload(false);';} ?>">
+					<div style="background-color:red;width:100%;"><img src="favicon.png" onload="if(!get_page_init()){init_page();};<?php if ($activatehtmlcache){echo 'set_album_error(true);checkOverload(false);';} ?>"/>
 					An error was encountered, due to overcapacity. 
 					<?php if ($activatehtmlcache){echo 'Please wait will the website tries to auto-recover...';} ?>
 					</div>
@@ -3663,7 +3667,7 @@ function checkOverload(allowRecursive){
 	}
 	
 	if (get_album_error()==true){
-		set_overload_track_counter(0);
+		set_overload_track_counter(parseInt(0));
 	}
 	
 	
