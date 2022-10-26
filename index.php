@@ -336,7 +336,7 @@ if (isset($_POST['page_purge'])&&$activatehtmlcache){
 	$pseudoget=json_decode(base64_decode($_POST['page_purge']),true);
 	
 	$cachingkey='key:';
-	$get_keys=$pseudoget;
+	$get_keys=array_keys($pseudoget);
 
 	foreach ($get_keys as $get_key){
 		if (in_array($get_key, $whitelist)){
