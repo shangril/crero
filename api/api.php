@@ -486,13 +486,31 @@ header('Content-Type: application/json; charset=utf-8');
 				}
 			}
 	
-	if(file_exists('./apicache-timestamp.dat')&&file_get_contents('./apicache-timestamp.dat')!==false&&$cachedfreshness>=floatval(file_get_contents('./apicache-timestamp.dat'))){
+	/****/
+	$fileshavemoved=true;
+	$filecounter=0;
+	$files=scandir('./audio');
+	foreach ($files as $file){
+		if ((! is_dir('./audio/'.$file)&&(strpos($file, $format)===(strlen($file)-strlen($format))))||$file=='.timestamp'){
+			$filecounter++;
+		}
+	}
+	if (file_exists('./l2-numberoffiles.dat')&&file_get_contents('./l2-numberoffiles.dat')!==false&&file_get_contents('./l2-numberoffiles.dat')==$filecounter){
+		$fileshavemoved=false;
+		file_put_contents('./l2-numberoffiles.dat', $filecounter);
+		touch ('./audio/.timestamp');
+	}
 	
+	
+	
+	if(file_exists('./apicache.dat')&&!$fileshavemoved&&file_exists('./apicache-timestamp.dat')&&file_get_contents('./apicache-timestamp.dat')!==false&&$cachedfreshness>=floatval(file_get_contents('./apicache-timestamp.dat'))){
+	/*****/
 		echo json_encode($cachedoutput[$id]['data']);
 	
 	}
 	else
 	{//outdated cache
+		
 		$numberoffiles=0;
 		$currentfreshness=0;
 		$cachedfresshness=0;
@@ -620,7 +638,7 @@ header('Content-Type: application/json; charset=utf-8');
 						$getID3 = new getID3;
 						$info = $getID3->analyze('audio/'.$file);
 						getid3_lib::CopyTagsToComments($info); 
-						if(in_array($info['comments']['artist'][0],$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
+						if(in_array(html_entity_decode($info['comments_html']['artist'][0]),$artists)&&!in_array($info['comments_html']['album'][0],$albumlist)){ //'comments_html']['album'][0])){
 								
 								
 								
