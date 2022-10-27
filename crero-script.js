@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
-var page_init=false;
+var page_init;
 var album_displayed=0;
 var overload_track_counter=NaN;
 var infoselected=null;
@@ -644,12 +644,12 @@ function twirling(){
 	}
 
 
-	if (get_page_init()){
+	/*if (get_page_init()){
 		baton.style.display='none';
 	}
 	if (!get_page_init()){
 		baton.style.display='block';
-	}
+	}*/
 
 }
 window.setInterval(clock_tick, 1200);	
@@ -891,7 +891,7 @@ function set_autoplay(auartarg){
 }
 
 function get_init_page(){
-	if (init_page==undefined){
+	if (init_page==null){
 		return false;
 	}
 	
@@ -1218,7 +1218,7 @@ if (get_artisthighlighthomepage())
 //yp stuff
 update_creroypservices();
 
-if (!get_embed()&&get_creroypservices>0)
+if (!get_embed()&&get_creroypservices()>0)
 	{
 	yprun=true;myfunc=setInterval (delegate, 1000);
 	}
