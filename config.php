@@ -456,7 +456,7 @@ if (file_exists('./d/highlight-artist-list.txt')){
 		}
 	}
 }
-$recentplay='false';
+$recentplay=false;
 if (file_exists('./d/recentplay.txt')){
 	$recentplay=boolval(trim(file_get_contents('./d/recentplay.txt')));
 }

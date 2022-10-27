@@ -1,4 +1,43 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
+var page_init=false;
+var album_displayed=0;
+var overload_track_counter=NaN;
+var infoselected=null;
+var infoselected=null;
+var size;
+
+var target_album='';
+var embed=null;
+var overloadindexchecked=false;
+
+//yp stuff
+var ypping=true;
+
+var myfunc=null;	
+var yprun=true;
+var ypindex=0;
+var appendypreq='';
+var ypretries=0;
+var ypcurrentindexretries=0;
+var stall=false;
+var yparrvalidated=[];
+var nosocialupdate=false;	  
+//ping recently played
+var xhttpingprecalb=null;
+var titleSite='';
+var artist;
+var album;
+var track;
+var offset;
+var isindex=undefined;
+var overloadtimer=null;
+var embed_value='';
+var isplaying;
+var isautoplay;
+var str_album_count;
+var dl_album_count;
+var recentplay;
+
 var myoverloadtimer=null
 function set_overloadtimer(tim){
 	myoverloadtimer=tim;
@@ -314,13 +353,12 @@ function playPrevious() {
 	
 }
 function loadInfo(track) {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
+  var xhttp = new XMLHttpRequest(function() {
+  if (this.readyState == 4 && this.status == 200) {
 	 infoselected.style.display='block';
      infoselected.innerHTML = this.responseText;
     }
-  };
+  });
   xhttp.open("GET", "./?getinfo="+encodeURI(track), true);
   xhttp.send();
 } 
@@ -342,14 +380,17 @@ function computeSize(width, height){
 }
 function update_ajax_body(http_url_target){
 	set_page_load(false);
+	set_page_init(false);
 	var autoplay='false';
 	var arttruc='';
 	var size=0;
 	var nosocialupdate=false;
 	var finalurl;
 	var parameters='';
-	var overload_track_counter=0;
 	var arg='';
+    set_overload_track_counter(0);
+	//set_page_init(false);
+	
 				
 	tar = http_url_target;
 	if (tar.startsWith('http://') || tar.startsWith('https://') || tar.startsWith('//') || tar.startsWith('/'))
@@ -453,14 +494,21 @@ function update_ajax_body(http_url_target){
 			}
 			//Now the AJAX part of the thing
 			
+			
+			
+			
+			
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
+
 			 document.getElementById('crerobody').innerHTML = this.responseText;
 			 set_page_load(true);
+			 
 			 document.getElementById('bodyajax').value = finalurl ;
 			 document.getElementById('bodyajax_autoplay').value = autoplay;
 			 document.getElementById('bodyajax_arttruc').value = arttruc;
+						
 			}
 			};
 			//console.log(finalurl);
@@ -588,12 +636,6 @@ function twirling(){
 	if (twindex==anim.length){
 		twindex=0;
 	}
-	if (get_page_init()){
-		baton.style.display='none';
-	}
-	if (!get_page_init()){
-		baton.style.display='block';
-	}
 	if (!get_page_load()){
 		baton.style.display='block';
 	}
@@ -601,17 +643,681 @@ function twirling(){
 		baton.style.display='none';
 	}
 
+
+	if (get_page_init()){
+		baton.style.display='none';
+	}
+	if (!get_page_init()){
+		baton.style.display='block';
+	}
+
 }
 window.setInterval(clock_tick, 1200);	
 window.setInterval(twirling, 650);	
 
-var loaded;		
+var loaded=false;		
 function get_page_load(){
 	return loaded;
 }	
 function set_page_load(argk){
 	loaded=argk;
 }	
+
+
+function autoplay (mycurrenttarget, mycurrentid, mycurrentclewn, mycurrentautoplay){
+	play(mycurrenttarget, mycurrentid, mycurrentclewn, mycurrentautoplay);
+}
+function get_isindex(){
+	if (isindex==undefined){
+		return false;
+	}
 	
+	return isindex;
+}
+function set_isindex(par){
+	isindex=par;
+}
+//var overloadindexchecked=false;
+function get_overloadindexchecked(){
+	return overloadindexchecked;
+}
+function set_overloadindexchecked(ckpar){
+	overloadindexchecked=ckpar;
+}
+
+
+
+
+
+function update_isindex(){
+	if (document.getElementById('isindex')!=null){
+		if (document.getElementById('isindex').value=='true'){
+			set_isindex(true);
+		}
+		else {
+			set_isindex(false);
+		}
+	}
+	else {
+		set_isindex(false);
+	}
+	
+	
+}
+function update_embed(){
+	if (document.getElementById('embed')!=null){
+		if (document.getElementById('embed').value=='true'){
+			set_embed(true);
+		}
+		else {
+			set_embed(false);
+		}
+	}
+	else {
+		set_embed(false);
+	}
+	
+	
+}
+function update_embed_value(){
+	if (document.getElementById('embed_value')!=null){
+		set_embed_value(document.getElementById('embed_value').value);
+		
+	}
+
+}
+function update_offset(){
+	if (document.getElementById('offset')!=null){
+		return parseInt(document.getElementById('offset').value);
+		}
+		else {
+			return 0;
+		}
+	
+	
+	
+}
+function update_album(){
+	if (document.getElementById('album')!=null){
+		return decodeURI(document.getElementById('album').value);
+		}
+		else {
+			return '';
+		}
+}
+function update_artist(){
+	if (document.getElementById('artist')!=null){
+		return decodeURI(document.getElementById('artist').value);
+		}
+		else {
+			return '';
+		}
+}
+function update_track(){
+	if (document.getElementById('track')!=null){
+		return decodeURI(document.getElementById('track').value);
+		}
+		else {
+			return '';
+		}
+}
+function update_autoplay(){
+	if (document.getElementById('bodyajax_autoplay')!=null){
+		if(document.getElementById('bodyajax_autoplay').value=='true'){
+			set_autoplay(true);
+
+	
+
+			if (document.getElementById('autoplay')!=null){
+				document.getElementById('autoplay').click();
+			}
+		}
+		else
+		{
+			set_autoplay(false);
+		}
+	}
+	else
+		{
+			set_autoplay(false);
+		}
+}
+
+function update_recentplay() {
+	if (document.getElementById('recentplay_pass')!=null){
+		if (document.getElementById('recentplay_pass').value=='true'){
+			set_recentplay(true);
+	
+			}
+		else
+			{
+			set_recentplay(false);	
+			}
+			
+	}
+	else {
+		set_recentplay(false);
+	}
+}
+function update_artisthighlighthomepage() {
+	if (document.getElementById('artisthighlighthomepage')!=null){
+		if (document.getElementById('artisthighlighthomepage').value=="true"){
+			set_artisthighlighthomepage(true);
+	
+			}
+		else
+			{
+			set_artisthighlighthomepage(false);	
+			}
+			
+	}
+	else {
+		set_artisthighlighthomepage(false);
+	}
+}
+function update_creroypservices() {
+	if (document.getElementById('creroypservices')!=null){
+		set_creroypservices(parseInt(document.getElementById('creroypservices').value));
+	
+		
+			
+	}
+	else {
+		set_creroypservices(0);
+	}
+}
+
+
+function update_album_count(){
+	if (document.getElementById('dl_album_count')!=null){
+		set_dl_album_count(parseInt(document.getElementById('dl_album_count').value));
+		}
+		else {
+			set_dl_album_count(parseInt('-2'));
+		}
+	if (document.getElementById('str_album_count')!=null){
+		set_str_album_count(parseInt(document.getElementById('str_album_count').value));
+		}
+		else {
+			set_str_album_count(parseInt('-2'));
+		}
+	
+	
+}
+
+
+var inc_stall=undefined;
+
+function get_inc_stall(){
+	if (inc_stall==undefined){
+		return false;
+	}
+	
+	return inc_stall;
+}
+function set_inc_stall(argst){
+	inc_stall=argst;
+}
+var toincrement=undefined;
+function increment_overload_track_counter(){
+	if (overload_track_counter=NaN){
+		set_overload_track_counter(0);
+	}
+		
+	set_overload_track_counter(parseInt(get_overload_track_counter())+parseInt(1));
+}
+
+
+function get_overload_track_counter(){
+	if (isNaN(parseInt(overload_track_counter))){
+		return 0;
+	}
+	return parseInt(overload_track_counter);
+	
+}
+function set_overload_track_counter(otca){
+	overload_track_counter=parseInt(otca);
+	
+}
+function get_album(){
+	return album;
+}
+
+function get_autoplay(){
+	return isautoplay;
+}
+function set_autoplay(auartarg){
+	isautoplay=auartarg;
+}
+
+function get_init_page(){
+	if (init_page==undefined){
+		return false;
+	}
+	
+	return page_init;
+}
+function set_init_page(onld){
+	page_init=onld;
+	}
+
+function get_artist(){
+	return artist;
+}
+function set_artist(artarg){
+	artist=artarg;
+}
+function get_track(){
+	return track;
+}
+function set_track(trarg){
+	track=trarg;
+}
+
+
+function get_offset(){
+	return offset;
+}
+function get_embed(){
+	return embed;
+	
+}
+function set_embed(earg){
+	embed=earg;
+}
+function get_embed_value(){
+	return embed_value;
+	
+}
+function set_embed_value(evarg){
+	embed_value=evarg;
+}
+function get_str_album_count(){
+	return str_album_count;
+	
+}
+function set_str_album_count(cevarg){
+	str_album_count=cevarg;
+}
+function get_dl_album_count(){
+	return dl_album_count;
+	
+}
+function set_dl_album_count(dcevarg){
+	dl_album_count=dcevarg;
+}
+function set_offset(offarg){
+	offset=offarg;
+}
+function set_album(aoffarg){
+	album=aoffarg;
+}
+function set_page_init(piarg){
+	page_init=piarg;
+}
+function get_page_init(){
+	return page_init;
+}
+function set_size(spiarg){
+	size=spiarg;
+}
+function get_size(){
+	return size;
+}
+
+var albumerror=undefined;
+
+function get_album_error(){
+	return albumerror;
+}
+function set_album_error(myargerr){
+	albumerror=myargerr;
+}
+
+
+
+function get_recentplay(){
+	if (recentplay==null){
+		return false;
+	}
+	return recentplay;
+	
+}	
+function set_recentplay(rparg){
+	recentplay=rparg;
+}
+var artisthighlighthomepage=null;
+
+function get_artisthighlighthomepage(){
+	if (artisthighlighthomepage==null){
+		return false;
+	}
+	return artisthighlighthomepage;
+	
+}	
+function set_artisthighlighthomepage(artparg){
+	artisthighlighthomepage=artparg;
+}
+var creroypservices=0;
+
+function get_creroypservices(){
+	return creroypservices;
+}
+function set_creroypservices(cyparg){
+	creroypservices=parseInt(cyparg);
+}
+//here the main logic of each page display
+function init_page() {
+	
+	set_inc_stall(false);
+	//monthly donation
+	monthly=false;
+
+	set_overloadindexchecked(false);
+	if (overload_track_counter==NaN){
+	
+		set_overload_track_counter(0);
+	}
+	set_isplaying('-1');
+	
+	update_album_count();
+	
+	update_embed();
+	
+
+	update_embed_value();
+	
+	set_offset(update_offset());
+	
+	set_album(update_album());
+	set_track(update_track());
+	set_artist(update_artist());
+	
+	update_title();
+
+	update_isindex();
+	
+	if (!get_isindex()){
+		if(document.getElementById('splash')!=null){
+			document.getElementById('splash').style.display='none';
+		}
+	}
+
+	update_recentplay();
+	
+	if (get_recentplay()){
+	
+	tryindex=10;
+				
+	while(xhttzzpingprecalb!=null&&tryindex>=0){if (xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();}tryindex--;}
+				
+	
+	
+	
+	
+	var callback_id=Math.random();
+	var alb_willhavetoping=true;
+	if (!get_isindex()&&get_album()!=''){
+		var recentretries=0;
+		var oprpretries=0;
+				 
+		var current_recent_album=get_album();
+		var xhttzzpingprecalb=[];
+		var xhttzzpingprecalb_index=0;
+		timer=1000;
+		while (recentretries < 10) {
+			recentretries++;
+			setTimeout(function(){
+				tryindex=xhttzzpingprecalb_index-1;
+				
+				while(xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();tryindex--;}
+				
+				
+				if (alb_willhavetoping)
+					{
+					xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest(function(){
+
+
+					if (this.readyState == 4 && this.status == 200) {
+							for (i=0;i<xhttzzpingprecalb.length;i++){
+								xhttzzpingprecalb[i].abort();
+							}
+							recentretries=10;
+							var oxhttozzypingprecalb; 
+							oxhttozzypingprecalb = new XMLHttpRequest(function(){
+								if (this.readyState == 4 && this.status == 200) {
+										
+										oprpretries=10;
+									}
+								
+								});
+							stimer=1000;
+								
+							while(oprpretries<10){
+								oprpretries++;
+								setTimeout(function(){
+								//oxhttozzypingprecalb.abort();
+								
+								oxhttozzypingprecalb = new XMLHttpRequest(function(){
+								if (this.readyState == 4 && this.status == 200) {
+										alb_willhavetoping=false;
+								
+										oprpretries=10;
+									}
+								
+								});
+								
+								if (alb_willhavetoping){
+									oxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
+									oxhttozzypingprecalb.send();
+									}
+								},stimer);
+								stimer=stimer+1000;
+							}
+							
+						}
+					
+					});
+				}
+				xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURIComponent(current_recent_album)+"&recently_callback_id="+encodeURIComponent(callback_id), true);
+				xhttzzpingprecalb[xhttzzpingprecalb_index].send();
+				xhttzzpingprecalb_index++;
+			},timer);
+			timer=timer+3800;
+		}
+	
+	
+	}
+
+
+	
+	
+	//ping recently played
+	if (!get_isindex()&&alb_willhavetoping){
+		var prpretries=0;
+		
+		var prpxhttozzypingprecalb = new XMLHttpRequest(function(){
+			if (this.readyState == 4 && this.status == 200) {
+					prpretries=10;
+				}
+			
+			});
+		ttimer=1000;
+		while(prpretries<10){
+			prpretries++;
+			setTimeout(function(){
+				prpxhttozzypingprecalb.abort();
+				prpxhttozzypingprecalb = new XMLHttpRequest(function(){
+					if (this.readyState == 4 && this.status == 200) {
+							alb_willhavetoping=false;
+							prpretries=10;
+						}
+					
+					});
+				if(alb_willhavetoping){
+					prpxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
+					prpxhttozzypingprecalb.send();
+				}
+			},ttimer);
+			ttimer=ttimer+1000;
+		}
+	}
+	}
+	
+	//yp stuff
+	ypping=true;
+	nosocialupdate=false;	  
+	if (myfunc!=null){
+		clearInterval(myfunc);	
+	}
+	myfunc=null;	
+	yprun=true;
+	ypindex=0;
+	appendypreq='';
+	ypretries=0;
+	ypcurrentindexretries=0;
+	stall=false;
+	yparrvalidated=[];
+	//end yp stuff
+
+	album_displayed=0;
+	set_size(computeSize(document.documentElement.clientWidth, document.documentElement.clientHeight));
+	
+	infoselected=null;
+	if (document.getElementById('noscripters')!=null){
+		document.getElementById('noscripters').style.display='none';
+	}
+	if (document.getElementById('noscripters_footer')!=null){
+		document.getElementById('noscripters_footer').style.display='none';
+	}
+	if (document.getElementById('infiniteloop')!=null){
+		document.getElementById('bodyajax_autoplay').value='false';
+	}
+	
+//initial stuf
+		stats();
+update_artisthighlighthomepage();	
+if (get_artisthighlighthomepage())
+{ 
+		
+	if (get_isindex()){	
+		document.getElementById('crerobody').style.marginLeft="0px";
+		document.getElementById('crerobody').style.marginRight="0px";
+		document.getElementById('crerobody').style.paddingLeft="0px";
+		document.getElementById('crerobody').style.paddingRight="0px";
+	} else {
+	if (document.documentElement.clientWidth>800){
+			document.getElementById('crerobody').style.paddingLeft="8%";
+			document.getElementById('crerobody').style.paddingRight="8%";
+		}
+	}
+}//restoration of maring/pading(left/right) is finished
+//fortunately enough, these things will never change
+//from one page to antoher
+
+//yp stuff
+update_creroypservices();
+
+if (!get_embed()&&get_creroypservices>0)
+	{
+	yprun=true;myfunc=setInterval (delegate, 1000);
+	}
+
+if (typeof update_cart === "function"){
+update_cart();
+}
+
+//then, sanitize the display URL with something accurate
+
+
+
+if (document.getElementById('bodyajax')!==null){//this should never happen
+		
+		titleSiteObj={  title:'',  url:''};
+		
+		titleSiteObj.title=document.getElementById('main_title').innerHTML;
+		if ( //this is the most common case ; an GET album, or more GET, are set, and it's an ajax call, and it's not an ajax call to call the homepage
+				(get_album()!=''||
+				get_artist()!=''||
+				(get_track()!=''&&get_album()!='')
+				)
+			&&	(document.getElementById('bodyajax').value!='./?body=void'&&document.getElementById('bodyajax').value!='')
+			){
+			ourURL='./?';
+			needamp=false;
+			if (get_album()!=''){	
+				ourURL=ourURL+'album='+encodeURI(get_album());
+				needamp=true;
+				}
+			if (get_artist()!=''){	
+				if (needamp) {ourURL=ourURL+'&';}
+				ourURL=ourURL+'artist='+encodeURI(get_artist());
+				needamp=true;
+				}
+			if (get_track()!=''){	
+				if (needamp)  {ourURL=ourURL+'&';}
+				ourURL=ourURL+'track='+encodeURI(get_track());
+				needamp=true;
+				}	
+			
+			titleSiteObj.url=ourURL;
+			window.history.pushState(titleSiteObj, '', ourURL);
+				
+			
+			
+			}
+				
+		
+		else if (document.getElementById('bodyajax').value!='./?body=void'&&document.getElementById('bodyajax').value.startsWith('?body=ajax&')){//this will happen on anything but indexpage, which does not requires sanitization
+			ourURL=document.getElementById('bodyajax').value;
+			ourURL=ourURL.replace('?body=ajax&', '?');
+			
+			titleSiteObj.url='./'+ourURL;
+			window.history.pushState(titleSiteObj, '', './'+ourURL);
+			
+			
+			
+		}
+		else if (document.getElementById('bodyajax').value=='./?body=void'){
+			titleSiteObj.url='./';
+			
+			window.history.pushState(titleSiteObj, '', './');
+
+			//window.location.href='./';//going back to index page
+		}
+		else if (get_isindex()) {
+			titleSiteObj.url='./';
+			
+			window.history.pushState(titleSiteObj, '', './');
+
+			
+		}
+	}
+	
+	//playback stuff
+	setplayerstall(false);
+
+	if (document.getElementById('digolder')!=null&&get_album()!=''&&(parseInt(get_offset())==parseInt('-1'))||get_offset==''){
+		document.getElementById('digolder').innerHTML='Dig what\'s new...';
+	}
+
+	
+	update_autoplay();
+
+	if (document.getElementById('infiniteloop')!=null){
+		document.getElementById('infiniteloop').click();
+	}
+	if (activatehtmlcache){
+		if(get_isindex()&&!get_page_init()){increment_overload_track_counter();};checkOverload(true);
+	}
+	set_page_init(true);
+}//function initpage
+
+
+
+
+
+
+
 
 // @license-end
