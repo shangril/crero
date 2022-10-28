@@ -71,7 +71,10 @@ class creroHtmlCache {
 		$page=$this::$cachedat[$cachedkey];
 		return file_get_contents('./htmlcache/cached/'.$page['expires'].'.html');
 	}
-	
+	public function getCachedPageDate($chachedkey){
+		$page=$this::$cachedat[$cachedkey];
+		return filemtime('./htmlcache/cached/'.$page['expires'].'.html');
+	}
 	
 	private function saveCacheDatToDisk(){
 			return file_put_contents('./htmlcache/cached.dat', serialize ($this::$cachedat));

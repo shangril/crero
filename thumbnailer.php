@@ -15,6 +15,9 @@
   $file = str_replace('./','',$_GET['target']);
   $viewportwidth= intval($_GET['viewportwidth']);
   $ratio=floatval($_GET['ratio']);
+  if ($ratio>1){
+	  $ratio=1;
+  }
   
   if ((file_exists('./'.$file) && strpos(mime_content_type('./'.$file),'image/')==0&&(dirname(realpath($file))===realpath('./covers')))||$file=='favicon.png'){ 
 /*	  	  if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && 
@@ -35,6 +38,7 @@
 			strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) <= filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')
 			)
 			{
+				header(null);
 				header('HTTP/1.0 304 Not Modified');
 				
 				exit();

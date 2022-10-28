@@ -523,6 +523,18 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 		
 	}
 	else {
+		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
+			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) <= date(DATE_RFC822, $myhtmlcache->getCachedPageDate($cachingkey))){
+				header(null);
+				session_abort();
+				header('HTTP/1.0 304 Not Modified');
+				throw new SystemExit();
+			}
+			
+		}
+		
+		
+		header('Last-Modified: '.date(DATE_RFC822, $myhtmlcache->getCachedPageDate($cachingkey)));
 		echo $myhtmlcache->getCachedPage($cachingkey);
 		throw new SystemExit();
 	}
@@ -1528,7 +1540,7 @@ else {
 
 
 
-<span id="recently_played"><a href="javascript:void(0);" onClick="displayRecentlyPlayed();">Recently played?</a><br/>
+<span id="recently_played"><a href="javascript:void(0);" onClick="this.innerHTML='Loading...';displayRecentlyPlayed();">Recently played?</a><br/>
 
 <hr style="float:none;clear:both;"/>
 </span>

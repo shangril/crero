@@ -628,18 +628,24 @@ function setplayerstall(arg){
 	playerstall=arg;
 }
 var twindex=0;
+var twirl=true;
 function twirling(){
 	baton=document.getElementById('twirling');
 	anim= ['(\\)', '(|)', '(/)', '(-)', '(\\)', '(|)', '(/)', '(-)']
-	baton.innerHTML=anim[twindex];
-	twindex++;
+	
+	if (twirl){
+		baton.innerHTML=anim[twindex];
+		twindex++;
+	}
 	if (twindex==anim.length){
 		twindex=0;
 	}
 	if (!get_page_load()){
+		twirl=true;
 		baton.style.display='block';
 	}
 	if (get_page_load()){
+		twirl=false;
 		baton.style.display='none';
 	}
 
@@ -1246,17 +1252,17 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 			ourURL='./?';
 			needamp=false;
 			if (get_album()!=''){	
-				ourURL=ourURL+'album='+encodeURI(get_album());
+				ourURL=ourURL+'album='+encodeURIComponent(get_album());
 				needamp=true;
 				}
 			if (get_artist()!=''){	
 				if (needamp) {ourURL=ourURL+'&';}
-				ourURL=ourURL+'artist='+encodeURI(get_artist());
+				ourURL=ourURL+'artist='+encodeURIComponent(get_artist());
 				needamp=true;
 				}
 			if (get_track()!=''){	
 				if (needamp)  {ourURL=ourURL+'&';}
-				ourURL=ourURL+'track='+encodeURI(get_track());
+				ourURL=ourURL+'track='+encodeURIComponent(get_track());
 				needamp=true;
 				}	
 			

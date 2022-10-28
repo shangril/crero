@@ -76,7 +76,7 @@ if (file_exists('./d/recently_generated_albums.dat')){
 }
 $counter=0;
 $recentsr=array_reverse($recents);
-echo 'Recently played: <a href="javascript:void(0);" onclick="displayRecentlyPlayed();">refresh</a> / <a href="javascript:void(0);" onclick="hideRecentlyPlayed();">hide</a><br/>';
+echo 'Recently played: <a href="javascript:void(0);" onclick="this.innerHTML=\'refreshing...\';displayRecentlyPlayed();">refresh</a> / <a href="javascript:void(0);" onclick="hideRecentlyPlayed();">hide</a><br/>';
 foreach ($recentsr as $recent){
 	if (!isset($recent['jailed'])){
 		$recent['jailed']=false;
