@@ -73,7 +73,14 @@ class creroHtmlCache {
 	}
 	public function getCachedPageDate($chachedkey){
 		$page=$this::$cachedat[$cachedkey];
-		return filemtime('./htmlcache/cached/'.$page['expires'].'.html');
+		if (file_exists('./htmlcache/cached/'.$page['expires'].'.html'))
+			{
+			return filemtime('./htmlcache/cached/'.$page['expires'].'.html');
+			}
+		else
+			{
+			return time();
+			}
 	}
 	
 	private function saveCacheDatToDisk(){
