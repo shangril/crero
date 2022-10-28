@@ -177,32 +177,152 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 	//returns the list of albums for a specified artist
+
+	$artist=$_GET['listalbums'];	
 	
 	
-	$artist=$_GET['listalbums'];
-	$files=scandir('./z');
-	$albums=array();
-	foreach ($files as $file){
-		if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			
-				$getID3 = new getID3;
-				$info = $getID3->analyze('z/'.$file);
-				getid3_lib::CopyTagsToComments($info); 
-				if($info['comments']['artist'][0]===$artist){
-					
-					$albums[strval($info['comments_html']['album'][0])]=array_reverse(explode('-', $info['comments_html']['date'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
-					
-				
+	$cachedworked=false; //We will try to get data from the cache. And if necessary, keep this to false, and rebuild the whole dataset
+	if (file_exists('./artist-album.dat')){
+			$content=file_get_contents('./artist-album.dat');
+			if ($content!==false){
+				$data=unserialize($content);
+				if ($data!==false){
+				//here we are for the main caching logic
+				//let's go for the ressource-intensive get of the freshness especially for this artist
+				//remember that before the cache was here, it already had to be done, each time
+				//that this API call is used -meant to be used- by crero-yp-api on front end that will cache it on its side
+				//and not call every two minutes ! 
+				//and moreover that GetID3 which read tags is a great software coded by skilled people, fast and robust
+				//and maintained for more than 20 years
+				//and you should support them (even Le Camp De La Bande does) with a monetary donation at getid3.org
+				$last_freshness=0;
+				$files=scandir('./z');
+				foreach ($files as $file){
+					if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+						
+							$getID3 = new getID3;
+							$info = $getID3->analyze('z/'.$file);
+							getid3_lib::CopyTagsToComments($info); 
+							if(html_entity_decode($info['comments_html']['artist'][0])==$artist){
+								//bugfix 20221028 for special characters in artist name
+								if ($last_freshness<filemtime('z/'.$file)){
+									$last_freshness=filemtime('z/'.$file);
+								}
+							
+							}
+						
+					}
 				}
+				//now the things are quite simple
+				//either the cache is fresh enough, output the album list, and we're outta here
+				//ot the cache is too old and we'll have to let the code continue
+				if ($last_freshness<=$data[$artist]['freshness']){
+					echo $data[$artist]['album_list'];
+					$cachedworked=true;
+				}
+			}//data was unserialized ? 
+		}//.dat file was readable ? 
+	}//.dat cache file exist?
+	if (!$cachedworked){
+
+
+
+
+
+		
+		//necessary for caching: we now need to store the actual freshness
+		//of the most recent file found
+		//while browsing the catalog. Note that everything will run into
+		//serious problem if by chance the file
+		//has been uploaded BEFORE Jan, 1st, 1970
+		
+		$last_freshness=0;
+		
+		
+		$files=scandir('./z');
+		$albums=array();
+		foreach ($files as $file){
+			if (! is_dir('./z/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				
+					$getID3 = new getID3;
+					$info = $getID3->analyze('z/'.$file);
+					getid3_lib::CopyTagsToComments($info); 
+					if(html_entity_decode($info['comments_html']['artist'][0])==$artist){
+						//bugfix 20221028 for special characters in artist name
+						$albums[strval($info['comments_html']['album'][0])]=array_reverse(explode('-', $info['comments_html']['date'][0]))[0].'.'.filemtime('z/'.$file).$info['comments_html']['album'][0];
+						//here we are for the freshness thing
+						if ($last_freshness<filemtime('z/'.$file)){
+							$last_freshness=filemtime('z/'.$file);
+						}
+					
+					}
+				
+			}
+			
 			
 		}
+		arsort($albums);
 		
-		
-	}
-	arsort($albums);
-	foreach ($albums as $album){
-		echo array_keys($albums, $album)[0]."\n";
-		
+		//it's time to deal with caching
+		$output='';
+		foreach ($albums as $album){
+			$output=$output.array_keys($albums, $album)[0]."\n";	
+		}
+		echo $output;
+		//the client got the data. Then store them ! 
+		if (file_exists('./artist-album.dat')){
+			$content=file_get_contents('./artist-album.dat');
+			if ($content!==false){
+				$data=unserialize($content);
+				if ($data!==false){
+					//the file exist, it is readable, it has been correctly unserizalized, here we go for storing
+					$data[$artist]['freshness']=$last_freshness;
+					$data[$artist]['album_list']=$output;
+					$sdata=serialize($data);
+					if ($sdata!==false){
+						//we serialized the data correctly, so we can save to disk NOW
+						file_put_contents('./artist-album.dat', $sdata);
+					
+					}
+						
+				}
+				else
+				{
+					//the data hasn't been unserialized. For everyone's safety, we'll delete the file, it may be malformed
+					//because of concurrent access
+					//but anyway such a thing never happens usually
+					unlink('./artist-album.dat'); //no need to test if unlink worked. We already now that we got read access. And if we hadn't write access, the file wouldn't exist
+				}
+				
+			}
+		}
+		else
+		{
+			//the cache is not existing, we are going to create it
+			$data=array();
+			$data[$artist]=array();
+			$data[$artist]['freshness']=$last_freshness;
+			$data[$artist]['album_list']=$output;
+			$sdata=serialize($data);
+			if ($sdata!==false){
+				//serialized worked ok
+				//now store on disk
+				//it's not that much a matter if we don't have write permission
+				//just a BIG performance issue for the instance
+				//but not giving write permissions on public wwww
+				//to CGI scripts like PHP
+				//is a awkward way to proceed
+				//and a sysadmin job and not mine
+				file_put_contents('./artist-album.dat', $sdata);
+				
+			}
+			
+			
+			
+			
+					
+			
+		}
 	}
 }
 else if (isset($_GET['getmtime'])) {
