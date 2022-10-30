@@ -896,6 +896,19 @@ else if (isset($_GET['radio'])) {
 //			$nextbitrate=$result[4];
 
 }
+else if (array_key_exists('cleanup', $_GET)){
+	$filez=scandir('z/');
+	foreach ($filez as $file){
+		if (strstr($file, '.php'))
+			$oldname=$file;
+			$newname=str_replace('.php', '.html', $file);
+			rename('z/'.$oldname, 'z/'.$newname);
+			
+		}
+	}
+}//cleanup done
+
+
 else {
 	//echo "\n"; THE MOST STUPID THING I EVER DONE IN MY LIFE 
 	//IS THIS LINE AND THE ONE I JUST CORRECTED JUSTE BELLOW

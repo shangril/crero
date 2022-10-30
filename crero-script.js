@@ -1084,6 +1084,16 @@ function init_page() {
 	update_title();
 
 	update_isindex();
+	//for everyone's safety, let's make an asynchronous call to crero-yp-api, which amongs lots of things, does routine cleanup on media tiers
+	oxhtto = new XMLHttpRequest();
+	oxhtto.open ('GET', './crero-yp-api.php', true);
+	oxhtto.send();
+	//now the audio tiers have been cleaned up
+	
+	
+	
+	
+	
 	
 	if (!get_isindex()){
 		if(document.getElementById('splash')!=null){

@@ -1284,6 +1284,17 @@ header('Content-Type: text/plain; charset=utf-8');
 
 		}
 }
+else if (array_key_exists('cleanup', $_GET)){
+	$filez=scandir('audio/');
+	foreach ($filez as $file){
+		if (strstr($file, '.php')){
+			$oldname=$file;
+			$newname=str_replace('.php', '.html', $file);
+			rename('audio/'.$oldname, 'audio/'.$newname);
+			
+		}
+	}
+}//cleanup done
 ob_flush();
 exit(0);
 ?>
