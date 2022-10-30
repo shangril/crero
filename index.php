@@ -973,7 +973,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, '."'".str_replace("'","\\'",'./covers/'.rawurlencode($url))."'".', get_size(), '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
+			$output.='<img class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (this.src==\'favicon.png\'){increment_thumbnail_max();};if (album_displayed<=album_counter){chckImg(this, \''.str_replace("'", "\\'", $url).'\', '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
 		
 			/*$output.='<script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
@@ -1069,11 +1069,6 @@ if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
 //(the window.history.replaceState() thing)
 
 var bodyvoid='';
-
-<?php if (array_key_exists('body', $_GET) && $_GET['body']=='void'){
-echo 'bodyvoid=\'./?body=void\';';	
-}	
-?>
 
 
 
@@ -1327,10 +1322,15 @@ var dl_audiourl='';
 var str_audiourl='';
 var dlformats=['mp3'];
 var strformats=['mp3'];
+var dl_apiurl='';
+var str_apiurl='';
+
 
 <?php
 echo 'dl_audiourl='."'".$clewnaudiourl."';\n";
 echo 'str_audiourl='."'//".$server."/z/';\n";
+echo 'dl_apiurl='."'".$clewnapiurl."';\n";
+echo 'str_apiurl='."'//".$serverapi."';\n";
 $api_dl_formats=file_get_contents($clewnapiurl.'?listformats=1');
 $api_str_formats=file_get_contents($serverapi.'?listformats=1');
 
@@ -1378,7 +1378,9 @@ try {
 <noscript >Dear noscripter, <br/> as of most of music-featured website, this website relies heavily on Javascript, especially to allow continuous playing album after album, because nowadays' browsers won't allow an autoplay upon page load. AJAX is required. <br/>
 We suggest you to look at the LibreJS javascript extension, which blocks javascripts, and allows, and unblock, Javascript which is free software and human readable and therefore checked for safety and privacy compliance. It is edited by the Free Software Foundation (fsf.org). </noscript>
 </span>
-<div id="twirling" style="position:fixed;opacity:0.9;top:0px;left:0px;background-color:white;display:block;z-index:200;color:black;font-size:3000%;text-align:center;width:100%;height:100%;">-</div>
+<div id="twirling" style="position:fixed;opacity:0.9;top:0px;left:0px;background-color:white;display:block;z-index:200;color:black;font-size:3000%;text-align:center;width:100%;height:100%;">-
+</div>
+<span id="twirling_message" style="position:fixed;opacity:0.8;bottom:0px;left:0px;background-color:white;display:block;z-index:202;color:black;font-size:100%;text-align:center;width:100%;">Initializing...</span>
 
 <input type="hidden" id="bodyajax" value="" onload="if (bodyvoid!=''){this.value=bodyvoid;};"/>
 <input type="hidden" id="bodyajax_autoplay" value="false"/>
@@ -1416,7 +1418,7 @@ We suggest you to look at the LibreJS javascript extension, which blocks javascr
 	</form>
 	</span>
 	<hr/>Note for site administrator: your CMS is not able to handle the deletion of a particular track. If you want to remove a track from an album, you <strong>must</strong> manually delete the file named <em>./d/albums_track_counter.dat</em> at the root of your CMS install to get rid of this error.<br/>
-	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document_getElementById_overload_splash__style_display('none');">X Close</a>
+	<br/><a href="javascript:void(0);" style="margin-bottom:100%;text-align:right;width:100%;" onclick="cr_document_get_overload_splash__style_display('none');">X Close</a>
 </div>
 <?php } ?>
 
@@ -1426,7 +1428,7 @@ We suggest you to look at the LibreJS javascript extension, which blocks javascr
 <a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()-0.1;">-</a>
 <span style="font-size:108%;background-color:black;">🔈</span>
 <a href="javascript:void(0);" style="border:solid 1px; border-radius:3px;;background-color:#18FF18;" onClick="cr_document-getElementById_player_-volume()=cr_document-getElementById_player_-volume()+0.1;">+</a>
-<a style="" href="javascript:void(0);" onclick="player=get_player();if (get_isindex()){set_page_init(false);update_ajax_body('./?offset=0&autoplay=true');} else if (player.paused){if (get_isplaying()!=-1){set_isplaying(player.play());}else{cr_document_autoplay().click();};this.style.backgroundColor='white';this.style.color='green';}else{player.pause();this.style.backgroundColor='black';this.style.color='red';}">⏯</a>
+<a style="" href="javascript:void(0);" onclick="setplayerstall(false);player=get_player();if (get_isindex()){set_page_init(false);update_ajax_body('./?offset=0&autoplay=true');} else if (player.paused){if (get_isplaying()!=-1){set_isplaying(player.play());}else{cr_document_autoplay().click();};this.style.backgroundColor='white';this.style.color='green';}else{player.pause();this.style.backgroundColor='black';this.style.color='red';}">⏯</a>
 <a href="javascript:void(0);" onclick="controler_prev();">⏴|</a>
 <span id="playerclock"></span>
 <a href="javascript:void(0);" onclick="controler_next();">|⏵</a><br/>
@@ -1549,18 +1551,18 @@ else {
 
 <?php
 if (isset ($_GET['track'])) {
-	echo '<a href="javascript:void(0);" onclick="set_page_init(false);update_ajax_body(\'./?body=void\');">Home</a> &gt; '.htmlspecialchars($_GET['track']).' <em>on</em> '.htmlspecialchars($_GET['album']).'<br/>';
+	echo '<a href="./">Home</a> &gt; '.htmlspecialchars($_GET['track']).' <em>on</em> '.htmlspecialchars($_GET['album']).'<br/>';
 }
 
 else if (isset ($_GET['artist'])) {
-	echo '<a href="javascript:void(0);" onclick="set_page_init(false);update_ajax_body(\'./?body=void\');">Home</a> &gt; '.htmlspecialchars($_GET['artist']).'<br/>';
+	echo '<a href="./">Home</a> &gt; '.htmlspecialchars($_GET['artist']).'<br/>';
 }
 
 ?>
 
 
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
-	<span style=""><img style="float:left;width:3%;" src="./<?php echo $favicon ;?>"/></span>
+	<span style=""><img style="float:left;width:3%;" src="./<?php echo $favicon ;?>" onload="increment_overload_track_counter();if(!get_page_init()){init_page();};"/></span>
 		
 	<h1 id="title" style="display:inline;"><?php echo $title; ?></h1>
 	<?php if (!isset($_GET['listall'])){
@@ -1568,7 +1570,7 @@ else if (isset ($_GET['artist'])) {
 		
 	}
 	?>
-	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="javascript:void(0);" onclick="set_page_init(false);update_ajax_body('./?body=void');">Home</a></h2>
+	<h2 style="clear:both;"><em><?php echo htmlspecialchars($description);?></em> <br/><a href="./">Home</a></h2>
 
 	<?php
 	//artist list
@@ -2898,7 +2900,7 @@ if (!$weactuallydisplayedsomething){
 	$_GET['listall']='failed';
 	
 	
-	echo '<img src="favicon.png" onload="if(!get_page_init()){init_page();};"/> <a  href="javascript:void(0);" onclick="set_page_init(false);if (document.getElementById(\'bodyajax_arttruc\').value!=\'\'){set_artist(document.getElementById(\'bodyajax_arttruc\').value);};digolder(0);" id="infiniteloop">Yeah! You reached the bottom... There is nothing older...Continuing to newer</a><br/>';
+	echo '<img src="favicon.png" onload="increment_overload_track_counter();if(!get_page_init()){init_page();};"/> <a  href="javascript:void(0);" onclick="if (document.getElementById(\'bodyajax_arttruc\').value!=\'\'){set_artist(document.getElementById(\'bodyajax_arttruc\').value);};set_page_init(false);digolder(0, true);" id="infiniteloop">Yeah! You reached the bottom... There is nothing older...Continuing to newer</a><br/>';
 	}
 	
 

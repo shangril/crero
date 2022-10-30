@@ -6,6 +6,9 @@ var infoselected=null;
 var infoselected=null;
 var size;
 
+var thumbnail_counter=0;
+var thumbnail_max=0;
+
 var target_album='';
 var embed=null;
 var overloadindexchecked=false;
@@ -45,6 +48,9 @@ function set_overloadtimer(tim){
 function get_overloadtimer(){
 	return myoverloadtimer;
 }
+
+
+
 function update_title(){
 	if(document.getElementById('main_title')!=null){
 		tobeprepend='';
@@ -114,7 +120,7 @@ function cr_c_document_getElementById(ajax_splash){
 	return document.getElementById(ajax_splash);
 
 }
-function cr_document_getElementById_overload_splash__style_display(display){
+function cr_document_overload_splash__style_display(display){
 	document.getElementById('overload_splash').style.display=display;
 }
 function cr_document_getElementById_player__volume(){
@@ -131,7 +137,7 @@ function get_player(){
 function is_playing(){
 	return (is_playing);
 }
-function  digolder(customoffset){
+function  digolder(customoffset, comesfrominfiniteloop){
 	customoffset=parseInt(customoffset);
 	arrartist=[];
 	arralbum=[];
@@ -158,7 +164,7 @@ function  digolder(customoffset){
 	//get_player().pause();
 	//set_isplaying(0);
 	//set_isplaying(NaN);
-	set_page_init(false);update_ajax_body('./?'+artfrag+embfrag+'&offset='+encodeURI(customoffset)+'&autoplay=true');
+	set_page_init(false);update_ajax_body('./?'+artfrag+embfrag+'&offset='+encodeURI(customoffset)+'&autoplay=true', comesfrominfiniteloop);
 	//setplayerstall(false);
 	//update_autoplay();
 }
@@ -378,9 +384,30 @@ function computeSize(width, height){
 			}
 	return size;
 }
-function update_ajax_body(http_url_target){
+function update_twirling_message(text){
+	document.getElementById('twirling_message').innerHTML=text;
+}
+function increment_thumbnail_counter(){
+		thumbnail_counter++;
+		update_twirling_message(thumbnail_counter+" thumbnails generated just for you, for you screen resolution, once for all");
+}
+function increment_thumbnail_max(){
+		thumbnail_max++;
+		//update_twirling_message(thumbnail_counter+"/"+thumbnail_max+" thumbnails generated juste for you, for you screen resolution, once for all");
+}
+
+
+function update_ajax_body(http_url_target, comesfrominfiniteloop){
+	var infiniteloop=false;
+	
+	if (comesfrominfiniteloop!=undefined){
+		infiniteloop=true;
+	}
+	
 	set_page_load(false);
 	set_page_init(false);
+	var thumbnail_counter=0;
+	var thumbnail_max=0;
 	var autoplay='false';
 	var arttruc='';
 	var size=0;
@@ -407,7 +434,7 @@ function update_ajax_body(http_url_target){
 			//slash-separated tokens
 			finalurl='./?body=ajax';
 			slashes=tar.split('/');
-			for (let i=0 ; i<slashes.length ; i++){
+			for (i=0 ; i<slashes.length ; i++){
 				while (i<slashes.length&&!(slashes[i].startsWith('?'))){
 					if (slashes[i]=='.'){
 						//our good ol' coder warns you that it is an url relative to the current folder
@@ -497,10 +524,11 @@ function update_ajax_body(http_url_target){
 			
 			
 			
-			
-			var xhttp = new XMLHttpRequest();
-			xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
+			var uaxhttpattempt=0;
+			var uaxhttp = new XMLHttpRequest();
+			uaxhttp.onreadystatechange = function() {
+			if (this.readyState == 4){
+			  if (this.status == 200) {
 
 			 document.getElementById('crerobody').innerHTML = this.responseText;
 			 set_page_load(true);
@@ -508,12 +536,21 @@ function update_ajax_body(http_url_target){
 			 document.getElementById('bodyajax').value = finalurl ;
 			 document.getElementById('bodyajax_autoplay').value = autoplay;
 			 document.getElementById('bodyajax_arttruc').value = arttruc;
-						
-			}
+			 if (infiniteloop){init_page();}
+				}
+				else {
+					uaxhttpattempt++;
+					update_twirling_message('The server replied with a non OK code: '+this.status+' ; retrying, retry is '+uaxhttpattempt);
+					this.abort();
+					this.send();
+					
+				}
+				}
 			};
 			//console.log(finalurl);
-			xhttp.open("GET", finalurl, true);
-			xhttp.send();
+			uaxhttp.open("GET", finalurl, true);
+			uaxhttp.send();
+			update_twirling_message("Loading...");
 			
 			
 			
@@ -524,7 +561,9 @@ function update_ajax_body(http_url_target){
 			
 			
 		}
-		
+function chckImg(img, url, ratio){
+	getCover(img, './covers/'+encodeURI(url), get_size(), ratio);if (img.src!='favicon.png'){increment_thumbnail_counter();};
+}		
 function update_controler(artist, track, noinfo){
 	c_target=document.getElementById('controler_nowplaying');
 	if (c_target!=null){
@@ -643,10 +682,13 @@ function twirling(){
 	if (!get_page_load()){
 		twirl=true;
 		baton.style.display='block';
+		document.getElementById('twirling_message').style.display='block';
 	}
 	if (get_page_load()){
 		twirl=false;
 		baton.style.display='none';
+		document.getElementById('twirling_message').style.display='none';
+
 	}
 
 
@@ -737,7 +779,7 @@ function update_offset(){
 		return parseInt(document.getElementById('offset').value);
 		}
 		else {
-			return 0;
+			return parseInt(-1);
 		}
 	
 	
@@ -1284,20 +1326,27 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 			
 			
 		}
-		else if (document.getElementById('bodyajax').value=='./?body=void'){
-			titleSiteObj.url='./';
-			
-			window.history.pushState(titleSiteObj, '', './');
+		else if (document.getElementById('bodyajax').value==''){//index page ? 
+			//ourURL=document.getElementById('bodyajax').value;
+			//ourURL=ourURL.replace('?body=ajax&', '?');
+			ourURL='';
+			if (window.location.href.endsWith('/radio/')){
+				ourURL='radio/';
+			}
+			if (get_isindex()||ourURL=='radio/'){
+				titleSiteObj.url='./'+ourURL;
+				window.history.pushState(titleSiteObj, '', './'+ourURL);
+			}
+			else {
+				//direct arrival on a shared link
+				titleSiteObj.url=window.location.href;
+				window.history.pushState(titleSiteObj, '', window.location.href);
 
-			//window.location.href='./';//going back to index page
-		}
-		else if (get_isindex()) {
-			titleSiteObj.url='./';
+			}
 			
-			window.history.pushState(titleSiteObj, '', './');
+			
+		}
 
-			
-		}
 	}
 	
 	//playback stuff
@@ -1310,12 +1359,16 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 	
 	update_autoplay();
 
+	if (activatehtmlcache){
+		if((get_isindex()&&!get_page_init())){increment_overload_track_counter();};checkOverload(true);
+	}
 	if (document.getElementById('infiniteloop')!=null){
+		set_page_init(true);
+		
+		
 		document.getElementById('infiniteloop').click();
 	}
-	if (activatehtmlcache){
-		if(get_isindex()&&!get_page_init()){increment_overload_track_counter();};checkOverload(true);
-	}
+
 	set_page_init(true);
 }//function initpage
 
