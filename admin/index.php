@@ -218,7 +218,7 @@ else if (isset($_GET['admin'])){
 			$data=$_POST['data'];
 			$data=str_replace("\r\n", "\n", $data);
 			$data=str_replace("\r", "\n", $data);
-			if (trim($data)!=''&&trim($data)!="\n"){
+			//if (trim($data)!=''&&trim($data)!="\n"){
 				if (file_put_contents('../d/'.$target, $data)){
 					echo '<hr/>Changes were saved<hr/>';
 					
@@ -226,15 +226,15 @@ else if (isset($_GET['admin'])){
 				else {
 					echo '<hr/>Something wrong happened and your changes have not been saved ! <hr/>';
 				}
-			}
-			else {
+			//}
+			/*else {
 				if (unlink('../d/'.$target)){
 					echo '<hr/>Changes were saved<hr/>';
 				}
 				else {
 					echo '<hr/>Something wrong happened and your changes have not been saved ! <hr/>';
 				}
-			}
+			}*/ //not working good and safer to forget about this
 		}
 	
 	
