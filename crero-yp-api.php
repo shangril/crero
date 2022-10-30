@@ -306,15 +306,17 @@ switch ($_GET['a']) {
 		
 		break;
 	case 'artist_info':
-		echo file_get_contents('./d/highlight-artist-list.txt');
-			//returns additionnal info for some artists of the label
-			//first line ("\n" for each newline) is the artist name
-			//second line is styles separated by spaces
-			//third line is info, typically years active
-			//fouth line is blank and reserved for future usage
-			//fifth line is 2nd artist name
-			//sixth line is 2nd artist styles
-			//...and so on
+		if (false!==file_get_contents('./d/highlight-artist-list.txt')){
+			echo file_get_contents('./d/highlight-artist-list.txt');
+				//returns additionnal info for some artists of the label
+				//first line ("\n" for each newline) is the artist name
+				//second line is styles separated by spaces
+				//third line is info, typically years active
+				//fouth line is blank and reserved for future usage
+				//fifth line is 2nd artist name
+				//sixth line is 2nd artist styles
+				//...and so on
+			}
 		break;
 	case 'list_all_artists':
 		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
