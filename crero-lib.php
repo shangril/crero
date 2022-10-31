@@ -97,7 +97,7 @@ class creroHtmlCache {
 				unlink ('./htmlcache/cached/'.$cachedfile);
 				
 			}
-		//unlink ('./htmlcache/cached.dat');
+		unlink ('./htmlcache/cached.dat');
 		}
 	}
 	public function purgePage($key){
