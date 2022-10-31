@@ -2,6 +2,11 @@
 error_reporting(0);
 require_once('config.php');
 //error_reporting(E_ALL);
+
+//first off let's make a bit of cleaning on audio tiers
+file_get_contents ($clewnapiurl.'?cleanup=1');
+file_get_contents ($serverapi.'?cleanup=1');
+
 header( 'Content-Type: text/plain; charset=utf-8');
 if (!array_key_exists('a', $_GET)){
 	echo '0';
