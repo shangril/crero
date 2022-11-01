@@ -41,7 +41,17 @@ var str_album_count;
 var dl_album_count;
 var recentplay;
 
-var myoverloadtimer=null
+var playerErrorTimer=0;
+var playerErrorTimestamp=0;
+
+
+var myoverloadtimer=null;
+
+
+
+
+
+
 function set_overloadtimer(tim){
 	myoverloadtimer=tim;
 }
