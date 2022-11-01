@@ -57,7 +57,7 @@
 		}
 		else {
 			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', file_get_contents(
-			'http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'].'?hook=hook&ratio='.$ratio.'&target='.$file.'&viewportwidth='.$viewportwidth)
+			'http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'].'?hook=hook&ratio='.$ratio.'&target='.urlencode($file).'&viewportwidth='.$viewportwidth)
 			);
 			header('Last-Modified: '.date(DATE_RFC822, filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')));
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');

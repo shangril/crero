@@ -589,7 +589,7 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 			 document.getElementById('bodyajax').value = finalurl ;
 			 document.getElementById('bodyajax_autoplay').value = autoplay;
 			 document.getElementById('bodyajax_arttruc').value = arttruc;
-			 if (infiniteloop){init_page();}
+			 if (infiniteloop){if (!get_page_init()){init_page();}}
 				}
 				else {
 					uaxhttpattempt++;
@@ -615,7 +615,7 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 			
 		}
 function chckImg(img, url, ratio){
-	getCover(img, './covers/'+encodeURI(url), get_size(), ratio);if (img.src!='favicon.png'){increment_thumbnail_counter();};
+	getCover(img, encodeURIComponent('./covers/')+url, get_size(), ratio);if (img.src!='favicon.png'){increment_thumbnail_counter();};
 }		
 function update_controler(artist, track, noinfo){
 	c_target=document.getElementById('controler_nowplaying');
