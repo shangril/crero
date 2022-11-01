@@ -49,7 +49,50 @@ var myoverloadtimer=null;
 
 
 
+function tryToRecoverPlayerError() {
+	//this funtion is called each time the <audio> only player on the main section (aka anything but Radio: index page, album pages, artist-album pages, track pages) will throw an onError JS event
+	//since the error can be caused for many, various reason, we are just going to try to relaunch play(); on the player ; this is typically for media data not coming from the HTTP server serving... Media data
+	//by far the most common case
+	//So let it a chance to send again the (partial-content) data and then to allow the listener to get its playback back after a quick cut is our aim with this call to play() after an error was triggered
+	//but since we don't want to overload the HTTP server providing us with audio, we are going
+	//to wait a bit, before trying... And if errors continue to arrive in a short time
+	//to wait each time a bit more, increasing the waiting time
+	//which is necessary to avoid general server overload and therefore never recovering
+	//This waiting behavior is achevied with the use of two global scope var defined outside this function:
+	// * playerErrorTimer : it is initially set to 0. It defines how much we will wait before a retry. Once the first call, we'll increment it of 500ms, wait for 500ms, and try to play()
+	// but on any possible subsequent call, we'll increment it again of 500ms each time. It means that if errors remains, we'll wait for 1000, 1500, 2000, 2500, 3000 and so on each time before attempting play()
+	// (and test if player is not already playing, before launching play(), because an previous thread can possibly already have solved the error, since we'll use timeOuts, which are asynchronous)
+	// * playerErrorTimestamp : it is initially set to 0. If this function is called for the first time, we'll store a current Date().getTime() and then we'll know we're in trouble and do the playerErrorIncrement
+	// has explained above
+	// BUT if this function is called, but playerErrorTimestamp is older than 5 minutes, which means the player hasn't triggered any error for the past 5 minutes
+	// we will reset playerErrorTimer to its initial zero value
+	// because if errors cames like the Niagara Falls, if the listener had to wait, if playerErrorTimer raised up to several, long seconds between each play() attempt, and finally, the playback process resumed quietly
+	// and then that after a long while without error (5 minutes as indicated), if on another track, or on another album, an new error is triggered
+	// we want to try to cure it after only a short (500ms) cutoff for the listener, and won't wait for the previously set to a possibly very long time playerErrorTimer before attempting our retry. 
+	
+	
+	//First off we look at playerErrorTimestamp, and, if it is older than 5 minutes, 
+	// * we reset playerErrorTimer
+	// * we set playerErrorTimestamp to the current time, and, for the next 5 minutes, it will be useful
+	d = new Date();
+	currentTime = d.getTime();
+	if (parseInt(playerErrorTimestamp)+300000<currentTime){
+		playerErrorTimestamp=currentTime;
+		playerErrorTimer=0;
+	}
+	
+	//Then we are going to try to recover, but for the first retry, after 500ms only, and on each subsequent retry if any, each time after 500ms added to the previous playerTimerError value
 
+	playerErrorTimer=parseInt(playerErrorTimer)+500;
+	window.setTimeout(function(){
+		if (get_player()!=null){
+				get_player().play();
+			}
+		
+		}, playerErrorTimer);
+
+	//end of TryToRecoverPlayerError()
+}
 
 
 function set_overloadtimer(tim){
