@@ -899,14 +899,14 @@ else if (isset($_GET['radio'])) {
 else if (array_key_exists('cleanup', $_GET)){
 	$filez=scandir('z/');
 	foreach ($filez as $file){
-		if (strstr($file, '.php'))
-			$oldname=$file;
-			$newname=str_replace('.php', '.html', $file);
-			rename('z/'.$oldname, 'z/'.$newname);
-			
+		if (strstr($file, '.php')){
+				$oldname=$file;
+				$newname=str_replace('.php', '.html', $file);
+				rename('z/'.$oldname, 'z/'.$newname);
+			}
 		}
 	}
-}//cleanup done
+//cleanup done
 
 
 else {
