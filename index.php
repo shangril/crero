@@ -1466,7 +1466,7 @@ We suggest you to look at the LibreJS javascript extension, which blocks javascr
 
  ?>
 	
-<a><audio id="player" onEnded="playNext();">
+<a><audio id="player" onEnded="playNext();" onError="tryToRecoverPlayerError();">
 	Your browser is very old ; sorry but streaming will not be enabled<br/>
 </audio></a>
 
