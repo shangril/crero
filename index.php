@@ -1513,14 +1513,9 @@ if ($acceptdonations){
 	
 
 if ($hasradio){
-	echo '<div style="width:98%;text-align:right;float:right;">Now on the radio: <br/><a href="./radio/index.php">';
+	echo '<div style="width:98%;text-align:right;float:right;"><strong>Now on the radio:</strong> <br/><a id="radio_nowplaying" href="./radio/index.php">';
 	
-	echo file_get_contents('./radio/d/nowplayingartist.txt');
-	
-	echo ' - ';
-	
-	echo file_get_contents('./radio/d/nowplayingalbum.txt');
-	
+	echo 'Initializing...';
 	echo '</a>';
 	
 	

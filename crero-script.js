@@ -47,8 +47,44 @@ var playerErrorTimestamp=0;
 
 var myoverloadtimer=null;
 
+var radioIntervalFunc=null;
+var radiomsg='';
 
+var radioajax;
 
+function update_radio_nowplaying(){
+	if (document.getElementById('radio_nowplaying')==null){
+		window.clearInterval(radioIntervalFunc);
+		radioIntervalFunc=null;	
+	}
+	else {
+		document.getElementById('radio_nowplaying').innerHTML=radiomsg;
+	}
+	radioajax = new XMLHttpRequest;
+	radioajax.onreadystatechange = radionymous;
+	radioajax.open("GET", "./radio_data.php", true);
+	radioajax.send();
+		
+	
+}
+function radionymous() {
+				if (this.readyState == 4 && this.status == 200) {
+					myresponse=new String(this.responseText).split("\n");
+					if (parseFloat(myresponse[0])<parseFloat(myresponse[5])){
+						radiomsg="Nothing currently - Waiting for a click";
+						
+					}
+					else {
+					radiomsg=myresponse[3]+' - '+myresponse[4];
+					}
+				
+			
+				}
+				else {
+				radiomsg="Ongoing fetching...";
+				}
+		
+		}
 function tryToRecoverPlayerError() {
 	//this funtion is called each time the <audio> only player on the main section (aka anything but Radio: index page, album pages, artist-album pages, track pages) will throw an onError JS event
 	//since the error can be caused for many, various reason, we are just going to try to relaunch play(); on the player ; this is typically for media data not coming from the HTTP server serving... Media data
@@ -412,12 +448,13 @@ function playPrevious() {
 	
 }
 function loadInfo(track) {
-  var xhttp = new XMLHttpRequest(function() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
 	 infoselected.style.display='block';
      infoselected.innerHTML = this.responseText;
-    }
-  });
+    }	
+  }
   xhttp.open("GET", "./?getinfo="+encodeURI(track), true);
   xhttp.send();
 } 
@@ -599,7 +636,7 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 					
 				}
 				}
-			};
+			}
 			//console.log(finalurl);
 			uaxhttp.open("GET", finalurl, true);
 			uaxhttp.send();
@@ -1109,6 +1146,12 @@ function set_creroypservices(cyparg){
 }
 //here the main logic of each page display
 function init_page() {
+	radiomsg='fetching data...';
+	
+	if (radioIntervalFunc==null){
+		radioIntervalFunc=window.setInterval(update_radio_nowplaying, 4500);
+	}
+	
 	
 	set_inc_stall(false);
 	//monthly donation
@@ -1186,7 +1229,8 @@ function init_page() {
 				
 				if (alb_willhavetoping)
 					{
-					xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest(function(){
+					xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest();
+					xhttzzpingprecalb[xhttzzpingprecalb_index].onreadystatechange= function(){
 
 
 					if (this.readyState == 4 && this.status == 200) {
@@ -1195,13 +1239,14 @@ function init_page() {
 							}
 							recentretries=10;
 							var oxhttozzypingprecalb; 
-							oxhttozzypingprecalb = new XMLHttpRequest(function(){
+							oxhttozzypingprecalb = new XMLHttpRequest();
+							oxhttozzypingprecalb.onreadystatechange = function(){
 								if (this.readyState == 4 && this.status == 200) {
 										
 										oprpretries=10;
 									}
 								
-								});
+								};
 							stimer=1000;
 								
 							while(oprpretries<10){
@@ -1209,14 +1254,15 @@ function init_page() {
 								setTimeout(function(){
 								//oxhttozzypingprecalb.abort();
 								
-								oxhttozzypingprecalb = new XMLHttpRequest(function(){
+								oxhttozzypingprecalb = new XMLHttpRequest();
+								oxhttozzypingprecalb.onreadystatechange = function(){
 								if (this.readyState == 4 && this.status == 200) {
 										alb_willhavetoping=false;
 								
 										oprpretries=10;
 									}
 								
-								});
+								};
 								
 								if (alb_willhavetoping){
 									oxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
@@ -1228,11 +1274,12 @@ function init_page() {
 							
 						}
 					
-					});
+					}
+				
+					xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURIComponent(current_recent_album)+"&recently_callback_id="+encodeURIComponent(callback_id), true);
+					xhttzzpingprecalb[xhttzzpingprecalb_index].send();
+					xhttzzpingprecalb_index++;
 				}
-				xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURIComponent(current_recent_album)+"&recently_callback_id="+encodeURIComponent(callback_id), true);
-				xhttzzpingprecalb[xhttzzpingprecalb_index].send();
-				xhttzzpingprecalb_index++;
 			},timer);
 			timer=timer+3800;
 		}
@@ -1247,24 +1294,26 @@ function init_page() {
 	if (!get_isindex()&&alb_willhavetoping){
 		var prpretries=0;
 		
-		var prpxhttozzypingprecalb = new XMLHttpRequest(function(){
+		var prpxhttozzypingprecalb = new XMLHttpRequest();
+		prpxhttozzypingprecalb.onreadystatechange = function(){
 			if (this.readyState == 4 && this.status == 200) {
 					prpretries=10;
 				}
 			
-			});
+			};
 		ttimer=1000;
 		while(prpretries<10){
 			prpretries++;
 			setTimeout(function(){
 				prpxhttozzypingprecalb.abort();
-				prpxhttozzypingprecalb = new XMLHttpRequest(function(){
+				prpxhttozzypingprecalb = new XMLHttpRequest();
+				prpxhttozzypingprecalb.onreadystatechange = function(){
 					if (this.readyState == 4 && this.status == 200) {
 							alb_willhavetoping=false;
 							prpretries=10;
 						}
 					
-					});
+					};
 				if(alb_willhavetoping){
 					prpxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
 					prpxhttozzypingprecalb.send();
