@@ -1790,6 +1790,17 @@ $artists_file=file_get_contents('./d/artists.txt');
 				
 				if ($albums_file_json===false){
 				echo '<h2><strong>Sorry ! </strong>It seems that the free albums host, is currently over capacity.</h2>That is why this page took so long to load, and free albums will not display. ';
+				
+				//20221130 : Autorepair of media tier overcapacity
+				?>
+					<img src="favicon.png" onload="if(!get_page_init()){init_page();};<?php if ($activatehtmlcache){echo 'set_album_error(true);checkOverload(false);';} ?>"/> An attempt to repair the broken page may be attempted soon. If not, your can try to refresh this page. 
+				
+				<?php
+				
+				//Ends 20221130 autorepair of media tier overcapacity
+				
+				
+				
 				}
 				$cache=Array();
 			
