@@ -19,6 +19,8 @@ If you plan to have several instances on the same server, you should set up a su
 # CreRo
 
 Recommended (strongly) PHP version is PHP 8.1, but PHP 7.0 or above is mandatory and may work, but hasn't been tested for post-September 2022 releases, while PHP 8.1 was. Please refer to the "PHP 8.1 tested things" for details. Core features (a subset, but core) is TESTED and WORKING with PHP 8.2
+
+
 If something fails (it can for quotes, double quotes, non-ASCII characters in either audio metadata (tags for artist, album, title, year and commment), filename of audio file stored by the server, please 1) upgrade your server to PHP 8.1 b) see "Emergency measures" section at the bottom of the document. 
 
 CURL php extension required (likely to be installed already at least on commercial-grade hosting services)
