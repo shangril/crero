@@ -181,11 +181,12 @@ Be sure to add a blank index.php file in `<install root>/z/` to prevent public d
 
 Remember that piracy actually increases sales :)
 
-The general requirement for audio is that same basename files have to be there in flac, ogg and mp3 format, and that metadata tags should be set, especially "artist", "album", "title", "year" and "comment". 
+The general requirement for audio is that same basename files have to be there and the whole catalog coherent: flac, ogg and mp3 are supported but if you choose say "flac and mp3" everything must be there in (same basename).flac and (same basename).mp3 - Mp3 is now out-of-patent-time and works on any browser even very old. Streaming requires either mp3 or ogg, flac is an High Quality format useful for download. Ogg provides better quality than MP3 at equivalent size, but is not as much widespread for in-browser streaming. 
+
+Metadata tags must be set, especially "artist", "album", "title", "year" and "comment". 
 
 Concerning the free download audio, if you run a local media tier for free album storage, they have to be uploaded in `<install root>/api/audio` directory.
 
-To host free audio by yourself or to host streaming only albums, you must download and install php-getID3, which is GPLed software primarily avaiable from SourceForge.net. Extract the php-getid3 archive directory at the root of your CreRo install.
 
 # Quite OLD ! The configuration options most commonly used - refer to admin panel for a more up-to-date list, with online help
 
