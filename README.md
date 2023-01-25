@@ -1,6 +1,6 @@
 ## Known bug workaround, temporarily
 
-After install, create an empty (or filled by whatever text you want, you will be instructed on how to edit the option it drives, in your admin panel, during initial configuration) ./d/server.txt file ! Ontherwise on a fesh install Admin Panel will never be reachable... Will be corrected for a release planned for Feb 2023.
+After install, create an empty (or filled by whatever text you want, you will be instructed on how to edit the option it drives, in your admin panel, during initial configuration) ./d/server.txt file ! Otherwise on a fresh install Admin Panel will never be reachable... Will be corrected for a release planned for Feb 2023.
 
 
 
