@@ -1,11 +1,12 @@
-# Known bug workaround, temporarily
+## Known bug workaround, temporarily
 
 After install, create an empty (or filled by whatever text you want, you will be instructed on how to edit the option it drives, in your admin panel, during initial configuration) ./d/server.txt file ! Ontherwise on a fesh install Admin Panel will never be reachable... Will be corrected for a release planned for Feb 2023.
 
 
 
 
-Security: please note that API on any media tier (free download/Streaming only) will assume that the function returning the current date (time(); to name it) will return an up-to-date date, coherent with the "modification date" that is added to each file when uploaded on the tier. Make sure the system date of the server hasn't been moved to the past (like, 1 jan 1970, but it is just an example) or to the future. This is a concern both for uploading files and to build API cache freshness. 
+## Security: 
+Please note that API on any media tier (free download/Streaming only) will assume that the function returning the current date (time(); to name it) will return an up-to-date date, coherent with the "modification date" that is added to each file when uploaded on the tier. Make sure the system date of the server hasn't been moved to the past (like, 1 jan 1970, but it is just an example) or to the future. This is a concern both for uploading files and to build API cache freshness. 
 # Help
 Primary place for information is the #crero chatroom on the https://libera.chat IRC (Internet Relayed Chat) network. Volunteers to make IRC presence or even willing to pass around information and help people are welcome there. 
 ## Additional documentation
