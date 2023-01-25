@@ -18,7 +18,7 @@ Please note that if you got a custom ./style.css, full upgrades with any files w
 If you plan to have several instances on the same server, you should set up a subdomain for each of them ; ie labelone.yourserver.tld ; labeltwo.yourserver.tld ; and so on. This is to prepare Syndication, then later, Federation, for which (black/white)listing of other servers will be made based on hostname, not full path. Then having different hostname will allow other instances to (black/white)list each of them at their convenience, and not all, at once, the instances you run on your server.  
 # CreRo
 
-Recommended (strongly) PHP version is PHP 8.1, but PHP 7.0 or above is mandatory and may work, but hasn't been tested for post-September 2022 releases, while PHP 8.1 was. Please refer to the "PHP 8.1 tested things" for details. 
+Recommended (strongly) PHP version is PHP 8.1, but PHP 7.0 or above is mandatory and may work, but hasn't been tested for post-September 2022 releases, while PHP 8.1 was. Please refer to the "PHP 8.1 tested things" for details. Core features (a subset, but core) is TESTED and WORKING with PHP 8.2
 If something fails (it can for quotes, double quotes, non-ASCII characters in either audio metadata (tags for artist, album, title, year and commment), filename of audio file stored by the server, please 1) upgrade your server to PHP 8.1 b) see "Emergency measures" section at the bottom of the document. 
 
 CURL php extension required (likely to be installed already at least on commercial-grade hosting services)
