@@ -58,57 +58,68 @@ if (isset($_GET['purge'])){
 if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SELF'], '/crero-yp-api.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/crero-yp-api.php'))
 {
 	if (!array_key_exists('no-infinite-loop-please', $_GET)){//we don't want to test ANYTHING it is a hook call from this script to the homepage cuz it would cause infinite loop
-
-			//here we go
-			//firstly we check the existence of the shadowed password
-
-			if (!file_exists('./admin/d/pwd.dat')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
-			echo '<!DOCTYPE html><body>General error: Site administrators, please edit ./admin/config.php to configure username and password of your administrator account then browse &lt;yourserver.tld/(path/to/crero)/admin&gt; for changes to take effect. </body></html>';
-			exit(0);
-
-			}
-			//then we check that server.txt is set and we also won't die() if the user is in admin (allong him/her to set server.txt)
-			else if (!file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
-			echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, please log in the admin panel at &lt;yourserver.tld/(path/to/crero)/admin&gt; and set up the "server" option</body></html>';
-			exit(0);
-			}
-			if (file_get_contents('./d/server.txt')===false){
-				echo '<!DOCTYPE html><body style="font-size:320%;">General error: ./d/server.txt is not readable. Please check the permission of your www user on your www files. </body></html>';
-					exit(0);
-			}
-			//useful data starting from now
-			
-			$server=trim(file_get_contents('./d/server.txt'));
-			$proto='http';
-			if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
-				$proto='https';
-			}
-			//then we check the consistency of server.tx and also won't die() if the user is admin at the admin panel 
-			if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
-				$page=file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1');
-				if ($page==false){
-					echo '<!DOCTYPE html><body style="font-size:320%;">General error: get content replied false, the site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
-					<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
-					</ul></body></html>';
-					exit(0);
+			//run only if wizard hasn't been completed
+			if (!file_exists('./d/wizard_completed.txt')){
+				//before any testing, create an empty server.text
+				if (!file_exists('./d/server.txt')){
+					touch ('./d/server.txt');
 				}
-			}
-			if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')!==false&&!strstr($http_response_header[0], ' 200 OK')){
-					echo '<!DOCTYPE html><body style="font-size:320%;">General error: http response was not 200 OK, he site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
-					<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
-					</ul></body></html>';
-					exit(0);
-					}
+				//here we go
+				//firstly we check the existence of the shadowed password
 
-					
+				if (!file_exists('./admin/d/pwd.dat')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+				echo '<!DOCTYPE html><body>General error: Site administrators, please edit ./admin/config.php to configure username and password of your administrator account then browse &lt;yourserver.tld/(path/to/crero)/admin&gt; for changes to take effect. </body></html>';
+				exit(0);
+
+				}
+				//then we check that server.txt is set and we also won't die() if the user is in admin (allong him/her to set server.txt)
+				else if (!file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+				echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, please log in the admin panel at &lt;yourserver.tld/(path/to/crero)/admin&gt; and set up the "server" option</body></html>';
+				exit(0);
+				}
+				if (file_get_contents('./d/server.txt')===false){
+					echo '<!DOCTYPE html><body style="font-size:320%;">General error: ./d/server.txt is not readable. Please check the permission of your www user on your www files. </body></html>';
+						exit(0);
+				}
+				//useful data starting from now
 				
+				$server=trim(file_get_contents('./d/server.txt'));
+				$proto='http';
+				if (isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!==''){
+					$proto='https';
+				}
+				//then we check the consistency of server.tx and also won't die() if the user is admin at the admin panel 
+				if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+					$page=file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1');
+					if ($page==false){
+						echo '<!DOCTYPE html><body style="font-size:320%;">General error: get content replied false, the site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
+						<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
+						</ul></body></html>';
+						exit(0);
+					}
+				}
+				if (file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1')!==false&&!strstr($http_response_header[0], ' 200 OK')){
+						echo '<!DOCTYPE html><body style="font-size:320%;">General error: http response was not 200 OK, he site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
+						<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
+						</ul></body></html>';
+						exit(0);
+						}
 
-			//Main thing now, check the .htaccess is honored
+						
+					
 
-			if (strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')&&file_get_contents($proto.'://'.$server.'/admin/d/fields.txt')!==false&&strstr($http_response_header[0], ' 200 OK')&&file_get_contents($proto.'://'.$server.'/admin/d/fields.txt')===file_get_contents('./admin/d/fields.txt')){
-			echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, you MUST enable .htaccess directives respect in your webserver configuration. Please refer to README.me.</body></html>';
-			exit(0);
-			}
+				//Main thing now, check the .htaccess is honored
+
+				if (strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')&&file_get_contents($proto.'://'.$server.'/admin/d/fields.txt')!==false&&strstr($http_response_header[0], ' 200 OK')&&file_get_contents($proto.'://'.$server.'/admin/d/fields.txt')===file_get_contents('./admin/d/fields.txt')){
+				echo '<!DOCTYPE html><body style="font-size:320%;">General error: Site administrators, you MUST enable .htaccess directives respect in your webserver configuration. Please refer to README.me.</body></html>';
+				exit(0);
+				}
+				
+				//all stages passed ok
+				//create the wizard_completed mark file to skip these checks next time
+				touch('./d/wizard_completed.txt');
+				
+			}//if wizard
 		}
 }
 else {

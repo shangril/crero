@@ -516,7 +516,10 @@ if (array_key_exists('recently_callback', $_GET)){
 
 
 if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'])){
-	
+	if ($_SERVER['HTTP_USER_AGENT']==''){
+		http_response_code(403);
+		exit(0);
+	}
 	
 	if ($myhtmlcache->hasPageExpired($cachingkey)){
 		$willhavetocache=true;
