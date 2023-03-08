@@ -61,19 +61,19 @@ if (isset($_GET['ajax'])){
 		}
 		
 		echo '<strong style="font-size:125%;">';
-		echo '<a target="new" href="../?artist='.urlencode(file_get_contents('./d/nowplayingartist.txt')).'">';
+		echo '<a target="new" id="artist" href="../?artist='.urlencode(file_get_contents('./d/nowplayingartist.txt')).'">';
 		echo file_get_contents('./d/nowplayingartist.txt');
 		echo '</a>';
 		echo '</strong>';
 		echo ' - ';
 		echo '<a target="new" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'&track='.urlencode(file_get_contents('./d/nowplayingtitle.txt')).'">';
-		echo '<em style="font-size:125%;">'.file_get_contents('./d/nowplayingtitle.txt').'</em>';
+		echo '<em id="title" style="font-size:125%;">'.file_get_contents('./d/nowplayingtitle.txt').'</em>';
 		echo '</a>';
 		echo ' - [';
 		//.htmlspecialchars($hasplayedminutes).':'.htmlspecialchars($hasplayedseconds).'/'.
 		echo htmlspecialchars($nowplayingdurationminutes).':'.htmlspecialchars($nowplayingdurationseconds).']';
 		echo '<br/><span  style="font-size:125%;">(';
-		echo '<a target="new" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'">';
+		echo '<a target="new"  id="album" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'">';
 		echo file_get_contents('./d/nowplayingalbum.txt');
 		echo '</a>';
 		
@@ -325,8 +325,16 @@ var blockLock=false;
 var coverLock=false;
 var syncLock=false;
 var allowGentleResync=false;
-var xbhttp;
-var xchttp;
+var xbhttp = [];
+var xchttp = [];
+var xci=0;
+var xbi=0;
+
+var oldsrc='';
+var oldartist='';
+var oldtitle='';
+var oldalbum='';
+
 function nanopause(){
 	playa=document.getElementById('player');
 	if (!playa.paused){
@@ -389,14 +397,39 @@ function resync() {
 		}
 
 function refreshBlock() {
-		if (xbhttp!=null&&(xbhttp.readyState>0&&xbhttp.readyState<4)){return;}
-	      
-		  var xbhttp = new XMLHttpRequest();
-		  xbhttp.onreadystatechange = function(){
+				
+		  for (i=0;i<xbhttp.length;i++){
+				if (xbhttp[i]!=null){xbhttp[i].abort();}
+	      }
+	      xbi=xbhttp.length;
+		  xbhttp[xbi] = new XMLHttpRequest();
+		  
+		  xbhttp[xbi].onreadystatechange = function(){
 			  
-			  if (xbhttp.readyState==4 && xbhttp.status==200) {
+			  if (xbhttp[xbi].readyState==4 && xbhttp[xbi].status==200) {
 					blockLock=false;
-					document.getElementById('block').innerHTML = xbhttp.responseText;
+					document.getElementById('block').innerHTML = xbhttp[xbi].responseText;
+					
+					artist=document.getElementById('artist');
+					title=document.getElementById('title');
+					album=document.getElementById('album');
+					src=document.getElementById('player').src;
+					if (album!=null&&title!=null&&artist!=null){
+						if ((album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist)&&src==oldsrc){
+							oldalbum=album.innerHTML;
+							oldtitle=title.innerHTML;
+							oldartist=artist.innerHTML;
+							document.getElementById('player').pause();
+							document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
+							document.getElementById('player').load();
+							oldsrc=document.getElementById('player').src;
+							document.getElementById('player').play();
+							
+						}
+						
+						
+						
+					}
 				}
 			  /*else if (xbhttp.readyState == 4){
 					refreshBlock();
@@ -404,19 +437,29 @@ function refreshBlock() {
 			  };
 		  //xbhttp.timeout=25000;
 		  //xbhttp.ontimeout=function(){refreshBlock();};
-		  xbhttp.open("GET", "./?ajax=block", true);
+		  xbhttp[xbi].open("GET", "./?ajax=block", true);
 		  
 		  blockLock=true;
-		  xbhttp.send();
-		  window.setTimeout(function(){xbhttp.abort();refreshBlock();}, 30000); 
+		  xbhttp[xbi].send();
+		  window.setTimeout(function(){		  for (i=0;i<xbhttp.length;i++){
+											if (xbhttp[i]!=null){xbhttp[i].abort();}
+									  }
+							refreshBlock();}, 30000); 
 }
 function refreshCover(){
-		if (xchttp!=null&&(xchttp.readyState>0&&xchttp.readyState<4)){return;}
-		  xchttp = new XMLHttpRequest();
-		  xchttp.onreadystatechange = function(){
-			  if (xchttp.readyState==4 && xchttp.status==200) {
+		  for (i=0;i<xchttp.length;i++){
+				if (xchttp[i]!=null){xchttp[i].abort();}
+	      }
+	      xci=xchttp.length;
+		  xchttp[xci] = new XMLHttpRequest();
+		  
+		
+		
+		  xchttp[xci] = new XMLHttpRequest();
+		  xchttp[xci].onreadystatechange = function(){
+			  if (xchttp[xci].readyState==4 && xchttp[xci].status==200) {
 					coverLock=false;
-					document.getElementById('cover').src = "../covers/"+xchttp.responseText;
+					document.getElementById('cover').src = "../covers/"+xchttp[xci].responseText;
 				}
 				/*else if (xchttp.readyState == 4){
 					refreshCover();
@@ -424,15 +467,18 @@ function refreshCover(){
 			  };
 		  //xchttp.timeout=55000;
 		  //xchttp.ontimeout=function(){refreshCover();};
-		  xchttp.open("GET", "./?ajax=cover", true);
-		  xchttp.send();
-		  window.setTimeout(function(){xchttp.abort();refreshCover();}, 60000);
+		  xchttp[xci].open("GET", "./?ajax=cover", true);
+		  xchttp[xci].send();
+		  window.setTimeout(function(){for (i=0;i<xchttp.length;i++){
+											if (xchttp[i]!=null){xchttp[i].abort();}
+									  }
+									  refreshCover();}, 60000);
 
 	
 }
 function onPlayLaunch(){
-if (xchttp!=null){xchttp.abort();}
-if (xbhttp!=null){xbhttp.abort();}
+if (xchttp[xci]!=null){xchttp[xci].abort();}
+if (xbhttp[xbi]!=null){xbhttp[xbi].abort();}
 
 window.setTimeout(refreshCover, 6500);
 window.setTimeout(refreshBlock, 5000);
@@ -482,8 +528,8 @@ function skipsong(auto) {
 	  xhttp.onreadystatechange = function(){
 		  if (xhttp.readyState==4) {
 				if (xhttp.status==200){
-				document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();
-	
+				document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();oldsrc=document.getElementById('player').src;document.getElementById('player').play();
+				
 				if (document.getElementById('skip')!=null){
 					document.getElementById('skip').innerHTML= 'Skip this song';
 				}
@@ -507,7 +553,7 @@ function skipsong(auto) {
 }
 ?>
 function cr_rad(){
-	window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);
+	window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();oldsrc=document.getElementById('player').src;document.getElementById('player').play();}, 7500);
 	
 }
 function launchPlay(playa){
@@ -578,6 +624,7 @@ if (!$activatechat===false||$allowradioskipsongwithoutchatnetwork){
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
 
 document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
+oldsrc=document.getElementById('player').src;
 
 var radiomsg='';
 
@@ -591,7 +638,7 @@ radioajax.send();
 	
 
 function radionymous() {
-				if (xbhttp!=null){return;}
+				if (xbhttp[xbi]!=null){return;}
 				if (this.readyState == 4 && this.status == 200) {
 					myresponse=new String(this.responseText).split("\n");
 					if (parseFloat(myresponse[0])<parseFloat(myresponse[5])){

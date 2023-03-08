@@ -240,7 +240,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 		
 		
 		
-		$dice=rand(1,10);
+		$dice=random_int(1,10);
 		if ($dice==1){
 			$featuredapi=true;
 			if (!$isinitial){

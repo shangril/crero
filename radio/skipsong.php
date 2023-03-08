@@ -5,12 +5,14 @@ require_once('./config.php');
 chdir('./radio');
 
 if (!$activatechat===false||$allowradioskipsongwithoutchatnetwork){
+		file_put_contents('./d/expire.txt', '0');
+
+
 	$messg='';
 	if (isset($_GET['auto'])){
 		$messg="auto";
 	}
-	
-	file_put_contents('./d/expire.txt', '0');
+	if(!$activatechat===false){
 		$data['long']=$_SESSION['long'];
 		$data['lat']=$_SESSION['lat'];
 		$data['nick']=$_SESSION['nick'];
@@ -19,6 +21,6 @@ if (!$activatechat===false||$allowradioskipsongwithoutchatnetwork){
 		$data['color']=$_SESSION['color'];
 		$dat=serialize($data);
 		file_put_contents('../network/d/'.microtime(true).'.dat', $dat);
-
+	}
 }
 ?>
