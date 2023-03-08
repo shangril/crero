@@ -482,6 +482,8 @@ function skipsong(auto) {
 	  xhttp.onreadystatechange = function(){
 		  if (xhttp.readyState==4) {
 				if (xhttp.status==200){
+				document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();
+	
 				if (document.getElementById('skip')!=null){
 					document.getElementById('skip').innerHTML= 'Skip this song';
 				}
@@ -498,15 +500,13 @@ function skipsong(auto) {
 	  if (auto){arg='?auto=auto';}
 	  xhttp.open("GET", "skipsong.php"+arg, true);
 	  xhttp.send();
-	  window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);
-	
+	  
 
 }
 <?php
 }
 ?>
 function cr_rad(){
-	skipsong(true);
 	window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);
 	
 }
