@@ -1,8 +1,24 @@
 <?php
 //include ('./config.php');
+if ($_SERVER['HTTP_USER_AGENT']==''){
+		http_response_code(403);
+		exit(0);
+	}
+//We've nothing to say to most impolite bots
+$options = array(
+    'http'=>array(
+        'method'=>"GET",
+        'header'=> "User-Agent: CreRo Thumbnailer\r\n")
+);
+
+$context = stream_context_create($options);
+
+
+
+
  $thumbz=array_diff(scandir('./thumbcache'), Array ('..', '.'));
  foreach ($thumbz as $thumb){
-	 if (floatval(filectime('./thumbcache/'.$thumb)+intval(60*60*24*7))<=microtime(true)){
+	 if (floatval(filectime('./thumbcache/'.$thumb)+(4*2419200))<=microtime(true)){//2419200 = 4*60*60*24*7
 		 unlink ('./thumbcache/'.$thumb);
 	 }
 	 
@@ -56,13 +72,27 @@
 			
 		}
 		else {
-			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', file_get_contents(
-			'http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'].'?hook=hook&ratio='.$ratio.'&target='.urlencode($file).'&viewportwidth='.$viewportwidth)
+			$content=false;
+			$sleeper=0;
+			while ($content===false){
+				sleep($sleeper);
+				$content=file_get_contents(
+				'http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'].'?hook=hook&ratio='.$ratio.'&target='.urlencode($file).'&viewportwidth='.$viewportwidth
+				
+				, false, $context
+				
+				);
+				$sleeper++;
+			}
+			file_put_contents('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png', 
+				$content
 			);
 			header('Last-Modified: '.date(DATE_RFC822, filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')));
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			die();
-
+			
+			
+			
 		}
 		
 	}

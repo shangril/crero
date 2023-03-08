@@ -1,6 +1,11 @@
 <?php
 
 error_reporting(0);
+if ($_SERVER['HTTP_USER_AGENT']==''){
+		http_response_code(403);
+		exit(0);
+	}
+//We've nothing to say to most impolite bots
 
 header('Accept-Ranges: none');
 
@@ -39,6 +44,8 @@ if (true||!isset($_SESSION['whitelist'])){
 		$ip = file_get_contents ('../e/'.$timestamp);
 		if ($ip==$_SERVER['REMOTE_ADDR']){
 			//unset($_SESSION['whitelist']);
+			header_remove();
+			http_response_code(403);
 			die('you are reconnecting too fast');
 			}
 
@@ -684,7 +691,7 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 				
 				$secondoffset=microtime(true)-$secondtimer;
 
-				usleep (intval(($bytesread/$bytestosend)*1000000-$offset*1000000-$secondoffset*1000000));
+				usleep (floor((intval(($bytesread/$bytestosend)*1000000-$offset*1000000-$secondoffset*1000000))/20));
 			
 			}
 			else {

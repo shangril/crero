@@ -1,4 +1,10 @@
 <?php
+if ($_SERVER['HTTP_USER_AGENT']==''){
+		http_response_code(403);
+		exit(0);
+	}
+//We've nothing to say to most impolite bots
+
 chdir('..');
 require_once('./config.php');
 chdir('./radio');
@@ -63,7 +69,9 @@ if (isset($_GET['ajax'])){
 		echo '<a target="new" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'&track='.urlencode(file_get_contents('./d/nowplayingtitle.txt')).'">';
 		echo '<em style="font-size:125%;">'.file_get_contents('./d/nowplayingtitle.txt').'</em>';
 		echo '</a>';
-		echo ' - ['.htmlspecialchars($hasplayedminutes).':'.htmlspecialchars($hasplayedseconds).'/'.htmlspecialchars($nowplayingdurationminutes).':'.htmlspecialchars($nowplayingdurationseconds).']';
+		echo ' - [';
+		//.htmlspecialchars($hasplayedminutes).':'.htmlspecialchars($hasplayedseconds).'/'.
+		echo htmlspecialchars($nowplayingdurationminutes).':'.htmlspecialchars($nowplayingdurationseconds).']';
 		echo '<br/><span  style="font-size:125%;">(';
 		echo '<a target="new" href="../?album='.urlencode(file_get_contents('./d/nowplayingalbum.txt')).'">';
 		echo file_get_contents('./d/nowplayingalbum.txt');
@@ -311,10 +319,21 @@ function loginpanel($activateaccountcreation){
 	
 var cover='';
 var start;
-
+var blockInterval;
+var coverInterval;
+var blockLock=false;
+var coverLock=false;
 var syncLock=false;
 var allowGentleResync=false;
-
+var xbhttp;
+var xchttp;
+function nanopause(){
+	playa=document.getElementById('player');
+	if (!playa.paused){
+		playa.pause();
+		window.setTimeout(playa.play(), 25);
+	}
+}
 function resync() {
 	
 			if (!syncLock<?php
@@ -370,36 +389,55 @@ function resync() {
 		}
 
 function refreshBlock() {
-
-		  var xhttp = new XMLHttpRequest();
-		  xhttp.onreadystatechange = function(){
-			  if (xhttp.readyState==4 && xhttp.status==200) {
-
-					document.getElementById('block').innerHTML = xhttp.responseText;
-				}
+		//if (xbhttp!=null){xbhttp.abort();}
+	      
+		  var xbhttp = new XMLHttpRequest();
+		  xbhttp.onreadystatechange = function(){
 			  
+			  if (xbhttp.readyState==4 && xbhttp.status==200) {
+					blockLock=false;
+					document.getElementById('block').innerHTML = xbhttp.responseText;
+				}
+			  /*else if (xbhttp.readyState == 4){
+					refreshBlock();
+			  }*/
 			  };
-		  xhttp.open("GET", "./?ajax=block", true);
-		  xhttp.send();
+		  //xbhttp.timeout=25000;
+		  //xbhttp.ontimeout=function(){refreshBlock();};
+		  xbhttp.open("GET", "./?ajax=block", true);
+		  
+		  blockLock=true;
+		  xbhttp.send();
+		  window.setTimeout(function(){xbhttp.abort();refreshBlock();}, 30000); 
 }
 function refreshCover(){
-			  var xhttp = new XMLHttpRequest();
-		  xhttp.onreadystatechange = function(){
-			  if (xhttp.readyState==4 && xhttp.status==200) {
-
-					document.getElementById('cover').src = "../covers/"+xhttp.responseText;
+		  //if (xchttp!=null){xchttp.abort();}
+		  xchttp = new XMLHttpRequest();
+		  xchttp.onreadystatechange = function(){
+			  if (xchttp.readyState==4 && xchttp.status==200) {
+					coverLock=false;
+					document.getElementById('cover').src = "../covers/"+xchttp.responseText;
 				}
-			  
+				/*else if (xchttp.readyState == 4){
+					refreshCover();
+				}*/
 			  };
-		  xhttp.open("GET", "./?ajax=cover", true);
-		  xhttp.send();
+		  //xchttp.timeout=55000;
+		  //xchttp.ontimeout=function(){refreshCover();};
+		  xchttp.open("GET", "./?ajax=cover", true);
+		  xchttp.send();
+		  window.setTimeout(function(){xchttp.abort();refreshCover();}, 60000);
 
 	
 }
-window.setInterval(refreshBlock, 2000);
-window.setInterval(refreshCover, 30000);
-setTimeout (refreshCover, 3000);
+function onPlayLaunch(){
+if (xchttp!=null){xchttp.abort();}
+if (xbhttp!=null){xbhttp.abort();}
 
+window.setTimeout(refreshCover, 6500);
+window.setTimeout(refreshBlock, 5000);
+//window.setInterval(nanopause, 30000);
+}
 <?php if ($IsRadioResyncing) { ?>
 window.setInterval(resync, <?php echo $RadioResyncInterval; ?>);
 <?php   } ?>
@@ -407,7 +445,7 @@ window.setInterval(resync, <?php echo $RadioResyncInterval; ?>);
 // @license-end
 </script>
 <?php echo $radioBanner; ?>
-Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a><br/>
+<!--Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a>--><br/>
 
 <img style="float:left;width:25%;" id="cover"/>
 <span style="float:left;">
@@ -460,12 +498,16 @@ function cr_rad(){
 	window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);
 	
 }
+function launchPlay(playa){
+	window.clearInterval(blockInterval);window.clearInterval(coverInterval);playa.play();allowGentleResync=true;
+}
 
 // @license-end
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.play();allowGentleResync=true;" 
+ onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.play();" 
  onError="cr_rad();" 
+ onCanPlay="onPlayLaunch();"
  <?php
 							if ($RadioHasGentleResync&&!$IsRadioResyncing){
 									echo ' onPlay="resync();allowGentleResync=false;" ';
@@ -481,6 +523,8 @@ function cr_rad(){
 							<script>
 
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
+
 
 							
 							function togglePlay(){
@@ -522,6 +566,41 @@ if (!$activatechat===false){
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
 
 document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
+
+var radiomsg='';
+
+var radioajax;
+
+radioajax = new XMLHttpRequest;
+radioajax.onreadystatechange = radionymous;
+radioajax.open("GET", "../radio_data.php", true);
+radioajax.send();
+		
+	
+
+function radionymous() {
+				if (xbhttp!=null){return;}
+				if (this.readyState == 4 && this.status == 200) {
+					myresponse=new String(this.responseText).split("\n");
+					if (parseFloat(myresponse[0])<parseFloat(myresponse[5])){
+						radiomsg="Nothing currently - Waiting for a click";
+						
+					}
+					else {
+					radiomsg=myresponse[3]+' - '+myresponse[4];
+					
+					}
+				
+			
+				}
+				else {
+				radiomsg="Ongoing fetching...";
+				}
+		document.getElementById('block').innerHTML=radiomsg;
+
+		}
+//window.setInterval(function(){blockLock=false;}, 30000);
+//window.setInterval(function(){coverLock=false;}, 60000);
 //document.getElementById('player').load();
 //document.getElementById('player').autoplay='autoplay';
 //document.getElementById('player').play();
