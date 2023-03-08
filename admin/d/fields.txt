@@ -138,5 +138,7 @@ YP-APIMisconfiguredDateOnHostingToleranceWindow.txt
 VERY special case. If your media tier host has not an on-time timestamp to reply to freshness calls, which are used by crero-yp-api.php for caching media tiers data, this options allows you to set a window for which the cached data will be served anyway, no matter if the server replied with a non-on time timestamp. Note that is value is bi-directionnal, and will be honored in the case of the server having an internal clock set in the future as well as in the past. It is expressed in seconds and decimal values are allowed. Default value is of 0 seconds which disable completely this setting.
 footerReadableName.txt
 By default this is a + symbol, that is used to display the Footer. Can be changed to something more explanatory, like "Legal" or whatever you want. 
+allowradioskipsong-withoutchatnetwork.txt
+Default is 0. If set to 1, radio listeners will be able to trigger the skipping (zap) of a particular song even if chat network is not activated. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

@@ -389,7 +389,7 @@ function resync() {
 		}
 
 function refreshBlock() {
-		//if (xbhttp!=null){xbhttp.abort();}
+		if (xbhttp!=null&&(xbhttp.readyState>0&&xbhttp.readyState<4)){return;}
 	      
 		  var xbhttp = new XMLHttpRequest();
 		  xbhttp.onreadystatechange = function(){
@@ -411,7 +411,7 @@ function refreshBlock() {
 		  window.setTimeout(function(){xbhttp.abort();refreshBlock();}, 30000); 
 }
 function refreshCover(){
-		  //if (xchttp!=null){xchttp.abort();}
+		if (xchttp!=null&&(xchttp.readyState>0&&xchttp.readyState<4)){return;}
 		  xchttp = new XMLHttpRequest();
 		  xchttp.onreadystatechange = function(){
 			  if (xchttp.readyState==4 && xchttp.status==200) {
@@ -457,16 +457,22 @@ window.setInterval(resync, <?php echo $RadioResyncInterval; ?>);
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
 
 <?php
-if (!$activatechat===false){
+if (true){
 ?>
 
-function skipsong() {
-	document.getElementById('skip').innerHTML= 'Skipping song, please be patient...';
+function skipsong(auto) {
+	
+	if (document.getElementById('skip')!=null){
+		document.getElementById('skip').innerHTML= 'Skipping song, please be patient...';
+	}
 				<?php
 				if (!isset($_SESSION['nick'])){
 					?>
-				document.getElementById('social').data="../network/?login=login";
-
+		
+				if (document.getElementById('social')!=null){
+		
+					document.getElementById('social').data="../network/?login=login";
+				}	
 					<?php
 					
 				}
@@ -476,8 +482,10 @@ function skipsong() {
 	  xhttp.onreadystatechange = function(){
 		  if (xhttp.readyState==4) {
 				if (xhttp.status==200){
+				if (document.getElementById('skip')!=null){
 					document.getElementById('skip').innerHTML= 'Skip this song';
-					location.reload();
+				}
+				//	location.reload();
 				}
 				else {
 					skipsong();
@@ -486,15 +494,19 @@ function skipsong() {
 
 		  
 		  };
-	  xhttp.open("GET", "skipsong.php", true);
+	  arg='';
+	  if (auto){arg='?auto=auto';}
+	  xhttp.open("GET", "skipsong.php"+arg, true);
 	  xhttp.send();
+	  window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);
+	
 
 }
 <?php
 }
 ?>
 function cr_rad(){
-	
+	skipsong(true);
 	window.setTimeout(function(){document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();document.getElementById('player').play();}, 5500);
 	
 }
@@ -552,9 +564,9 @@ function launchPlay(playa){
 
 <span id="resync" style="float:right;"></span></div>	
 <?php
-if (!$activatechat===false){
+if (!$activatechat===false||$allowradioskipsongwithoutchatnetwork){
 ?>
-		<a href="javascript:void(0);" id="skip" onclick="skipsong();">Fork the radio!</a> (other listeners may become angry)
+		<a href="javascript:void(0);" id="skip" onclick="skipsong(false);">Zap this song!</a> (other listeners may become angry)
 <?php
 }
 ?>

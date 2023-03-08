@@ -653,6 +653,12 @@ if (file_exists('./d/footerReadableName.txt')){
 	}
 }
 
+//allowradioskipsong-withoutchatnetwork.txt
+
+$allowradioskipsongwithoutchatnetwork=false;
+if (file_exists('./d/allowradioskipsong-withoutchatnetwork.txt')){
+	$allowradioskipsongwithoutchatnetwork=boolval(trim(file_get_contents('./d/allowradioskipsong-withoutchatnetwork.txt')));
+}
 
 
 
