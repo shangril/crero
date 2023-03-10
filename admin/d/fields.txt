@@ -140,5 +140,7 @@ footerReadableName.txt
 By default this is a + symbol, that is used to display the Footer. Can be changed to something more explanatory, like "Legal" or whatever you want. 
 allowradioskipsong-withoutchatnetwork.txt
 Default is 0. If set to 1, radio listeners will be able to trigger the skipping (zap) of a particular song even if chat network is not activated. 
+radioFeaturedPlaylistRelativeFilesystemLocation.txt
+CURRENTLY UNUSED. Not working. Default is empty, which means unused. Otherwise, must contain a single line, which is the relative-to-install-root filesystem path of the 'streaming only' audio storage tier of the install, typically ./z/ on most install (mind the trailing slash) and is useful ONLY if you have a Radio, a RadioFeatured playlist featuring ONLY http url of mp3 files from the streaming-only catalog for Exclusive Premiere track playlisting on the radio in addition of ordinary downloadable tracks specified in RadioBase ; if the option is set, the radio will no longer use HTTP with Partial Content to access the RadioFeatured mp3's, but instead read them directly as disk file on the local filesystem. It is mainly useful for quota-based low-end hosting plans which can have trouble to make the http access. Most install will not need this option, especially if the RadioFeatured tracks are already correctly playlisted by the radio. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

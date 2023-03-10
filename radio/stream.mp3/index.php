@@ -1,6 +1,4 @@
 <?php
-
-error_reporting(0);
 if ($_SERVER['HTTP_USER_AGENT']==''){
 		http_response_code(403);
 		exit(0);
@@ -111,7 +109,7 @@ if ($radiohasyp&&!file_exists('../d/ypexpires.txt')){
 	file_put_contents('../d/ypexpires.txt', '0');
 }
 
-header('Content-Type: audio/mpeg');
+	header('Content-Type: audio/mpeg');
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: no-cache');
@@ -242,6 +240,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 		
 		$dice=random_int(1,10);
 		if ($dice==1){
+			file_put_contents('../d/is_featured.txt', '1');
 			$featuredapi=true;
 			if (!$isinitial){
 				$loop=ceil(floatval(file_get_contents('../d/featuredapitime.txt'))/0.052);
@@ -267,7 +266,9 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			
 			$apihook.='?radio='.urlencode($featuredbasename);
 			$apirequest=file_get_contents($apihook);
-			if (count($apirequest)>0){
+			$result=explode("\n", $apirequest);
+
+			if (count($result)>0){
 				$result=explode("\n", $apirequest);
 				
 				$nexturl=$thisfeatured;
@@ -282,7 +283,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			}
 		}
 		else {
-			
+			file_put_contents('../d/is_featured.txt', '0');
 			if (!$isinitial){
 				$loop=ceil(floatval(file_get_contents('../d/baseapitime.txt'))/0.052);
 				$silent='';
@@ -610,6 +611,11 @@ $hasstarted=file_get_contents('../d/starttime.txt');
 $bytestosend=intval($nowplayingbitrate/8);
 
 if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+	$content='';
+	$nowplayingfile='';
+	
+	
+	
 	$initialburstcounter=0; 
 	$thirdtimer=microtime(true);
 	$beta=microtime(true)-$alpha;
@@ -628,10 +634,10 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	$bravo=microtime(true);
 	
 	
-	
-	
-	$handle=fopen($nowplayingurl, 'rb', false, $context);
-	if ($handle!==false&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+if (true||!(boolval(trim(file_get_contents('../d/is_featured.txt')))&&$radioFeaturedPlaylistRelativeFilesystemLocation!==''))	
+{
+	$handle=fopen($nowplayingurl, 'r', false, $context);
+	if ($handle!==false&&$nowplayingurl==trim(file_get_contents('../d/nowplayingurl.txt'))){
 
 
 	$bursttimer=microtime(true);
@@ -717,6 +723,107 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 	}
 	
 	}
+	
+	
+}
+else {
+	$nowplayingfilearr=explode('/', $nowplayingurl);
+	$nowplayingfile=end($nowplayingfilearr);
+	$nowplayingfile='../../'.$radioFeaturedPlaylistRelativeFilesystemLocation.$nowplayingfile;
+	
+	
+	
+	$handle=fopen($nowplayingfile, 'r', false);//, $context);
+	
+	file_put_contents('./log.txt', var_dump($handle));
+	
+	fseek($handle, intval((intval($nowplayingbitrate)/8)*(microtime(true)-floatval($hasstarted)+$beta)));
+	if ($handle!==false&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+
+
+		$bursttimer=microtime(true);
+		$bursthassleeped=false;
+				$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
+
+			while (!feof($handle)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+				
+				$offset=dothelistenerscount($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $expire-microtime(true));
+
+				$secondtimer=microtime(true);
+				$bytestoread=$bytestosend+intval($bytetosend*(microtime(true)-$thirdtimer));
+				
+				$bytesread=0;
+				$content='';
+				$position=ftell($handle);
+				while ($bytesread<=$bytestoread&&!feof($handle)){
+					$content.=fread($handle,8192);
+					
+					if (!feof($handle)){
+					$bytesread=$bytesread+8192;
+					}
+					else{
+					$bytesread=ftell($handle)-$position;
+					if(isset($_GET['web'])&&!$isfirstpass)
+						{
+							echo $content;
+							
+							ob_flush();
+							flush();
+							
+							fclose($handle);
+							exit();
+							
+							
+						}
+					}
+				}
+
+
+
+				
+				echo  $content;
+				ob_flush();
+				flush();
+
+				
+				if ($initialburstcounter>=10)
+					 {//we send an initial burst of data upon client connection to fill in the cache and prevent cutoff in the first seconds
+					if (!$bursthassleeped){
+						usleep(1000000);
+						$bursthassleeped=true;
+						
+					}
+					
+					
+					
+					$secondoffset=microtime(true)-$secondtimer;
+
+					usleep (floor((intval(($bytesread/$bytestosend)*1000000-$offset*1000000-$secondoffset*1000000))/20));
+				
+				}
+				else {
+					$initialburstcounter++;
+					$burstbytesent=$burstbytesent+$bytesread;
+				}
+				$thirdtimer=microtime(true);
+			}
+			ob_flush();
+			flush();
+			fclose ($handle);
+			//and now let's resync just in case eof was reached befor the station clock says next song
+			while (microtime(true)<floatval($expire)&&$nowplayingurl===file_get_contents('../d/nowplayingurl.txt')){
+			
+				$silenttimer=microtime(true);
+			
+				fpassthru('../silence.mp3');//all I found. Quite hugly
+				ob_flush();
+				flush();
+			}
+
+		
+		}
+	}
+
 	$isinitial=false;
 	if (!isset($_GET['web'])){
 		$isfirstpass=false;
@@ -730,9 +837,9 @@ if (floatval(microtime(true))<floatval($expire)&&$bytestosend>=1&&$nowplayingurl
 		exit();
 	}
 }
+
 $isfirstpass=true;
 $bytessent=0;
 $isinitial=true;
 play($radioname, $server, $radiodescription, $labelgenres, $radiohasyp, $statid, $bytessent, $isinitial, $dontdoit, $IsRadioStreamHTTPS, $isfirstpass);
-
 ?>

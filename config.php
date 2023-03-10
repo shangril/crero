@@ -660,6 +660,10 @@ if (file_exists('./d/allowradioskipsong-withoutchatnetwork.txt')){
 	$allowradioskipsongwithoutchatnetwork=boolval(trim(file_get_contents('./d/allowradioskipsong-withoutchatnetwork.txt')));
 }
 
+$radioFeaturedPlaylistRelativeFilesystemLocation='';
+if (file_exists('./d/radioFeaturedPlaylistRelativeFilesystemLocation.txt')){
+	$radioFeaturedPlaylistRelativeFilesystemLocation = trim(file_get_contents('./d/radioFeaturedPlaylistRelativeFilesystemLocation.txt'));
+}
 
 
 ?>
