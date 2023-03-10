@@ -335,6 +335,14 @@ var oldartist='';
 var oldtitle='';
 var oldalbum='';
 
+var arr_timeouts = [] ; 
+
+function clearTimeouts(){
+	for (i=0;i<arr_timeouts.lenght;i++){
+		window.clearTimeout(arr_timeouts[i]);
+	}
+	
+} 
 function nanopause(){
 	playa=document.getElementById('player');
 	if (!playa.paused){
@@ -441,7 +449,7 @@ function refreshBlock() {
 		  
 		  blockLock=true;
 		  xbhttp[xbi].send();
-		  window.setTimeout(function(){		  for (i=0;i<xbhttp.length;i++){
+		  arr_timeouts[arr_timeouts.length] = window.setTimeout(function(){		  for (i=0;i<xbhttp.length;i++){
 											if (xbhttp[i]!=null){xbhttp[i].abort();}
 									  }
 							refreshBlock();}, 30000); 
@@ -469,7 +477,7 @@ function refreshCover(){
 		  //xchttp.ontimeout=function(){refreshCover();};
 		  xchttp[xci].open("GET", "./?ajax=cover", true);
 		  xchttp[xci].send();
-		  window.setTimeout(function(){for (i=0;i<xchttp.length;i++){
+		  arr_timeouts[arr_timeouts.length] = window.setTimeout(function(){for (i=0;i<xchttp.length;i++){
 											if (xchttp[i]!=null){xchttp[i].abort();}
 									  }
 									  refreshCover();}, 60000);
@@ -480,8 +488,8 @@ function onPlayLaunch(){
 if (xchttp[xci]!=null){xchttp[xci].abort();}
 if (xbhttp[xbi]!=null){xbhttp[xbi].abort();}
 
-window.setTimeout(refreshCover, 6500);
-window.setTimeout(refreshBlock, 5000);
+arr_timeouts[arr_timeouts.length] = window.setTimeout(refreshCover, 6500);
+arr_timeouts[arr_timeouts.length] = window.setTimeout(refreshBlock, 5000);
 //window.setInterval(nanopause, 30000);
 }
 <?php if ($IsRadioResyncing) { ?>
@@ -563,7 +571,7 @@ function launchPlay(playa){
 // @license-end
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();this.play();" 
+ onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();this.play();" 
  onError="cr_rad();" 
  onCanPlay="onPlayLaunch();"
  <?php
