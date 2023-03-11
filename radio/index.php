@@ -338,6 +338,7 @@ var oldalbum='';
 var arr_timeouts = [] ; 
 
 var justzapped = false;
+var justended = true;
 function clearTimeouts(){
 	for (i=0;i<arr_timeouts.lenght;i++){
 		window.clearTimeout(arr_timeouts[i]);
@@ -423,8 +424,8 @@ function refreshBlock() {
 					title=document.getElementById('title');
 					album=document.getElementById('album');
 					src=document.getElementById('player').src;
-					if (album!=null&&title!=null&&artist!=null){
-						if (((album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist)&&(oldsrc!='')&&(src!=oldsrc&&!(oldartist==''&&oldalbum==''&&oldtitle=='')))||(src==oldsrc&&(album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist))){ //&&src==oldsrc
+					if (album!=null&&title!=null&&artist!=null&&!justended){
+						if (!justended&&((album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist)&&(oldsrc!='')&&(src!=oldsrc&&!(oldartist==''&&oldalbum==''&&oldtitle=='')))||(src==oldsrc&&(album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist))){ //&&src==oldsrc
 							oldalbum=album.innerHTML;
 							oldtitle=title.innerHTML;
 							oldartist=artist.innerHTML;
@@ -441,9 +442,14 @@ function refreshBlock() {
 								justzapped=false;
 							}
 						}
+						else {
+							justended=false;
+						}
 						
 						
-						
+					}
+					else{
+						justended=false;
 					}
 				}
 			  /*else if (xbhttp.readyState == 4){
@@ -552,6 +558,7 @@ function skipsong(auto) {
 					document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
 					document.getElementById('player').load();
 					oldsrc=document.getElementById('player').src;
+					justzapped=true;
 					document.getElementById('player').play();
 							
 						
@@ -586,7 +593,7 @@ function launchPlay(playa){
 // @license-end
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();oldsrc=this.src;this.play();" 
+ onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();oldsrc=this.src;justended=true;this.play();" 
  onError="cr_rad();" 
  onCanPlay="onPlayLaunch();"
  <?php
