@@ -337,6 +337,7 @@ var oldalbum='';
 
 var arr_timeouts = [] ; 
 
+var justzapped = false;
 function clearTimeouts(){
 	for (i=0;i<arr_timeouts.lenght;i++){
 		window.clearTimeout(arr_timeouts[i]);
@@ -405,7 +406,7 @@ function resync() {
 		}
 
 function refreshBlock() {
-				
+		  clearTimeouts();	
 		  for (i=0;i<xbhttp.length;i++){
 				if (xbhttp[i]!=null){xbhttp[i].abort();}
 	      }
@@ -423,16 +424,22 @@ function refreshBlock() {
 					album=document.getElementById('album');
 					src=document.getElementById('player').src;
 					if (album!=null&&title!=null&&artist!=null){
-						if ((album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist)&&src==oldsrc){
+						if (((album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist)&&(oldsrc!='')&&(src!=oldsrc&&!(oldartist==''&&oldalbum==''&&oldtitle=='')))||(src==oldsrc&&(album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist))){ //&&src==oldsrc
 							oldalbum=album.innerHTML;
 							oldtitle=title.innerHTML;
 							oldartist=artist.innerHTML;
+							if (!justzapped){
 							document.getElementById('player').pause();
 							document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
 							document.getElementById('player').load();
 							oldsrc=document.getElementById('player').src;
 							document.getElementById('player').play();
+							}
+							else{
+								oldsrc=document.getElementById('player').src;
 							
+								justzapped=false;
+							}
 						}
 						
 						
@@ -541,8 +548,16 @@ function skipsong(auto) {
 				if (document.getElementById('skip')!=null){
 					document.getElementById('skip').innerHTML= 'Skip this song';
 				}
+					document.getElementById('player').pause();
+					document.getElementById('player').src='./stream.mp3/index.php?web=web&'+Math.random();
+					document.getElementById('player').load();
+					oldsrc=document.getElementById('player').src;
+					document.getElementById('player').play();
+							
+						
+					}
 				//	location.reload();
-				}
+				
 				else {
 					skipsong();
 				}
@@ -571,7 +586,7 @@ function launchPlay(playa){
 // @license-end
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();this.play();" 
+ onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();oldsrc=this.src;this.play();" 
  onError="cr_rad();" 
  onCanPlay="onPlayLaunch();"
  <?php
