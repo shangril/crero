@@ -337,7 +337,7 @@ var oldalbum='';
 
 var arr_timeouts = [] ; 
 
-var justzapped = true;
+var justzapped = false;
 var justended = true;
 function clearTimeouts(){
 	for (i=0;i<arr_timeouts.lenght;i++){
@@ -424,6 +424,12 @@ function refreshBlock() {
 					title=document.getElementById('title');
 					album=document.getElementById('album');
 					src=document.getElementById('player').src;
+					if (album!=null&&title!=null&&artist!=null){
+							oldalbum=album.innerHTML;
+							oldtitle=title.innerHTML;
+							oldartist=artist.innerHTML;
+							
+					}
 					if (album!=null&&title!=null&&artist!=null&&!justended){
 						if (!justended&&((album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist)&&(oldsrc!='')&&(src!=oldsrc&&!(oldartist==''&&oldalbum==''&&oldtitle=='')))||(src==oldsrc&&(album.innerHTML!=oldalbum||title.innerHTML!=oldtitle||artist.innerHTML!=oldartist))){ //&&src==oldsrc
 							oldalbum=album.innerHTML;
@@ -444,12 +450,14 @@ function refreshBlock() {
 						}
 						else {
 							justended=false;
+							justzapped=false;
 						}
 						
 						
 					}
 					else{
 						justended=false;
+						justzapped=false;
 					}
 				}
 			  /*else if (xbhttp.readyState == 4){
