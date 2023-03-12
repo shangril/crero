@@ -337,7 +337,7 @@ var oldalbum='';
 
 var arr_timeouts = [] ; 
 
-var justzapped = false;
+var justzapped = true;
 var justended = true;
 function clearTimeouts(){
 	for (i=0;i<arr_timeouts.lenght;i++){
@@ -593,7 +593,7 @@ function launchPlay(playa){
 // @license-end
 </script>
 <div style="text-align:left;"><audio id="player" src="" preload="none" controls="controls" 
- onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();oldsrc=this.src;justended=true;this.play();" 
+ onEnded="this.src='./stream.mp3/index.php?web=web&'+Math.random();clearTimeouts();oldsrc=this.src;justended=true;justzapped=true;this.play();" 
  onError="cr_rad();" 
  onCanPlay="onPlayLaunch();"
  <?php
