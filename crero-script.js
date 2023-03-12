@@ -1387,6 +1387,21 @@ if (typeof update_cart === "function"){
 update_cart();
 }
 
+//blocks move!  New page design thx to Fauve's advices !
+blocksToMove=['splash-','links-','recent-','radio-','menu-','artists-','donate-'];
+for (i=0;i<blocksToMove.length;i++){
+	if (document.getElementById(blocksToMove[i]+'wrapper')!=null&&document.getElementById(blocksToMove[i]+'dest')!=null){
+		code=document.getElementById(blocksToMove[i]+'wrapper').innerHTML;
+		document.getElementById(blocksToMove[i]+'dest').innerHTML=code;
+		document.getElementById(blocksToMove[i]+'wrapper').innerHTML='';
+	}
+}
+if (get_isindex()){
+	
+	document.getElementById('title-dest').innerHTML=document.getElementById('title').innerHTML;
+	document.getElementById('title-dest').style.textAlign='center';
+}
+
 //then, sanitize the display URL with something accurate
 
 

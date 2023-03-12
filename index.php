@@ -1478,17 +1478,19 @@ We suggest you to look at the LibreJS javascript extension, which blocks javascr
 <?php if (!((true==$embed)||(false!==$embed))) { //IF NOT EMBED ********************* STARTS?>	
 	
 <?php
+echo '<span id="splash-wrapper">';
 echo '<span id="splash">';
 if (file_exists('./splash.php')){
 	include ('./splash.php');
 }
+echo '</span>';
 echo '</span>';
 if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 	
 	echo '<div style="color:red;background-color:black;width:100%;text-align:center;"><span><strong>'.$message[$_GET['message']].'</strong><a href="./" style="color:black;background-color:red;text-decoration:underline;float:right;text-align:right;">X</a></span></div>';
 	
 }
-
+echo '<span id="links-wrapper">';
 if (count($socialmediaicons)>0){
 	//let's display the social media icons
 	echo '<span style="float:left;">';
@@ -1504,7 +1506,8 @@ if (count($socialmediaicons)>0){
 	}
 	echo '</span>';
 }
-
+echo '</span>';
+echo '<span id="donate-wrapper">';
 if ($acceptdonations){
 	echo '<span style="float:right;text-align:right">';
 	
@@ -1513,8 +1516,9 @@ if ($acceptdonations){
 	echo '</span><br style="clear:both;float:none;"/>';
 	
 }
-	
+echo '</span>';	
 
+echo '<span id="radio-wrapper">';
 if ($hasradio){
 	echo '<div style="width:98%;text-align:right;float:right;"><strong>Now on the radio:</strong> <br/><a id="radio_nowplaying" href="./radio/index.php">';
 	
@@ -1525,8 +1529,10 @@ if ($hasradio){
 	echo '</div>';
 	
 }
+echo '</span>';
 ?>
 <div></div>
+<span id="recent-wrapper">
 <span id="recentplay" style="display:<?php
 if ($recentplay){
 	echo 'block';
@@ -1544,8 +1550,11 @@ else {
 
 <hr style="float:none;clear:both;"/>
 </span>
-<br style="float:none;clear:both;"/>
 </span>
+</span>
+<span id="title-dest"></span>
+<br style="float:none;clear:both;"/>
+
 
 <?php
 if (isset ($_GET['track'])) {
@@ -1558,7 +1567,7 @@ else if (isset ($_GET['artist'])) {
 
 ?>
 
-
+<span id="menu-wrapper">
 <a name="menu"></a><div id="mainmenu" style="display:none;">	
 	<span style=""><img style="float:left;width:3%;" src="./<?php echo $favicon ;?>" onload="increment_overload_track_counter();if(!get_page_init()){init_page();};"/></span>
 		
@@ -1601,8 +1610,9 @@ else if (isset ($_GET['artist'])) {
 	}
 ?>
 </div>
-<div><a href="javascript:void(0);" onclick="mainmenu=cr_document_menu_getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo htmlspecialchars($title);?></a></div>
 
+<div><a href="javascript:void(0);" onclick="mainmenu=cr_document_menu_getElementById('mainmenu');if(mainmenu.style.display=='none'){mainmenu.style.display='inline';this.innerHTML='&lt;';}else{mainmenu.style.display='none';this.innerHTML='☰<?php echo str_replace("'", "\\'", htmlspecialchars($title));?>';}">☰<?php echo htmlspecialchars($title);?></a></div>
+</span>
 <span id="loginpanel" style="float:right;text-align:right;margin-bottom:2%;">
 	<?php
 		loginpanel($activateaccountcreation);
@@ -1613,7 +1623,7 @@ else if (isset ($_GET['artist'])) {
 <?php
 
 if ($mosaic) {
-	include ('featuredvids.php');
+	//include ('featuredvids.php');
 }
 
 //material releases : listing products
@@ -1929,7 +1939,7 @@ $boolflipcoin=false;
 
 ///
 
-
+echo '<span id="artists-wrapper">';
 if ($mosaic&&$artisthighlighthomepage){
 	$flipcoin=true;
 	echo '<span style="float:left;position: static; top:Opx;text-align:center;display:inline;">';
@@ -1967,7 +1977,7 @@ if ($mosaic&&$artisthighlighthomepage){
 
 
 ///
-
+echo '</span>';
 $highlightcounter=0;
 
 
@@ -2927,6 +2937,14 @@ if ($mosaic) {
 if (!((true==$embed)||(false!==$embed))){// IF NOT EMBED STARTS **************************************************
 echo $pageFooterSplash;
 ?>
+<span id="splash-dest" style="margin-left:6%;padding-left:6%;"></span>
+<span id="donate-dest"></span>
+<span id="radio-dest"></span>
+<span id="recent-dest"></span>
+<span id="menu-dest"></span>
+<span id="links-dest"></span>
+<span id="artists-dest" style="margin-right:6%;"></span>
+<hr/>
 
 <a href="javascript:void(0);" style="border:solid 1px;" onclick="bottommenu=cr_document_menu_getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='<?php echo str_replace("'", "\\'", htmlspecialchars($footerReadableName));?>';}"><?php echo htmlspecialchars($footerReadableName);?></a>
 <a name="bottommenu"></a>
