@@ -296,10 +296,42 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 				ob_flush();
 				flush();
 			}
+			$alreadyPlayed=Array();
+			if (file_exists('../d/already_played.dat')){
+				$aldat=file_get_contents('../d/already_played.dat');
+				if ($aldat!==false){
+					$alreadyPlayed=unserialize($aldat);
+				}
+				else {
+					unlink('../d/already_played.dat');
+					file_put_contents('../d/already_played.dat', serialize($alreadyPlayed));
+				}
+			}
+			else {
+				file_put_contents('../d/already_played.dat', serialize($alreadyPlayed));
+			}
+			if (!is_array($alreadyPlayed)){
+				$alreadyPlayed=Array();
+				unlink('../d/already_played.dat');
+			}
+			
 			
 			$featured=explode("\n", trim($radiobase));
+			
+			$tempPlay=array_diff($featured, $alreadyPlayed);
+			
+			if (count($tempPlay)==0){
+				$tempPlay=$featured;
+				unlink('../d/already_played.dat');
+			}
+			$featured=$tempPlay;
+			
 			shuffle($featured);
 			$thisfeatured = $featured[random_int(0, count($featured) - 1)];
+			
+			array_push($alreadyPlayed, $thisFeatured);
+			file_put_contents('../d/already_played.dat', serialize($alreadyPlayed));
+			
 			
 			$featuredbasenamed=explode('/', $thisfeatured);
 			$featuredbasename=array_pop($featuredbasenamed);
