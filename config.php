@@ -133,15 +133,15 @@ else {
 	//here we go
 	//firstly we check the existence of the shadowed password
 
-	if (!file_exists('./admin/d/pwd.dat')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+	if (!file_exists('./admin/d/pwd.dat')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!=strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
 		exit('0');
 
 	}
 	//then we check that server.txt is set and we also won't die() if the user is in admin (allong him/her to set server.txt)
-	else if (!file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+	else if (!file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!=strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
 		exit('0');
 	}
-	if (file_get_contents('./d/server.txt')===false){
+	if (!file_get_contents('./d/server.txt')!==false){
 		exit('0');
 	}
 	//useful data starting from now
@@ -152,9 +152,9 @@ else {
 		$proto='https';
 	}
 	//then we check the consistency of server.tx and also won't die() if the user is admin at the admin panel 
-	if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
+	if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!=strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
 		$page=file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1');
-		if ($page==false){
+		if (!$page==false){
 	
 			exit('0');
 		}
