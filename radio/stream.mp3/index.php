@@ -329,7 +329,7 @@ if (microtime(true)>=$expire&&(!file_exists('../d/lock.txt'))){
 			shuffle($featured);
 			$thisfeatured = $featured[random_int(0, count($featured) - 1)];
 			
-			array_push($alreadyPlayed, $thisFeatured);
+			array_push($alreadyPlayed, $thisfeatured);
 			file_put_contents('../d/already_played.dat', serialize($alreadyPlayed));
 			
 			
