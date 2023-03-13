@@ -174,7 +174,7 @@ switch ($_GET['a']) {
 			break;
 		}
 		
-		$ret=file_get_contents($serverapi.'?listalbums='.urlencode(htmlentities($_GET[$_GET['a']])));
+		$ret=file_get_contents($serverapi.'?listalbums='.urlencode(($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
 			$ret=html_entity_decode($ret);
@@ -191,7 +191,7 @@ switch ($_GET['a']) {
 			break;
 		}
 		
-		$ret = file_get_contents($clewnapiurl.'?listalbums='.urlencode(htmlentities($_GET[$_GET['a']])));
+		$ret = file_get_contents($clewnapiurl.'?listalbums='.urlencode(($_GET[$_GET['a']])));
 		
 		if ($ret!==false){
 			$ret=html_entity_decode($ret);
