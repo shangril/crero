@@ -52,6 +52,17 @@ var radiomsg='';
 
 var radioajax;
 
+function clearRadioInterval(){
+	
+	if (radioIntervalFunc!=null){	
+	
+		window.clearInterval(radioIntervalFunc);
+		radioIntervalFunc=null;	
+		
+	}
+}
+
+
 function update_radio_nowplaying(){
 	if (document.getElementById('radio_nowplaying')==null){
 		window.clearInterval(radioIntervalFunc);
@@ -488,6 +499,8 @@ function increment_thumbnail_max(){
 
 
 function update_ajax_body(http_url_target, comesfrominfiniteloop){
+	clearRadioInterval();
+	
 	var infiniteloop=false;
 	
 	if (comesfrominfiniteloop!=undefined){
