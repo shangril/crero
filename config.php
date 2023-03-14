@@ -91,7 +91,7 @@ if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SEL
 				//then we check the consistency of server.tx and also won't die() if the user is admin at the admin panel 
 				if (file_exists('./d/server.txt')&&strpos($_SERVER['PHP_SELF'], '/admin/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/admin/index.php')){
 					$page=file_get_contents($proto.'://'.$server.'/?no-infinite-loop-please=1');
-					if ($page==false){
+					if (!$page==false){
 						echo '<!DOCTYPE html><body style="font-size:320%;">General error: get content replied false, the site is currently unavailable. Some cases are probable <ul><li>this is a temporary overload and you can wait a bit and reload the page</li>
 						<li>The "server" parameter in this is configuration is inconsistent. If this error persists, site administrators should check the correctness of this parameter<ol><li>Especially this error will trigger if the VHOST of the webserver is not correctly set. Example with Apache with version>2 : make sur that CanonicalName is activated and that ServerName is set for your VHOST. Most if not any commercial-grade hosting will have made it already. But if you sysadmin your server on your own, it is your job.</li></ol></li>
 						</ul></body></html>';
@@ -122,7 +122,7 @@ if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SEL
 			}//if wizard
 		}
 }
-else {
+else if (!file_exists('./d/wizard_completed.txt')){
 	//in case we are in crero-yp-api, we are doing the full range of testing, and if anything fails, output a "0" api response, which is
 	//the special code for API calls, which are meant to start by a call to the "version" API action
 	//and real version list of supported API version starts with version 1
@@ -174,7 +174,9 @@ else {
 		exit('0');
 	}
 	
-	
+	//all stages passed ok
+	//create the wizard_completed mark file to skip these checks next time
+	touch('./d/wizard_completed.txt');
 }//end of basic configuration testing for crero-yp-api specifically
 
 
