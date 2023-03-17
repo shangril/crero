@@ -1,6 +1,6 @@
 <?php
 
-if (session_start()){
+if (session_start()&&$_SERVER['HTTP_USER_AGENT']!==''){
 	if (file_exists('./recently_ping.lock')&&floatval(filectime('./recently_ping.lock'))+5>microtime(true)){
 		unlink('./recently_ping.lock');
 	}
