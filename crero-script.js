@@ -474,6 +474,18 @@ function getCover (img, target, size, ratio){
 	img.src="./thumbnailer.php?target="+target+"&viewportwidth="+parseInt(size)+"&ratio="+parseFloat(ratio);
 	
 }
+function cancelCover (img){
+	img.src='./favicon.png';
+	img.onLoad='if (!get_page_init()){init_page()};if (album_displayed<=album_counter){album_displayed++;};';
+	
+}
+function cancelAllCovers(){
+	imgs=document.getElementsByClassName('lineTranslate');
+	for (i=0;i<imgs.length;i++){
+		cancelCover(imgs[i]);
+	}
+	album_displayed=album_counter+1;
+}
 function computeSize(width, height){
 	size=640;
 	if (width>=height){
@@ -490,7 +502,7 @@ function update_twirling_message(text){
 }
 function increment_thumbnail_counter(){
 		thumbnail_counter++;
-		update_twirling_message(thumbnail_counter+" thumbnails generated just for you, for you screen resolution, once for all");
+		update_twirling_message('<a href="javascript:cancelAllCovers();">[Cancel]</a> '+thumbnail_counter+" thumbnails generated just for you, for you screen resolution, once for all");
 }
 function increment_thumbnail_max(){
 		thumbnail_max++;
@@ -509,6 +521,8 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 	
 	set_page_load(false);
 	set_page_init(false);
+	album_displayed=0;
+	album_counter=0;
 	var thumbnail_counter=0;
 	var thumbnail_max=0;
 	var autoplay='false';
@@ -519,6 +533,8 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 	var parameters='';
 	var arg='';
     set_overload_track_counter(0);
+	var uaxhttpattempt=0;
+
 	//set_page_init(false);
 	
 				
@@ -627,7 +643,6 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 			
 			
 			
-			var uaxhttpattempt=0;
 			var uaxhttp = new XMLHttpRequest();
 			uaxhttp.onreadystatechange = function() {
 			if (this.readyState == 4){
@@ -651,6 +666,7 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 				}
 			}
 			//console.log(finalurl);
+			uaxhttp.timeout=35000;
 			uaxhttp.open("GET", finalurl, true);
 			uaxhttp.send();
 			update_twirling_message("Loading...");

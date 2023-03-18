@@ -248,6 +248,11 @@ if (array_key_exists('ypservices', $_GET)){
 
 if (isset($_GET['embed'])){
 	$embed=$_GET['embed'];
+			//as a temporary measure, to comply with per-site cookies isolation introduced in modern mozilla
+		//we disable download_cart
+		//to allow download on embeding sites
+		//awaiting for further dev. enabling it
+		$enableDownloadCart=false;
 }else{$embed=false;}
 /**********************************************************************
  * IMPORTANT NOTICE ABOUT $embed
@@ -1413,7 +1418,7 @@ We suggest you to look at the LibreJS javascript extension, which blocks javascr
 	<br/>
 	We will try to clear the cache for this particular page and see if it can solve this error. 
 	<form id="overload_form" method="POST">
-	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode(array_diff($_GET, array($_GET['listall'], $_GET['no_infinite_loop_please']))));?>"/>
+	<input type="hidden" name="page_purge" value="<?php echo base64_encode(json_encode(array_diff_assoc($_GET, array('listall' => $_GET['listall'], 'no_infinite_loop_please' => $_GET['no_infinite_loop_please']))));?>"/>
 	
 	<span id="overload_countdown">This page will try to autorepair in <span id="overload_countdown_seconds">6</span> seconds...<a href="javascript:void(0);" onclick="cr_window_overloadtime();">Cancel</a></span>
 	<span id="overload_button">
@@ -2888,6 +2893,10 @@ if (!$_SESSION['random']&&$weactuallydisplayedsomething&&!isset($_GET['listall']
 	$embedurl='';
 	
 	if (((true==$embed)||(false!==$embed))) {
+
+		
+		
+		
 		$embedurl='&embed='.urlencode($embed);
 	}
 	/* <a href="javascript:set_page_init(false);arr=[\''.urlencode(html_entity_decode($item['album'])).'\'];update_ajax_body(\'./?album=\'+encodeURI(JSON.stringify(arr)));" */
