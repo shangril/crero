@@ -1,4 +1,10 @@
 <?php
+if ($_SERVER['HTTP_USER_AGENT']==''){
+		http_response_code(403);
+		exit(0);
+	}
+//We've nothing to say to most impolite bots
+
 session_start();
 chdir('..');
 require_once('./config.php');
