@@ -593,7 +593,7 @@ else if (isset($_GET['listallalbums2'])||isset($_GET['l2'])) {
 //ON THE CALLER SERVER
 //PREFER IT TO listallalbums or l
 //***********************************************
-	
+	$content=Array();
 header('Content-Type: application/json; charset=utf-8');
 	//returns a serialized array of all albums for a specified array of artists
 	//keys are mtime of the albums
@@ -638,7 +638,7 @@ header('Content-Type: application/json; charset=utf-8');
 	if (file_exists('./l2-numberoffiles.dat')&&file_get_contents('./l2-numberoffiles.dat')!==false&&file_get_contents('./l2-numberoffiles.dat')==$filecounter){
 		$fileshavemoved=false;
 		file_put_contents('./l2-numberoffiles.dat', $filecounter);
-		touch ('./audio/.timestamp');
+		touch ('./z/.timestamp');
 	}
 	
 	

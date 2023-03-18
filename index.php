@@ -1724,7 +1724,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 		}
 		if (isset($_GET['artist']))
 		{
-			$artists=array(html_entity_decode($_GET['artist']));
+			$artists=array(($_GET['artist']));
 			
 		}
 		$querystring='';
@@ -1864,7 +1864,7 @@ $artists_file=file_get_contents('./d/artists.txt');
 $querystring = '';
 		foreach ($artists as $artist) 
 		{
-			$querystring.='&listallalbums2[]='.urlencode($artist);
+			$querystring.='l2[]='.urlencode($artist).'&';
 			
 			
 		}
@@ -1872,8 +1872,150 @@ $querystring = '';
 
 
 		$albums_file=file_get_contents($serverapi.'?'.$querystring);
+
+//****************************NEEDS WORK
+/*				$timeout=300;
+		if (file_exists('./loverload.dat')){
+			//$timeout=intval(file_get_contents('./loverload.dat'));
+		}
+		else {
+			file_put_contents('./loverload.dat', '180');
+			
+		}
+		//$opts = array(
+		//	'http'=>array(
+		//	'timeout'=>$timeout
+		//)
+		//);
+
+		$overloadmove=$timeout+2;
+
+
+
+
+
+		//$albums_file=file_get_contents($clewnapiurl.'?'.$querystring, false, stream_context_create($opts));
+			
+			$fresh=file_get_contents($serverapi.'?freshness=true');
+								
+			if ($fresh!==false){
+				$fresh=floatval($fresh);
+				if (floatval($fresh)>=floatval(filemtime('./lremoteapicache-v2.dat'))){
+							
+							
+							unlink('./lremoteapicache-v2.dat');
+					
+						}
+			    
+			
+			}
+			/*$cache_dl_count=file_get_contents($server.'/gimme_str_album_count.php');
+			if ($cache_dl_count===false){
+				unlink('./lremoteapicache-v2.dat');
+			}
+			else {*/
+			
+			/*
+				$remoteapicache=unserialize(file_get_contents('./lremoteapicache-v2.dat'));
+				if (isset($remoteapicache[$querystring])){
+					$albums_file=$remoteapicache[$querystring];
+					$albums=json_decode($albums_file, true);
+
+					if (!is_array($albums)){$albums=Array();}
+					//if ($albums===false||count($albums)!=intval($cache_dl_count)){
+					//		unlink('./lremoteapicache-v2.dat');
+					//}
+				//}
+				
+				
+				
+			}
+			if (!file_exists('./lremoteapicache-v2.dat')){
+				$ch = curl_init();
+
+				curl_setopt($ch, CURLOPT_URL,$serverapi.'?l2=true');
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $querystring);
+				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT ,$timeout); 
+				curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+				$albums_file_json= curl_exec ($ch);
+
+				curl_close ($ch);
+				$albums_file=$albums_file_json;
+
+				
+				if ($albums_file_json===false){
+				echo '<h2><strong>Sorry ! </strong>It seems that the streaming albums host, is currently over capacity.</h2>That is why this page took so long to load, and streaming albums will not display. ';
+				
+				//20221130 : Autorepair of media tier overcapacity
+				?>
+					<img src="favicon.png" onload="if(!get_page_init()){init_page();};<?php if ($activatehtmlcache){echo 'set_album_error(true);checkOverload(false);';} ?>"/> An attempt to repair the broken page may be attempted soon. If not, your can try to refresh this page. 
+				
+				<?php
+				
+				//Ends 20221130 autorepair of media tier overcapacity
+				
+				
+				
+				}
+				$cache=Array();
+			
+			
+				$cache[$querystring]=$albums_file_json;
+				file_put_contents('./lremoteapicache-v2.dat', serialize($cache));
+
+			}
+			else {
+				$remoteapicache=unserialize(file_get_contents('./lremoteapicache-v2.dat'));
+				if (is_array($remoteapicache)&&isset($remoteapicache[$querystring])){
+					$albums_file=$remoteapicache[$querystring];
+					
+				}
+				else {
+					
+					echo '<h2><strong>Deeply sorry ! </strong>It seems that the host of the streaming albums, is currently over capacity.</h2>That is why this page took so long to load, and streaming albums will not display.';
+					?>
+					<img src="favicon.png" onload="if(!get_page_init()){init_page();};<?php if ($activatehtmlcache){echo 'set_album_error(true);checkOverload(false);';} ?>"/> An attempt to repair the broken page may be attempted soon. If not, your can try to refresh this page. 
+				
+					<?php
+				}
+			
+			}
+			$overloadmove=$timeout-2;
+		
+			
+		
+		
+		
+		if ($overloadmove<=0){
+			$overloadmove=180;
+		}
+		
+		file_put_contents('./loverload.dat', $overloadmove);
+			
+		//$albums=json_decode($albums_file, true);
+
+		//if (!is_array($albums)){$albums=Array();}
+
+
+*/
+//************************************
+		$albums_file=file_get_contents($serverapi.'?'.$querystring);
+
+
 		$albums=json_decode($albums_file, true);
-		if (!is_array($albums)){$albums=Array();}
+		if (!is_array($albums)){$albums=Array();
+		/*?>	
+			<div style="background-color:red;width:100%;"><img src="favicon.png" onload="if(!get_page_init()){init_page();};<?php if ($activatehtmlcache){echo 'set_album_error(true);checkOverload(false);';} ?>"/>
+					An error was encountered, due to overcapacity. 
+					<?php if ($activatehtmlcache){echo 'Please wait will the website tries to auto-recover...' ; }?>
+					</div>
+			
+		<?php*/	
+		}
 
 		ksort($albums);
 		$albums=array_reverse($albums);
