@@ -88,7 +88,7 @@ $context = stream_context_create($options);
 				$content
 			);
 			header('Last-Modified: '.date(DATE_RFC822, filemtime('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png')));
-			header('Cache-Control', 'public, max-age='.intval(3*864000)); //30 days
+			header('Cache-Control:', 'public, max-age='.intval(3*864000)); //30 days
 	
 			readfile('./thumbcache/'.$modwidth.'-'.$modheight.'-'.str_replace('/','',$file).'.png');
 			die();
@@ -120,7 +120,7 @@ $context = stream_context_create($options);
 
 		if (isset($_GET['hook'])){
 			header('Content-type: application/x-png'); 
-			header('Cache-Control', 'public, max-age='.intval(3*864000)); //30 days
+			//header('Cache-Control', 'public, max-age='.intval(3*864000)); //30 days
 	
 			imagepng($output);
 		} 
