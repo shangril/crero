@@ -72,7 +72,7 @@ if (false&&$IsRadioResyncing){
 	}
 }
 
-if (!$hasradio){
+if (!$hasradio||$isRadioDisabled){
 	die();
 }
 if ($autobuildradiobase){

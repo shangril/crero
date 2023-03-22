@@ -515,6 +515,17 @@ window.setInterval(resync, <?php echo $RadioResyncInterval; ?>);
 // @license-end
 </script>
 <?php echo $radioBanner; ?>
+<?php if ($isRadioDisabled){
+	if (file_exists('../radio_disabled.html')){
+		include ('../radio_disabled.html');
+		
+	}
+	
+	
+	echo '</body></html>';
+	die();
+}
+?>
 <!--Stream : <a href="?m3u=m3u">m3u</a> <a href="./stream.mp3">mp3</a>--><br/>
 
 <img style="float:left;width:25%;" id="cover"/>

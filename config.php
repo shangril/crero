@@ -667,5 +667,11 @@ if (file_exists('./d/radioFeaturedPlaylistRelativeFilesystemLocation.txt')){
 	$radioFeaturedPlaylistRelativeFilesystemLocation = trim(file_get_contents('./d/radioFeaturedPlaylistRelativeFilesystemLocation.txt'));
 }
 
+$isRadioDisabled=false;
+if (file_exists('./d/RadioIsDisabled.txt')){
+	$isRadioDisabled=boolval(trim(file_get_contents('./d/RadioIsDisabled.txt')));
+}
+
+
 
 ?>
