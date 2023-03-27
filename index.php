@@ -3095,6 +3095,10 @@ echo $pageFooterSplash;
 <span id="menu-dest"></span>
 <span id="links-dest"></span>
 <span id="artists-dest" style="margin-right:6%;"></span>
+<?php if ($RandomPlayer){
+	echo '<br/><a href="./random/">The Great Random Player</a>';
+	
+}?>
 <hr/>
 
 <a href="javascript:void(0);" style="border:solid 1px;" onclick="bottommenu=cr_document_menu_getElementById('bottommenu');if(bottommenu.style.display=='none'){bottommenu.style.display='inline';this.innerHTML='&lt;';}else{bottommenu.style.display='none';this.innerHTML='<?php echo str_replace("'", "\\'", htmlspecialchars($footerReadableName));?>';}"><?php echo htmlspecialchars($footerReadableName);?></a>
