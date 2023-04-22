@@ -2289,7 +2289,7 @@ foreach ($contentlocal as $item){
 				}
 
 				
-				if (!isset($_GET['track'])||$_GET['track']==$track_name)
+				if (!isset($_GET['track'])||$_GET['track']==html_entity_decode($track_name))
 				{
 					if (in_array(html_entity_decode($track_artist), $artists)){
 											?>
