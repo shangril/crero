@@ -36,8 +36,8 @@ if ($str_cnt_artists_file!==false){
 	curl_setopt($str_cnt_ch, CURLOPT_URL, $serverapi.'?l2=true');
 	curl_setopt($str_cnt_ch, CURLOPT_POST, 1);
 	curl_setopt($str_cnt_ch, CURLOPT_POSTFIELDS, $str_cnt_querystring);
-	curl_setopt($str_cnt_ch, CURLOPT_CONNECTTIMEOUT ,3000); 
-	curl_setopt($str_cnt_ch, CURLOPT_TIMEOUT, 3000);
+	curl_setopt($str_cnt_ch, CURLOPT_CONNECTTIMEOUT ,15000); 
+	curl_setopt($str_cnt_ch, CURLOPT_TIMEOUT, 15000);
 
 	curl_setopt($str_cnt_ch, CURLOPT_RETURNTRANSFER, true);
 

@@ -40,8 +40,8 @@ if ($dl_cnt_artists_file!==false){
 	curl_setopt($dl_cnt_ch, CURLOPT_URL,$clewnapiurl.'?l2=true');
 	curl_setopt($dl_cnt_ch, CURLOPT_POST, 1);
 	curl_setopt($dl_cnt_ch, CURLOPT_POSTFIELDS, $dl_cnt_querystring);
-	curl_setopt($dl_cnt_ch, CURLOPT_CONNECTTIMEOUT ,300); 
-	curl_setopt($dl_cnt_ch, CURLOPT_TIMEOUT, 300);
+	curl_setopt($dl_cnt_ch, CURLOPT_CONNECTTIMEOUT ,15000); 
+	curl_setopt($dl_cnt_ch, CURLOPT_TIMEOUT, 15000);
 
 	curl_setopt($dl_cnt_ch, CURLOPT_RETURNTRANSFER, true);
 
