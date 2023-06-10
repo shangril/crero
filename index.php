@@ -767,7 +767,7 @@ function cacheTracklist($album_entitified, $myserverapi) {
 	if ($data!==false){
 		$localfreshness=filectime('./d/albums_track_counter.dat');
 		$remotefreshness=file_get_contents($myserverapi.'?freshness=1');
-		if ($remotefreshness!==false){
+		if ($remotefreshness!==false&&is_numeric($remotefreshness)){
 			if (floatval($localfreshness)>=floatval(trim($remotefreshness))){
 				if (array_key_exists($album_entitified, $data)){
 					return $data[$album_entitified];
@@ -775,13 +775,22 @@ function cacheTracklist($album_entitified, $myserverapi) {
 				}
 			
 			}
+			else {
+				if (array_key_exists($album_entitified, $data)){
+					return $data[$album_entitified];
+					}
+				else {
+					return false;
+					
+				}
+				
+			}
 			
-		}
-		
+		}	
 	
 	/////NOT IN CACHE, QUERYING
 	$remotedat=file_get_contents($myserverapi.'?gettracks='.urlencode($album_entitified));
-	if ($remotedat!==false){
+	if ($remotedat!==false&&is_numeric(unserialize($remotedat))){
 		$data=unserialize(file_get_contents('./d/albums_track_counter.dat'));
 		if ($data!==false){
 			if (array_key_exists($album_entitified, $data)&&(strlen($data[$album_entitified])<=strlen($remotedat))){
@@ -1408,7 +1417,7 @@ We suggest you to look at the LibreJS javascript extension, which blocks javascr
 		echo '<h1 style="text-align:center;">Overload autorepair. Step 1 / 2</h1>';
 	}
 	else {
-		echo '<h1 style="text-align:center;">Overload autorepair Step 1 effective. Now step 2 / 2</h1>';
+		echo '<h1 style="text-align:center;">Overload autorepair <strong>Step 1 effective. Now step <em>2</em> / 2</strong></h1>';
 	
 	}
 	?>
