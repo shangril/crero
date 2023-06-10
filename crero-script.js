@@ -255,7 +255,8 @@ function  digolder(customoffset, comesfrominfiniteloop){
 	}
 	/*if (get_album()!=null&&get_album()!=''){
 		arralbum=[encodeURIComponent(get_album())];
-		albfrag='&album='+encodeURI(JSON.stringify(arralbum));
+		albfrag='&album='+
+		encodeURI(JSON.stringify(arralbum));
 	}*/
 	if (get_embed_value()!=null&&get_embed_value()!=''){
 		embembed=[encodeURIComponent(get_embed_value())];
@@ -660,8 +661,9 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 					uaxhttpattempt++;
 					update_twirling_message('The server replied with a non OK code: '+this.status+' ; retrying, retry is '+uaxhttpattempt);
 					this.abort();
+					//update_ajax_body(http_url_target, comesfrominfiniteloop);
+					this.open();
 					this.send();
-					
 				}
 				}
 			}
