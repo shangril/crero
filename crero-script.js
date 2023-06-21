@@ -1,4 +1,7 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
+var uaxhttpattempt=0;
+
+
 var page_init;
 var album_displayed=0;
 var overload_track_counter=NaN;
@@ -534,7 +537,6 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 	var parameters='';
 	var arg='';
     set_overload_track_counter(0);
-	var uaxhttpattempt=0;
 
 	//set_page_init(false);
 	
@@ -658,13 +660,11 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 			 if (infiniteloop){init_page();}
 				}
 				else {
-					uaxhttpattempt++;
-					update_twirling_message('The server replied with a non OK code: '+this.status+' ; retrying, retry is '+uaxhttpattempt);
-					this.abort();
-					//update_ajax_body(http_url_target, comesfrominfiniteloop);
-					this.open();
-					this.send();
-				}
+						uaxhttpattempt++;
+						update_twirling_message('The server replied with a non OK code: '+this.status+' ; retrying, retry is '+uaxhttpattempt);
+						this.abort();
+						update_ajax_body(http_url_target, comesfrominfiniteloop);
+					}
 				}
 			}
 			//console.log(finalurl);
@@ -1178,6 +1178,9 @@ function set_creroypservices(cyparg){
 //here the main logic of each page display
 function init_page() {
 	radiomsg='fetching data...';
+	
+	uaxhttpattempt=0;
+	
 	
 	if (radioIntervalFunc==null){
 		radioIntervalFunc=window.setInterval(update_radio_nowplaying, 4500);
