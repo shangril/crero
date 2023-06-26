@@ -3139,7 +3139,7 @@ if ($activatehtmlcache){
 
 
 function checkOverload(allowRecursive){
-	
+   if (page_init){
 	if (allowRecursive){
 		var dl_queried=-1;
 		var str_queried=-1;
@@ -3215,6 +3215,7 @@ function checkOverload(allowRecursive){
 		},1000));
 		
 	}
+  }
 }
 
 
