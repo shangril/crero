@@ -1192,7 +1192,7 @@ function init_page() {
 	monthly=false;
 
 	set_overloadindexchecked(false);
-	if (overload_track_counter==NaN){
+	if (parseInt(overload_track_counter)==NaN){
 	
 		set_overload_track_counter(0);
 	}

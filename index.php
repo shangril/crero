@@ -3149,7 +3149,7 @@ function checkOverload(allowRecursive){
 			if (this.readyState == 4 && this.status == 200) {
 			 dl_queried = parseInt(this.responseText);
 			
-			 if (Number.isInteger(overload_track_counter)&&(dl_queried!=parseInt(-1))&&(parseInt(get_dl_album_count())!=dl_queried)){
+			 if (Number.isInteger(parseInt(overload_track_counter))&&(dl_queried!=parseInt(-1))&&(parseInt(get_dl_album_count())!=dl_queried)){
 					set_album_error(true);
 					
 					set_dl_album_count(dl_queried);
