@@ -875,9 +875,9 @@ function outputArtistSiteLink($artistHTML, $albumHTML, $ArtistSites){
 
 
 
-function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl) {
+function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl, $albumhasvid) {
 	//let's see if there is a video available
-					if ($videoapiurl===false){
+					if ($videoapiurl===false||boolval($albumhasvid)===false){
 						return;
 					}	
 					
@@ -1011,6 +1011,20 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 	else{
 			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
 	}	
+}
+
+$albumhasvid=null;
+
+
+function checkalbhasvid($alb){
+if ($videoapiurl!==null){
+	
+		return (intval(trim(file_get_contents($videoapiurl.'?hasalbum='.urlencode($alb)))));
+	
+}
+else {
+	return 0;
+}
 }
 if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
 ?><!DOCTYPE html>
@@ -2145,6 +2159,17 @@ foreach ($contentlocal as $item){
 	
 	
 	if (isset ($item['album'])&&$running){
+		
+		if((isset($_GET['album'])||isset($_GET['offset']))&&$albumhasvid==null){
+		
+			$albumhasvid = checkalbhasvid(html_entity_decode($item['album']));
+		
+		}
+		
+		
+		
+		
+		
 		$weactuallydisplayedsomething=true;
 		$ran=true;
 
@@ -2347,7 +2372,7 @@ foreach ($contentlocal as $item){
 					
 					
 					
-					generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
+					generatevideo(html_entity_decode($track_name), html_entity_decode($item['album']), html_entity_decode($track_artist), $videoapiurl, $videourl, $albumhasvid);
 					showsongsheet($track);
 					?>
 					
@@ -2476,6 +2501,16 @@ foreach ($content as $item){
 	
 	
 	if (isset ($item['album'])&&$running){
+		if((isset($_GET['album'])||isset($_GET['offset']))&&$albumhasvid==null){
+		
+			$albumhasvid = checkalbhasvid(html_entity_decode($item['album']));
+		
+		}
+
+		
+		
+		
+		
 		$weactuallydisplayedsomething=true;
 		$ran=true;
 		$float=true;
@@ -2845,7 +2880,7 @@ foreach ($content as $item){
 							 
 							 </div>
 							<?php
-							generatevideo($track_name, $item['album'], $track_artist, $videoapiurl, $videourl);
+							generatevideo(html_entity_decode($track_name), html_entity_decode($item['album']), html_entity_decode($track_artist), $videoapiurl, $videourl, $albumhasvid);
 							showsongsheet($track);
 							?>
 							<?php
