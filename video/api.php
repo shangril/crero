@@ -1,9 +1,39 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
+if (!file_exists('./audio')){
+	mkdir ('./audio');
+}
+
 
 $formats=array('mp4');
 	
-if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset($_GET['gettarget'])) {
+if (isset($_GET['hasalbum'])){
+	header('Content-Type: text/plain; charset=utf-8');
+
+
+	$al=$_GET['hasalbum'];
+	$res=array();
+	
+	$files=scandir('./audio');
+	foreach ($files as $file) {
+		if (!is_dir($file)){
+			
+			if (mime_content_type('./audio/'.$file)=='text/plain'){
+				if (strpos ($file, '.album.txt')==(strlen($file)-10)){
+					if(trim(file_get_contents('audio/'.$file))==$al){
+					
+						array_push($res, $file);
+					
+					}
+			}
+		}
+	}
+}
+	echo count($res);
+	die();
+}
+	
+else if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset($_GET['gettarget'])) {
 		header('Content-Type: text/plain; charset=utf-8');
 		$files=scandir('./audio');
 		foreach ($files as $file) {
