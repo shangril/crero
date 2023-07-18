@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 
-$formats=Array('ogv','mp4','mpg','webm','avi');
+$formats=array('mp4');
 	
 if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset($_GET['gettarget'])) {
 		header('Content-Type: text/plain; charset=utf-8');
@@ -9,11 +9,11 @@ if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset(
 		foreach ($files as $file) {
 			if (!is_dir($file)){
 				
-				if (mime_content_type('./audio/'.$file)==='text/plain'){
-					if (strpos ($file, '.artist.txt')===(strlen($file)-11)){
-						if (htmlentities(trim(file_get_contents('audio/'.$file)))===$_GET['artist']
-						&& htmlentities(trim(file_get_contents('audio/'.str_replace('.artist.txt', '.album.txt',$file))))===$_GET['album']
-						&& htmlentities(trim(file_get_contents('audio/'.str_replace('.artist.txt', '.title.txt',$file))))===$_GET['title']
+				if (mime_content_type('./audio/'.$file)=='text/plain'){
+					if (strpos ($file, '.artist.txt')==(strlen($file)-11)){
+						if ((trim(file_get_contents('audio/'.$file)))==$_GET['artist']
+						&& (trim(file_get_contents('audio/'.str_replace('.artist.txt', '.album.txt',$file))))==$_GET['album']
+						&& (trim(file_get_contents('audio/'.str_replace('.artist.txt', '.title.txt',$file))))==$_GET['title']
 						) {
 							echo str_replace ('.artist.txt', '', $file);
 							exit();
@@ -50,7 +50,7 @@ if (isset($_GET['artist'])&&isset($_GET['album'])&&isset($_GET['title'])&&isset(
 else if (isset($_GET['listformats'])){
 	header('Content-Type: text/plain; charset=utf-8');
 	
-	$target=str_replace('./', '', $_GET['listformats']);
+	$target=str_replace('/', '', $_GET['listformats']);
 	
 	foreach ($formats as $format)
 	{
