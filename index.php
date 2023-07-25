@@ -877,7 +877,7 @@ function outputArtistSiteLink($artistHTML, $albumHTML, $ArtistSites){
 
 function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videourl, $albumhasvid) {
 	//let's see if there is a video available
-					if ($videoapiurl===false||boolval($albumhasvid)===false){
+					if ($videoapiurl===false||intval($albumhasvid)<=0){
 						return;
 					}	
 					
@@ -1016,10 +1016,14 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 $albumhasvid=null;
 
 
-function checkalbhasvid($alb){
-if ($videoapiurl!==null){
-	
-		return (intval(trim(file_get_contents($videoapiurl.'?hasalbum='.urlencode($alb)))));
+function checkalbhasvid($alb, $videoapiurl){
+
+
+if (filter_var($videoapiurl, FILTER_VALIDATE_URL)){
+	    
+		$cont  = file_get_contents($videoapiurl.'?hasalbum='.urlencode($alb));
+	    
+		return (intval(trim($cont)));
 	
 }
 else {
@@ -2162,7 +2166,7 @@ foreach ($contentlocal as $item){
 		
 		if((isset($_GET['album'])||isset($_GET['offset']))&&$albumhasvid==null){
 		
-			$albumhasvid = checkalbhasvid(html_entity_decode($item['album']));
+			$albumhasvid = checkalbhasvid(html_entity_decode($item['album']), $videoapiurl);
 		
 		}
 		
@@ -2503,7 +2507,7 @@ foreach ($content as $item){
 	if (isset ($item['album'])&&$running){
 		if((isset($_GET['album'])||isset($_GET['offset']))&&$albumhasvid==null){
 		
-			$albumhasvid = checkalbhasvid(html_entity_decode($item['album']));
+			$albumhasvid = checkalbhasvid(html_entity_decode($item['album']), $videoapiurl);
 		
 		}
 
@@ -3105,7 +3109,7 @@ if (!$weactuallydisplayedsomething){
 	$_GET['listall']='failed';
 	
 	
-	echo '<img src="favicon.png" onload="increment_overload_track_counter();if(!get_page_init()){init_page();};"/> <a  href="javascript:void(0);" onclick="if (document.getElementById(\'bodyajax_arttruc\').value!=\'\'){set_artist(document.getElementById(\'bodyajax_arttruc\').value);};set_page_init(false);digolder(0, true);" id="infiniteloop">Yeah! You reached the bottom... There is nothing older...Continuing to newer</a><br/>';
+	echo '<img src="favicon.png" onload="increment_overload_track_counter();if(!get_page_init()){init_page();};"/> <a  href="javascript:void(0);" onclick="if(get_album_error()!=undefined&&get_album_error()!=false){if (document.getElementById(\'bodyajax_arttruc\').value!=\'\'){set_artist(document.getElementById(\'bodyajax_arttruc\').value);};set_page_init(false);digolder(0, true);};" id="infiniteloop">Yeah! You reached the bottom... There is nothing older...Continuing to newer</a><br/>';
 	}
 	
 
