@@ -925,7 +925,7 @@ function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videou
 						}
 						echo '<video controls="controls" autoplay="autoplay" style="width:100%;">';
 						foreach($videoformats as $videoformat) {
-							echo '<source src="'.htmlspecialchars($videourl.urlencode($videotarget).'.'.urlencode($videoformat)).'" mime-type="'.htmlspecialchars(mime_content_type($videotarget.'.'.$videoformat)).'"></source>';
+							echo '<source src="'.htmlspecialchars($videourl.rawurlencode($videotarget).'.'.rawurlencode($videoformat)).'" mime-type="'.htmlspecialchars(mime_content_type($videotarget.'.'.$videoformat)).'"></source>';
 							
 							
 						}
@@ -933,7 +933,7 @@ function generatevideo($track_name, $album, $track_artist, $videoapiurl, $videou
 						echo '<br/>';
 						echo 'Download : ';
 						foreach ($videoformats as $videoformat) {
-							echo '<a download href="'.$videourl.urlencode($videotarget).'.'.urlencode($videoformat).'">'.htmlspecialchars($videoformat).'</a> ';
+							echo '<a download href="'.$videourl.rawurlencode($videotarget).'.'.rawurlencode($videoformat).'">'.htmlspecialchars($videoformat).'</a> ';
 							
 						}
 						echo '<br/>';
