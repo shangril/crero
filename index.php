@@ -1003,14 +1003,14 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 			return $output;
 		}
 		else {
-			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
+			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> <br/><div style="padding-bottom:3%;text-align:center;border:solid 1px;">'.str_replace(" ", '<br/>', $album).'</div>';
 		}
 	
 	
 	
 	}
 	else{
-			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> ';
+			return ' <img src="favicon.png" class="lineTranslate" alt="'.$album.'" id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (album_displayed<=album_counter){getCover(this, \'./favicon.png\', get_size(), '.floatval($ratio).');album_displayed++;}"/> <br/><div style="padding-bottom:3%;text-align:center;border:solid 1px;">'.str_replace(" ", '<br/>', $album).'</div>';
 	}	
 }
 
