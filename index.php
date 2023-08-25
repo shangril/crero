@@ -981,7 +981,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<img class="lineTranslate" alt=" ['.$album.'] " id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (this.src==\'favicon.png\'){increment_thumbnail_max();};if (album_displayed<=album_counter){chckImg(this, \''.str_replace("'", "\\'", urlencode($url)).'\', '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
+			$output.='<div style="display:inline;align:center;text-align:center;"><img style="margin:auto;" class="lineTranslate" alt=" ['.$album.'] " id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (this.src==\'favicon.png\'){increment_thumbnail_max();};if (album_displayed<=album_counter){chckImg(this, \''.str_replace("'", "\\'", urlencode($url)).'\', '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
 		
 			/*$output.='<script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
@@ -999,6 +999,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
  // @license-end 
  </script>';
 			*/
+			$output.='<br/><div style="padding-bottom:3%;text-align:center;border:solid 1px;">'.str_replace(" ", '<br/>', $album).'</div></div>';
 			return $output;
 		}
 		else {
@@ -1134,6 +1135,8 @@ function displayRecentlyPlayed(){
 		  wwwxhttprecalb.send();
 	
 }
+
+
 
 
  //@license-end 
@@ -2207,7 +2210,12 @@ foreach ($contentlocal as $item){
 			}
 
 			
-			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.65).'</div>';
+			echo '<div style="margin-left:auto;margin-right:auto;">'.displaycover($item['album'], 0.65).'
+			
+			<noscript><a href="./?album='.urlencode($item[$album]).'">'.htmlspecialchars($item[$album]).'</a></noscript>
+			
+			
+			</div>';
 
 			}
 		else  {
@@ -2542,7 +2550,13 @@ foreach ($content as $item){
 			if ($mixed){
 				echo 'float:left;';
 			}
-			echo '">'.displaycover($item['album'], 0.65).'</div>';
+			echo '">'.displaycover($item['album'], 0.65).'
+					<br/>
+					<noscript><a href="./?album='.urlencode($item[$album]).'">'.htmlspecialchars($item[$album]).'</a></noscript>
+	
+			
+			
+			</div>';
 			if ($mixed){
 				echo '<div style="float:right;text-align:right;font-size:120%;" id="mixedtracks"></div>';
 				echo '<div style="float:none;clear:both;"></div>';
@@ -3381,6 +3395,19 @@ if (count($creroypservices)>0) { ?>
 
 <?php  ?>
 <br/><a style="float:right;font-size:76%;" href="./about-js.html" data-jslicense="1" target="_blank">JavaScript license information</a>
+
+
+
+<script>
+
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
+
+if(!get_page_init()){init_page();}
+
+// @license-end 
+
+</script>
+
 
 <?php if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')){
 echo '</body>
