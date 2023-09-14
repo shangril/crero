@@ -1,5 +1,13 @@
 <?php
 error_reporting(0);
+
+if ($_SERVER['HTTP_USER_AGENT']==''){
+		http_response_code(403);
+		exit(0);
+	}
+
+
+
 header( 'Content-Type: text/plain; charset=utf-8');
 
 //returns a series of useful data about radio current playing track
