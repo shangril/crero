@@ -981,7 +981,7 @@ function displaycover($album, $ratio, $param='cover', $AlbumsToBeHighlighted = 0
 		}
 		if (isset($url)){
 			$output='';
-			$output.='<table style="border:black 4px;border-radius:3px;"><tr><td><div style="display:inline;align:center;text-align:center;border:solid red 3px;border-radius:2px;"><img style="margin:auto;" class="lineTranslate" alt=" ['.$album.'] " id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (this.src==\'favicon.png\'){increment_thumbnail_max();};if (album_displayed<=album_counter){chckImg(this, \''.str_replace("'", "\\'", urlencode($url)).'\', '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
+			$output.='<table style="border:solid red 4px;border-radius:3px;"><tr><td><div style="display:inline;align:center;text-align:center;border:solid black 3px;border-radius:2px;"><img style="margin:auto;" class="lineTranslate" alt=" ['.$album.'] " id="'.$param.'_'.htmlspecialchars($album).'" onload="increment_overload_track_counter();if (!get_page_init()){init_page()};if (this.src==\'favicon.png\'){increment_thumbnail_max();};if (album_displayed<=album_counter){chckImg(this, \''.str_replace("'", "\\'", urlencode($url)).'\', '.floatval($ratio).');album_displayed++;}" src="favicon.png" />';
 		
 			/*$output.='<script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL Version 3 or later
