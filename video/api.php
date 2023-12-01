@@ -91,7 +91,16 @@ else if (isset($_GET['listformats'])){
 	}
 	
 }
+else if (isset($_GET['baselistformats'])){
+	header('Content-Type: text/plain; charset=utf-8');
+	foreach ($formats as $format){
+		echo $format."\n";
+	}
+
+
+}
 else if (isset($_GET['hasdowngrade'])&&isset($_GET['format'])) {
+	die();
 	header('Content-Type: text/plain; charset=utf-8');
 	$files=scandir('./audio');
 	$target=str_replace('./','',$_GET['hasdowngrade']);
@@ -113,4 +122,90 @@ else if (isset($_GET['hasdowngrade'])&&isset($_GET['format'])) {
 	}
 	
 }
+else if (isset($_GET['listalbvids'])){
+	//PARAM album title
+	//outputs one line with vid base name, one line with vid title, one line with vid basename, and so on
+	$currentfreshness=0;
+	$cachedfreshness=0;
+	if (file_exists('./storedfreshness.dat')){$currentfreshness=file_get_contents('./storedfreshness.dat');}
+
+	$format=$formats[0];
+	
+	$id=$_GET['listalbvids'];
+	
+	header('Content-Type: text/plain; charset=utf-8');
+	$cached=true;
+	if (file_exists('./apicache.dat')){
+		$cachedoutput=unserialize(file_get_contents('./apicache.dat'));
+		$cachedfreshness=intval($cachedoutput[$id]['freshness']);
+		
+	}
+	else
+	{
+		$cachedfreshness=0;
+		$cached=false;
+	}
+	if (true!==scandir('./audio')&&$numberoffiles!==count(scandir('./audio')))
+	{
+		$files=scandir('./audio');
+		$albums=Array();
+		foreach ($files as $file){
+			if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+				$albums[filemtime('./audio/'.$file)]=filemtime('./audio/'.$file);
+		
+			}
+		}
+		krsort($albums);
+
+		$currentfreshness=intval(array_keys($albums)[0]);
+		file_put_contents('./numberoffiles.dat', count(scandir('./audio')));
+		file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	else if (true!==scandir('./audio'));
+	{
+			$currentfreshness=time();
+			
+			file_put_contents('./numberoffiles.dat', '0');
+				
+			
+			file_put_contents('./storedfreshness.dat', $currentfreshness);
+		
+	}
+	if ($cachedfreshness>=$currentfreshness&&$cached){
+		echo $cachedoutput[$id]['data'];
+		
+	}
+	else {
+		
+			//outdated cache
+
+
+	
+	
+	
+		$files=scandir('./audio');
+		sort($files);
+		$data='';
+			foreach ($files as $file) {
+				if (!is_dir($file)){
+				if (strpos($file,'.album.txt')==strlen($file)-10&&trim(file_get_contents('./audio/'.$file))==$_GET['listalbvids']){
+					$data.=str_replace('.album.txt', '', $file)."\n";
+					$data.=trim(file_get_contents('./audio/'.str_replace('.album.txt', '.title.txt', $file)))."\n";
+					
+					
+				
+				
+				}
+			}
+		}
+		$cachedoutput[$id]['freshness']=time();
+		$cachedoutput[$id]['data']=serialize($data);
+		file_put_contents('./apicache.dat', serialize($cachedoutput));
+
+		
+		echo $data;
+	}
+}
+
 ?>
