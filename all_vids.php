@@ -89,7 +89,15 @@ if (file_exists('./vidcache.dat')){
 	foreach ($arts as $art){
 		$col='';
 		if ($art==$selart){$col='background-color:white;';}
-		echo '<span style="'.$col.'">[<a href="?a='.urlencode($art).'">'.htmlspecialchars($art).'</a>]</span> ';
+		echo '<span style="'.$col.'">[<a href="?a='.urlencode($art).'">'.htmlspecialchars($art).'</a>';
+		
+		foreach ($hlartists as $tis){
+			if (isset($tis['name'])&&$tis['name']==$art){
+				echo ' ('.htmlspecialchars($tis['styles']).')';
+			}
+		}
+		
+		echo ']</span> ';
 	}
 	echo '<hr/>';
 	if ($selart!=''){
