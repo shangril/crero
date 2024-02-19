@@ -18,7 +18,7 @@ $context = stream_context_create($options);
 
  $thumbz=array_diff(scandir('./thumbcache'), Array ('..', '.'));
  foreach ($thumbz as $thumb){
-	 if (floatval(filectime('./thumbcache/'.$thumb)+(4*2419200))<=microtime(true)){//2419200 = 4*60*60*24*7
+	 if (floatval(filemtime('./thumbcache/'.$thumb)+(4*2419200))<=microtime(true)){//2419200 = 4*60*60*24*7
 		 unlink ('./thumbcache/'.$thumb);
 	 }
 	 
