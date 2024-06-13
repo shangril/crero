@@ -6,8 +6,48 @@ if (!file_exists('./audio')){
 
 
 $formats=array('mp4');
+
+if (isset($_GET['listallvids'])){
+	//works only with mp4 vids
+	if (in_array('mp4', $formats)){
+
+		header('Content-Type: text/plain; charset=utf-8');
+
+		$res=array();
+		$al=array();
+		$title=array();
+		$desc=array();
+		$art = array();
+		
+		
+		$files=scandir('./audio');
+		foreach ($files as $file) {
+			if (!is_dir($file)){
+				
+					if (strpos ($file, '.mp4')==(strlen($file)-4)){
+						array_push($res, $file);
+					
+						array_push($art, trim(file_get_contents(str_replace('.mp4', '.artist.txt', 'audio/'.$file))));
+						
+						array_push($al, trim(file_get_contents(str_replace('.mp4', '.album.txt', 'audio/'.$file))));
+						array_push($title, trim(file_get_contents(str_replace('.mp4', '.title.txt', 'audio/'.$file))));
+						array_push($desc, trim(file_get_contents(str_replace('.mp4', '.description.txt', 'audio/'.$file))));
+						
+					}
+			}
+		
+		}
+		for ($i=0;$i<count($res);$i++){
+			echo $res[$i]."\n";
+			echo $art[$i]."\n";
+			echo $title[$i]."\n";
+			echo $al[$i]."\n";
+			echo $desc[$i]."\n";
+		}
+	}
+}
 	
-if (isset($_GET['hasalbum'])){
+else if (isset($_GET['hasalbum'])){
 	header('Content-Type: text/plain; charset=utf-8');
 
 

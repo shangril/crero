@@ -81,6 +81,7 @@ if (file_exists('./vidcache.dat')){
 </head>
 <body>
 	<a href="./"><?php echo htmlspecialchars($sitename);?> Home</a> &gt; All vids<hr/>
+	<a href="./random_vids.php">All videos in random mode</a><br/>
 	<?php
 	$arts = explode ("\n", file_get_contents('./d/artists.txt'));
 	sort($arts);
