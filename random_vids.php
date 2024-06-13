@@ -33,6 +33,7 @@ require_once('./config.php');
 	$title=array();
 	$desc=array();
 	$art = array();
+	$allink = array();
 	
 	
 	for ($i=0;$i<count($tokens);$i++){
@@ -44,6 +45,7 @@ require_once('./config.php');
 			array_push($title, $tokens[$i]);
 			$i++;
 			array_push($al, $tokens[$i]);
+			array_push($allink, './?album='.urlencode($tokens[$i]));
 			$i++;
 			array_push($desc, $tokens[$i]);
 		}
@@ -161,6 +163,6 @@ require_once('./config.php');
 	<a href="./"><?php echo htmlspecialchars($sitename);?> Home</a> &gt; Random vids<hr/>
 	<br/>
 <div id="splash">000</div>
-<video controls src="<?php echo $videourl.rawurlencode($res[0]);?>" onEnded="next(this);">Browser has no video support</video><div><?php echo $in_title;?></div><h2><?php echo $in_art;?></h2><h3><a href="<?php echo $in_allink;?>"><?php echo $in_al; ?></a></h3><h4><?php echo $in_desc; ?></h4>
+<video controls src="<?php echo $videourl.rawurlencode($res[0]);?>" onEnded="next(this);">Browser has no video support</video><div><?php echo $in_title;?></div><h2><?php echo $in_art;?></h2><h3><a href="<?php echo $in_allink; ?>"><?php echo $in_al; ?></a></h3><h4><?php echo $in_desc; ?></h4>
 </body>
 </html>
