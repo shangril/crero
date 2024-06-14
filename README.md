@@ -149,6 +149,28 @@ Apply previous steps 1-5
 
 4. usual stuff for artist declaring and cover uploads
 
+## Video 
+
+1. dans le dossier ./video mettez un dossier qui s'appelera "audio", dedans mettez vos monbeaufichier.mp4 pour chacun de vos clips
+
+2. dans le dossier audio, pour chacun d'eux créez des fichiers texte comme cela :
+
+monbeaufichier.title.txt
+
+monbeaufichier.artist.txt
+
+monbeaufichier.album.txt
+
+monbeaufichier.description.txt
+
+J'imagine que vous comprenez. Title dedans il faut indiquer le titre de la chanson, artist son artiste, etc etc
+
+3. Ensuite dans le panneau d'admin indiquer les urls
+
+-de l'api du tiers video par exemple http:// (votre serveur) /video/api.php
+
+-du stockage des video, idem, http:// (votre serveur) /video/audio/ …avec le / final !
+
 ## Sell merch
 
 1. providing your audio and covers are here, define your products in ''material_support_and_price''. Define ''material_shipping'', ''material_currency'', and don't forget to set **your own** paypal adress for payment routing
