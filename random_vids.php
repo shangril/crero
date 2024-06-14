@@ -19,6 +19,13 @@ require_once('./config.php');
 <body onload="init();">
 	<script>
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL v3.0
+	var saved_res ;
+	var saved_title ;
+	var saved_art ;
+	var saved_al ;
+	var saved_allink ;
+	var saved_desc ;
+
 
 	<?php
 	$arts = explode ("\n", file_get_contents('./d/artists.txt'));
@@ -146,12 +153,12 @@ require_once('./config.php');
 		}
 	}
 	function init(){
-		var saved_res = res.slice();
-		var saved_title = title.slice();
-		var saved_art = art.slice();
-		var saved_al = al.slice();
-		var saved_allink = allink.slice();
-		var saved_desc = desc.slice();
+		saved_res = res.slice();
+		saved_title = title.slice();
+		saved_art = art.slice();
+		saved_al = al.slice();
+		saved_allink = allink.slice();
+		saved_desc = desc.slice();
 		
 		document.getElementById('splash').innerHTML=res.length+" videos still not played";
 	}
