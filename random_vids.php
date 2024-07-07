@@ -118,6 +118,27 @@ require_once('./config.php');
 	$in_al = $al[$z];
 	$in_allink = $allink[$z];
 	$in_desc = $desc[$z];
+	$vidtarget = $videourl.rawurlencode($res[0]);
+	$vidshare = $res[0];
+	
+	if (isset($_GET['v'])){
+
+		$zd = array_search($_GET['v'], $rescopy);
+		
+		if ($zd !== false){
+				$in_title = $title[$zd];
+				$in_art = $art[$zd];
+				$in_al = $al[$zd];
+				$in_allink = $allink[$zd];
+				$in_desc = $desc[$zd];
+
+				$vidtarget = $videourl.rawurlencode($rescopy[$zd]);
+			
+		}
+		
+		
+		
+	}
 	
 	?>
 	
@@ -130,7 +151,10 @@ require_once('./config.php');
 		v.nextElementSibling.nextElementSibling.innerHTML = art[i];
 		v.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '<a href="'+allink[i]+'">'+al[i]+'</a>';
 		v.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = desc[i];
-		
+		v.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.href="?v="+encodeURI(res[i].replace("<?php echo $videourl;?>",""));
+
+
+
 		v.play();
 		
 		res.splice(i, 1);
@@ -170,6 +194,6 @@ require_once('./config.php');
 	<a href="./"><?php echo htmlspecialchars($sitename);?> Home</a> &gt; Random vids<hr/>
 	<br/>
 <div id="splash">000</div>
-<video controls src="<?php echo $videourl.rawurlencode($res[0]);?>" onEnded="next(this);">Browser has no video support</video><div><?php echo $in_title;?></div><h2><?php echo $in_art;?></h2><h3><a href="<?php echo $in_allink; ?>"><?php echo $in_al; ?></a></h3><h4><?php echo $in_desc; ?></h4>
+<video controls src="<?php echo $vidtarget;//$videourl.rawurlencode($res[0]);?>" onEnded="next(this);">Browser has no video support</video><div><?php echo $in_title;?></div><h2><?php echo $in_art;?></h2><h3><a href="<?php echo $in_allink; ?>"><?php echo $in_al; ?></a></h3><h4><?php echo $in_desc; ?></h4><a id="share" target="_blank" href="?v=<?php echo urlencode($vidshare);?>">Share?</a>
 </body>
 </html>
