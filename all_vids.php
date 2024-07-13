@@ -193,7 +193,7 @@ if (file_exists('./vidcache.dat')){
 							echo '<a href="'.$videourl.rawurlencode($array[$i]).'.'.$format.'" download>'.htmlspecialchars($format).'</a>';
 							}
 						echo '<br/>';
-						echo '<a target="_blank" src="./random_vids.php?v='.urlencode($array[$i]).'">Share?</a><br/>';
+						echo '<a target="_blank" href="./random_vids.php?v='.urlencode($array[$i]).'">Share?</a><br/>';
 						$i++;
 					
 					}
