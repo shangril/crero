@@ -1407,7 +1407,7 @@ try {
 <noscript >Dear noscripter, <br/> as of most of music-featured website, this website relies heavily on Javascript, especially to allow continuous playing album after album, because nowadays' browsers won't allow an autoplay upon page load. AJAX is required. <br/>
 We suggest you to look at the LibreJS javascript extension, which blocks javascripts, and allows, and unblock, Javascript which is free software and human readable and therefore checked for safety and privacy compliance. It is edited by the Free Software Foundation (fsf.org). </noscript>
 </span><span style="float:right;text-align:right;"><?php if ($videoapiurl!==false){echo '<a href="./random_vids.php">Random videos</a><br/><a href="./all_vids.php">Browse videos</a>';} ?></span><br style="clear:both;"/>
-<div id="twirling" style="position:fixed;opacity:0.9;top:0px;left:0px;background-color:white;display:block;z-index:200;color:black;font-size:3000%;text-align:center;width:100%;height:100%;">-
+<div id="twirling" style="position:fixed;opacity:0.7;top:0px;right:0px;background-color:white;display:block;z-index:200;color:black;font-size:100%;text-align:center;">-
 </div>
 <span id="twirling_message" style="position:fixed;opacity:0.8;bottom:0px;left:0px;background-color:white;display:block;z-index:202;color:black;font-size:100%;text-align:center;width:100%;">Initializing...</span>
 
