@@ -14,6 +14,9 @@ $artist='My Rock n\' Roll Artist Name';
 //Like instead of Rock n' Roll, just write Rock n\' Roll
 
 
+old_user_agent = ini_get('user_agent');
+ini_set('user_agent', 'Crero (https://github.com/shangril/crero)');
+
 ?>
 
 		<hr/>
@@ -135,5 +138,8 @@ $artist='My Rock n\' Roll Artist Name';
 		
 		?>" title="<?php echo htmlspecialchars($artist);?> albums on <?php echo explode("/", $server_root)[1]; ?>" style="width:100%;height:1024px;"></iframe>
 		
+		<?php
+		ini_set('user_agent', $old_user_agent);
+		?>
 		
 <!-- END EMBED CODE FOR ARTIST DISCOGRAPHY AND PLAYER -->
