@@ -15,7 +15,7 @@ $artist='My Rock n\' Roll Artist Name';
 
 
 old_user_agent = ini_get('user_agent');
-ini_set('user_agent', 'Crero (https://github.com/shangril/crero)');
+ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crero)');
 
 ?>
 
