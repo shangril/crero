@@ -3,9 +3,18 @@ error_reporting(0);
 require_once('config.php');
 //error_reporting(E_ALL);
 
-//first off let's make a bit of cleaning on audio tiers
-file_get_contents ($clewnapiurl.'?cleanup=1');
-file_get_contents ($serverapi.'?cleanup=1');
+//first off let's make a bit of cleaning on audio tiers every 4 hours
+$last_cleanup=file_get_contents('last_cleanup.dat');
+if ($last_cleanup===false){
+	$last_cleanup=0;
+}
+$last_cleanup=floatval($last_cleanup);
+if ($last_cleanup+14400<microtime(true)){
+	file_get_contents ($clewnapiurl.'?cleanup=1');
+	file_get_contents ($serverapi.'?cleanup=1');
+
+	file_put_contents('last_cleanup.dat', microtime(true));
+}
 
 header( 'Content-Type: text/plain; charset=utf-8');
 if (!array_key_exists('a', $_GET)){
@@ -13,7 +22,7 @@ if (!array_key_exists('a', $_GET)){
 	exit(0);
 }
 
-$provided_api_versions = '1';
+$provided_api_versions = '1 2';
 	//must be a (string) list of space separated integers >0 ; each of these integers indicates that the corresponding API version is supported by this instance
 	//0 is a reserved value used to indicate that the requesting (CreRo or YP server) client cannot access this API, either that it is host-based blacklisted by the instance
 	//or that the instance has an host-based whiteslist and that the requesting server is not listed in it
@@ -342,7 +351,61 @@ switch ($_GET['a']) {
 	//Then the API V3 commands
 	//(...)
 	//And so on
+	case 'list_albums_with_covers':
+		$list_albums = '';
+		//Step 1 get streaming albums
+		if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
+			$list_albums =  readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true);
+		}
+		else {
+			$ret=file_get_contents($serverapi.'?listalbums='.urlencode(($_GET[$_GET['a']])));
+			
+			if ($ret!==false){
+				$ret=html_entity_decode($ret);
+				writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$serverapi, true, $ret); 
+				$list_albums = $ret;
+			}		
+		}
+		$arr_alb_str = explode("\n", $list_albums);
+		$arr_alb_str = array_diff($arr_alb_str, Array(''));
 		
+		$list_albums = '';
+		//Step 2 get d/l albums
+				if (false!==readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $YP_APIMisconfiguredDateOnHostingToleranceWindow)){
+			$list_albums =  readCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true);
+		}
+		else {
+			$ret=file_get_contents($clewnapiurl.'?listalbums='.urlencode(($_GET[$_GET['a']])));
+			
+			if ($ret!==false){
+				$ret=html_entity_decode($ret);
+				writeCache($version, $_GET['a'], strval($_GET[$_GET['a']]),$clewnapiurl, true, $ret); 
+				$list_albums = $ret;
+			}		
+		}
+		$arr_alb_dl = explode ("\n", $list_albums);
+		$arr_alb_dl = array_diff($arr_alb_dl, Array(''));
+		
+		
+		$arr_alb = array_merge($arr_alb_str, $arr_alb_dl);
+		
+		$coversdat = file_get_contents('./d/covers.txt');
+		if ($coverdat === false){$coverdat=implode("\n\n", $arr_alb).'\n';}
+		$arr_covers = explode ("\n", $coversdat);
+		
+		$albcov = Array();
+				
+		for ($i=0;$i<count($arr_covers);$i++) {
+			$albcov[$arr_covers[$i]]=$arr_covers[$i+1];
+			$i++;
+		}
+		
+		foreach ($arr_alb as $thing){
+			echo $thing."\n".$albcov[$thing]."\n";
+		}
+		
+		
+		break;
 	
 	default: 
 		echo 'Unsupported api action';
