@@ -9,6 +9,9 @@ var infoselected=null;
 var infoselected=null;
 var size;
 
+var album_counter=document.getElementsByClassName('lineTranslate').lenght;
+
+
 var thumbnail_counter=0;
 var thumbnail_max=0;
 
@@ -153,9 +156,10 @@ function get_overloadtimer(){
 }
 
 
-
+var titled=false;
 function update_title(){
-	if(document.getElementById('main_title')!=null){
+	if(document.getElementById('main_title')!=null&&!titled){
+		titled=true;
 		tobeprepend='';
 		if (get_album()!=''){
 			tobeprepend=get_album();
@@ -522,6 +526,11 @@ function update_ajax_body(http_url_target, comesfrominfiniteloop){
 	if (comesfrominfiniteloop!=undefined){
 		infiniteloop=true;
 	}
+	
+	initlock=false;
+	blockmoved=false;
+	titled=false;
+	
 	
 	set_page_load(false);
 	set_page_init(false);
@@ -1175,8 +1184,57 @@ function get_creroypservices(){
 function set_creroypservices(cyparg){
 	creroypservices=parseInt(cyparg);
 }
+function gogetit(){
+	if (!blockmoved){blockmove();}
+}
+var blockmoved=false;
+
+function blockmove(){
+
+	
+	if (blockmoved){
+		return;
+	}
+	//blockmoved = true;
+	
+	
+		//blocks move!  New page design thx to Fauve's advices !
+	blocksToMove=['splash-','links-','recent-','radio-','menu-','artists-','donate-'];
+	for (i=0;i<blocksToMove.length;i++){
+		if (document.getElementById(blocksToMove[i]+'wrapper')!=null&&document.getElementById(blocksToMove[i]+'dest')!=null){
+			code=document.getElementById(blocksToMove[i]+'wrapper').innerHTML;
+			document.getElementById(blocksToMove[i]+'dest').innerHTML=code;
+			document.getElementById(blocksToMove[i]+'wrapper').innerHTML='';
+			
+		//
+		}
+	}
+	if (document.getElementById('title-dest')!=null && document.getElementById('title')!=null){
+		
+		document.getElementById('title-dest').innerHTML=document.getElementById('title').innerHTML;
+		document.getElementById('title-dest').style.textAlign='center';
+	}
+}
+
+
+
 //here the main logic of each page display
+var initlock=false;
+
 function init_page() {
+	if (initlock){
+		return;
+	}
+	initlock=true;
+	if (get_page_init()){
+		return;}
+		
+	set_page_init(true);
+	
+	
+	
+	
+	
 	radiomsg='fetching data...';
 	
 	uaxhttpattempt=0;
@@ -1211,7 +1269,6 @@ function init_page() {
 	set_track(update_track());
 	set_artist(update_artist());
 	
-	update_title();
 
 	update_isindex();
 	//for everyone's safety, let's make an asynchronous call to crero-yp-api, which amongs lots of things, does routine cleanup on media tiers
@@ -1421,20 +1478,7 @@ if (typeof update_cart === "function"){
 update_cart();
 }
 
-//blocks move!  New page design thx to Fauve's advices !
-blocksToMove=['splash-','links-','recent-','radio-','menu-','artists-','donate-'];
-for (i=0;i<blocksToMove.length;i++){
-	if (document.getElementById(blocksToMove[i]+'wrapper')!=null&&document.getElementById(blocksToMove[i]+'dest')!=null){
-		code=document.getElementById(blocksToMove[i]+'wrapper').innerHTML;
-		document.getElementById(blocksToMove[i]+'dest').innerHTML=code;
-		document.getElementById(blocksToMove[i]+'wrapper').innerHTML='';
-	}
-}
-if (get_isindex()){
-	
-	document.getElementById('title-dest').innerHTML=document.getElementById('title').innerHTML;
-	document.getElementById('title-dest').style.textAlign='center';
-}
+
 
 //then, sanitize the display URL with something accurate
 
@@ -1521,7 +1565,10 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 	update_autoplay();
 
 	if (activatehtmlcache){
-		if((get_isindex()&&!get_page_init())){increment_overload_track_counter();};checkOverload(true);
+		if((get_isindex())){increment_overload_track_counter();}
+		if (typeof checkOverload === "function"){
+			checkOverload(true);
+		}
 	}
 	if (document.getElementById('infiniteloop')!=null){
 		set_page_init(true);
@@ -1530,7 +1577,10 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 		document.getElementById('infiniteloop').click();
 	}
 
-	set_page_init(true);
+
+
+
+	initlock=false;
 }//function initpage
 
 
