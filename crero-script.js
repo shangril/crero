@@ -1565,7 +1565,7 @@ if (document.getElementById('bodyajax')!==null){//this should never happen
 	update_autoplay();
 
 	if (activatehtmlcache){
-		if((get_isindex())){increment_overload_track_counter();}
+		if(true){increment_overload_track_counter();}
 		if (typeof checkOverload === "function"){
 			checkOverload(true);
 		}
