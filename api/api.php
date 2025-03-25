@@ -269,7 +269,7 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 	//get the track title for a specified basename
-	$file=str_replace ('./', '', $_GET['gettitle']);
+	$file=str_replace ('./', '', basename($_GET['gettitle']));
 	$title='';
 
 	$getID3 = new getID3;
@@ -1283,6 +1283,20 @@ header('Content-Type: text/plain; charset=utf-8');
 			file_put_contents('./apicache-artist-list.dat', serialize($cachedoutput));
 
 		}
+}
+else if (isset($_GET['length'])){
+	$target=basename($_GET['length']);
+	
+	if (file_exists('./audio/'.$target)){
+		echo filesize('./audio/'.$target);
+	}
+}
+else if (isset($_GET['pubdate'])){
+	$target=basename($_GET['pubdate']);
+	
+	if (file_exists('./audio/'.$target)){
+		echo filemtime('./audio/'.$target);
+	}
 }
 else if (array_key_exists('cleanup', $_GET)){
 	$filez=scandir('audio/');
