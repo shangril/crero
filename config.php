@@ -55,7 +55,10 @@ if (isset($_GET['purge'])){
 
 
 //a first thing, we are going to disable the Site, not the API of it (we don't want to send HTML about a misconfigured file in reply to an API request
-if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SELF'], '/crero-yp-api.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/crero-yp-api.php'))
+if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SELF'], '/crero-yp-api.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/crero-yp-api.php')
+	&&
+	!strstr($_SERVER['PHP_SELF'], '/rss/index.php')&&strpos($_SERVER['PHP_SELF'], '/rss/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/rss/index.php')
+	)
 {
 	if (!array_key_exists('no-infinite-loop-please', $_GET)){//we don't want to test ANYTHING it is a hook call from this script to the homepage cuz it would cause infinite loop
 			//run only if wizard hasn't been completed

@@ -11,6 +11,9 @@ else {
 
 require_once('./../Redist-LGPL/cretID3/getid3/getid3.php');
 
+if (!file_exists('./metadatacache')){
+	mkdir ('./metadatacache');
+}
 if (!file_exists('./audio')){
 	mkdir ('./audio');
 }
@@ -237,6 +240,7 @@ header('Content-Type: text/plain; charset=utf-8');
 
 	//get the file basenames of the tracks for a specified album 
 	$album=$_GET['gettracks'];
+
 	$files=scandir('./audio');
 	$tracks=Array();
 	foreach ($files as $file){
@@ -266,7 +270,17 @@ header('Content-Type: text/plain; charset=utf-8');
 }
 else if (isset($_GET['gettitle'])) {
 header('Content-Type: text/plain; charset=utf-8');
-
+	//really simple caching mechanism
+	if (file_exists('./metadatacache/'.basename($_GET['gettitle']).$format.'.title.txt')){
+		if (filemtime('./metadatacache/'.basename($_GET['gettitle']).$format.'.title.txt')>filemtime('./audio/'.basename($_GET['gettitle']).$format)){
+			if (($ret=file_get_contents('./metadatacache/'.basename($_GET['gettitle']).$format.'.title.txt'))!==false){
+				echo $ret;
+				die();
+			}
+		}
+		
+		
+	}
 
 	//get the track title for a specified basename
 	$file=str_replace ('./', '', basename($_GET['gettitle']));
@@ -277,7 +291,7 @@ header('Content-Type: text/plain; charset=utf-8');
 	getid3_lib::CopyTagsToComments($info); 
 	$title=$info['comments_html']['title'][0];
 			
-			
+	file_put_contents('./metadatacache/'.basename($_GET['gettitle']).$format.'.title.txt', $title."\n");		
 
 
 	echo $title."\n";
@@ -291,10 +305,20 @@ header('Content-Type: text/plain; charset=utf-8');
 }
 else if (isset($_GET['getartist'])) {
 header('Content-Type: text/plain; charset=utf-8');
+		//really simple caching mechanism
+	if (file_exists('./metadatacache/'.basename($_GET['getartist']).$format.'.artist.txt')){
+		if (filemtime('./metadatacache/'.basename($_GET['getartist']).$format.'.title.txt')>filemtime('./audio/'.basename($_GET['getartist']).$format)){
+			if (($ret=file_get_contents('./metadatacache/'.basename($_GET['getartist']).$format.'.artist.txt'))!==false){
+				echo $ret;
+				die();
+			}
+		}
+		
+		
+	}
 
-
-	//get the track title for a specified basename
-	$file=str_replace ('./', '', $_GET['getartist']);
+	//get the artist title for a specified basename
+	$file=str_replace ('./', '', basename($_GET['getartist']));
 	$title='';
 
 	$getID3 = new getID3;
@@ -303,6 +327,8 @@ header('Content-Type: text/plain; charset=utf-8');
 	$artist=$info['comments_html']['artist'][0];
 			
 			
+			
+	file_put_contents('./metadatacache/'.basename($_GET['getartist']).$format.'.artist.txt', $artist."\n");		
 
 
 	echo $artist."\n";
@@ -1296,6 +1322,17 @@ else if (isset($_GET['pubdate'])){
 	
 	if (file_exists('./audio/'.$target)){
 		echo filemtime('./audio/'.$target);
+	}
+}
+else if (isset($_GET['duration'])){
+	$file=basename($_GET['duration']);
+	
+	
+	if (file_exists('./audio/'.$file)){
+
+		$getID3 = new getID3;
+		$info = $getID3->analyze('audio/'.$file);
+		echo $info['playtime_seconds'];
 	}
 }
 else if (array_key_exists('cleanup', $_GET)){
