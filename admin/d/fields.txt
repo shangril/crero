@@ -146,5 +146,7 @@ RadioIsDisabled.txt
 Only useful if hasRadio is activated. If hasRadio is activated, but also this option is set to 1 ("active", 0 is the default and means inactive), the homepage of the site will still have a radio link, but the radio page will not featured the player, and the radio stream will be disabled. Instead of the player, under the description of the radio, a free form ./radio_disabled.html html snippet will be inserted if existing, to explain why the radio is not active. 
 RandomPlayer.txt
 If set to 1, a "The Great Random Player", leading to ./random/ is displayed on home page. The Random Player relies on RadioBase and RadioFeatured options to feed its playlists. Default is 0 (no link). 
+Podcast.txt
+If set to 1, a "Podcast (click to copy to clipboard)" link is displayed on home page. It allows to copy the URL of your (free download) audio's podcast to the user clipboard to then paste it in a podcast application, to subscribe to your label's new music feed. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

@@ -296,6 +296,7 @@ if (array_key_exists('noscript', $_GET)&&$_GET['noscript']=='footer'){
 <head>
 <link rel="shortcut icon" href="./<?php echo $favicon;?>" />
 <link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+<link rel="alternate" type="application/rss+xml" href="//<?php echo $server; ?>/rss" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
@@ -1519,18 +1520,18 @@ if (isset ($_GET['message'])&&isset($message[$_GET['message']])){
 echo '<span id="links-wrapper">';
 if (count($socialmediaicons)>0){
 	//let's display the social media icons
-	echo '<span style="float:left;">';
+	echo '<hr/><span style="float:left;">Various stuff: ';
 	
 	foreach ($socialmediaicons as $socialicon){
 		echo '<strong><a target="new" href="'.$socialicon['link'].'" style="color:'.$socialicon['color'].';background-color:'.$socialicon['background-color'].';border-radius:3px;">';
 		
-		echo htmlspecialchars($socialicon['letter']);
+		echo str_replace(' ', '&nbsp;', htmlspecialchars($socialicon['letter']));
 		
 		echo '</a></strong> ';
 		
 		
 	}
-	echo '</span>';
+	echo '</span><hr/>';
 }
 echo '</span>';
 echo '<span id="donate-wrapper">';
@@ -3150,6 +3151,23 @@ echo $pageFooterSplash;
 <span id="artists-dest" style="margin-right:6%;"></span>
 <?php if ($RandomPlayer){
 	echo '<br/><a href="./random/">The Great Random Player</a>';
+	
+}?>
+<?php if ($RandomPlayer&&$Podcast){
+	echo ' - ';
+	
+}?>
+<?php if (!$RandomPlayer&&$Podcast){
+	echo '<br/>';
+	
+}?>
+<?php if ($Podcast){
+	$protocol='http://';
+	if (isset($_SERVER['HTTPS'])){
+		$protocol='https://';
+	}
+	
+	echo '<a href="javascript:void(0)" onclick="navigator.clipboard.writeText(\''.$protocol.$server.'/rss'.'\');this.nextElementSibling.innerHTML=\' <strong>Link copied to clipboard!</strong>\';">Podcast</a><em> (click to copy to clipboard)</em>';
 	
 }?>
 <hr/>

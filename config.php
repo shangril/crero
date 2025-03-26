@@ -679,6 +679,9 @@ $RandomPlayer=false;
 if (file_exists('./d/RandomPlayer.txt')){
 	$RandomPlayer=boolval(trim(file_get_contents('./d/RandomPlayer.txt')));
 }
-
+$Podcast=false;
+if (file_exists('./d/Podcast.txt')){
+	$Podcast=boolval(trim(file_get_contents('./d/Podcast.txt')));
+}
 
 ?>
