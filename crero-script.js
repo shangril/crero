@@ -1195,7 +1195,7 @@ function blockmove(){
 	if (blockmoved){
 		return;
 	}
-	//blockmoved = true;
+	blockmoved = true;
 	
 	
 		//blocks move!  New page design thx to Fauve's advices !
