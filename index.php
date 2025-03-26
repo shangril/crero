@@ -3149,26 +3149,25 @@ echo $pageFooterSplash;
 <span id="menu-dest"></span>
 <span id="links-dest"></span>
 <span id="artists-dest" style="margin-right:6%;"></span>
+<?php if($RandomPlayer||$Podcast){
+	echo 'need more? <ul>';
+}?>
 <?php if ($RandomPlayer){
-	echo '<br/><a href="./random/">The Great Random Player</a>';
+	echo '<li><a href="./random/">The Great Random Player</a></li>';
 	
 }?>
-<?php if ($RandomPlayer&&$Podcast){
-	echo ' - ';
-	
-}?>
-<?php if (!$RandomPlayer&&$Podcast){
-	echo '<br/>';
-	
-}?>
+
 <?php if ($Podcast){
 	$protocol='http://';
 	if (isset($_SERVER['HTTPS'])){
 		$protocol='https://';
 	}
 	
-	echo '<a href="javascript:void(0)" onclick="navigator.clipboard.writeText(\''.$protocol.$server.'/rss'.'\');this.nextElementSibling.innerHTML=\' <strong>Link copied to clipboard!</strong>\';">Podcast</a><em> (click to copy to clipboard)</em>';
+	echo '<li><a href="javascript:void(0)" onclick="navigator.clipboard.writeText(\''.$protocol.$server.'/rss'.'\');this.nextElementSibling.innerHTML=\' <strong>Link copied to clipboard!</strong>\';">Podcast</a><em> (click to copy to clipboard)</em></li>';
 	
+}?>
+<?php if($RandomPlayer||$Podcast){
+	echo '</ul>';
 }?>
 <hr/>
 
