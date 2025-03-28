@@ -297,6 +297,15 @@ if (array_key_exists('noscript', $_GET)&&$_GET['noscript']=='footer'){
 <link rel="shortcut icon" href="./<?php echo $favicon;?>" />
 <link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
 <link rel="alternate" type="application/rss+xml" href="//<?php echo $server; ?>/rss" />
+<?php
+	$artists_file=trim(file_get_contents('./d/artists.txt')); 
+
+	$artists=explode("\n", $artists_file);
+	foreach ($artists as $a){
+		echo '<link rel="alternate" type="application/rss+xml" href="//'.$server.'./rss/?artist='.urlencode($a).'"/>'."\n";
+
+	}
+?>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
@@ -1045,6 +1054,16 @@ if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
 <link rel="shortcut icon" href="./<?php echo $favicon;?>" />
 <link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="alternate" type="application/rss+xml" href="//<?php echo $server; ?>/rss" />
+<?php
+	$artists_file=trim(file_get_contents('./d/artists.txt')); 
+
+	$artists=explode("\n", $artists_file);
+	foreach ($artists as $a){
+		echo '<link rel="alternate" type="application/rss+xml" href="//'.$server.'./rss/?artist='.urlencode($a).'"/>'."\n";
+
+	}
+?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />
 <meta charset="UTF-8"/>
@@ -3163,8 +3182,13 @@ echo $pageFooterSplash;
 		$protocol='https://';
 	}
 	
-	echo '<li><a href="javascript:void(0)" onclick="navigator.clipboard.writeText(\''.$protocol.$server.'/rss'.'\');this.nextElementSibling.innerHTML=\' <strong>Link copied to clipboard!</strong>\';">Podcast</a><em> (click to copy to clipboard)</em></li>';
-	
+	echo '<li><a href="javascript:void(0)" onclick="navigator.clipboard.writeText(\''.$protocol.$server.'/rss'.'\');this.nextElementSibling.innerHTML=\' <strong>Link copied to clipboard!</strong>\';">General podcast</a><em> (click to copy to clipboard)</em></li>';
+	echo '<li>';
+	echo 'Artist podcasts: <em>(click to copy to clipboard)<em><span>';
+	foreach ($artists as $a){
+		echo '[<a href="javascript:void(0)" onclick="navigator.clipboard.writeText(\''.$protocol.$server.'/rss/?artist='.urlencode($a).'\');alert(\'Link copied to clipboard!\');">'.str_replace(" ", "&nbsp;", htmlspecialchars($a)).'</a>] ';
+	}
+	echo '</span></li>';
 }?>
 <?php if($RandomPlayer||$Podcast){
 	echo '</ul>';
