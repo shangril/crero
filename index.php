@@ -1060,7 +1060,7 @@ if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
 
 	$artists=explode("\n", $artists_file);
 	foreach ($artists as $a){
-		echo '<link rel="alternate" type="application/rss+xml" href="//'.$server.'./rss/?artist='.urlencode($a).'"/>'."\n";
+		echo '<link rel="alternate" type="application/rss+xml" href="//'.$server.'/rss/?artist='.urlencode($a).'"/>'."\n";
 
 	}
 ?>
