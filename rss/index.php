@@ -82,10 +82,10 @@ if ($freshness===false){
 	$freshness=0;
 }
 
-if(file_exists($art64.'./rss.xml')&&file_exists('./freshness.txt')){
+if(file_exists('./'.$art64.'rss.xml')&&file_exists('./'.$art64.'freshness.txt')){
 
-	if ($freshness!==false&&$freshness<=floatval(file_get_contents('./freshness.txt'))){
-		echo file_get_contents($art64.'./rss.xml');
+	if ($freshness!==false&&$freshness<=floatval(file_get_contents('./'.$art64.'freshness.txt'))){
+		echo file_get_contents('./'.$art64.'rss.xml');
 		die();
 	}
 }
@@ -201,7 +201,11 @@ if ($artlist!==false){
 		
 			$itemcount++;
 			$ret.='<item>';
-			$title_cdata = html_entity_decode($artist).' - '.html_entity_decode($title).' ('.html_entity_decode($albumlist[$trackitem]).')';
+			$title_cdata = '';
+			if (count($artists)>1){
+				$title_cdata .= html_entity_decode($artist).' - ';
+			}
+			$title_cdata .= html_entity_decode($title).' ('.html_entity_decode($albumlist[$trackitem]).')';
 			$ret.='<title>'.xmlcdata($title_cdata).'</title>';
 			
 			if (false!==($length=file_get_contents($clewnapiurl.'?length='
@@ -251,10 +255,10 @@ if ($artlist!==false){
 		
 		//Saving the cache
 		file_put_contents('./'.$art64.'rss.xml', $ret);
-		file_put_contents('./freshness.txt', microtime(true));
+		file_put_contents('./'.$art64.'freshness.txt', microtime(true));
 	} 
-	else if (file_exists($art64.'./rss.xml')){
-		echo file_get_contents($art64.'./rss.xml');
+	else if (file_exists('./'.$art64.'rss.xml')){
+		echo file_get_contents('./'.$art64.'rss.xml');
 		
 	}
 }
