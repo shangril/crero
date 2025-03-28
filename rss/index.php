@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/rss+xml; charset=utf-8');
-
+function xmlcdata($arg){
+	return '<![CDATA['.$arg.']]>';
+}
 if(!file_exists('./metadatacache')){
 	mkdir('./metadatacache');
 }
@@ -18,10 +20,21 @@ if (!file_exists('../d/wizard_completed.txt')){
 	die();
 	//the initial CMS setup hasn't been completed
 }
+$art64='';
 
-	
-if (file_exists('./rss.xml')&&(floatval(filemtime('./rss.xml'))+floatval(24*3600))>microtime(true)){
-	echo file_get_contents('./rss.xml');
+$artlist=file_get_contents('../d/artists.txt');
+if ($artlist!==false){
+	$artists=explode("\n", trim($artlist));
+}
+if (isset($_GET['artist'])){
+	if (!in_array($_GET['artist'], $artists)){
+		die();
+	}
+	$art64=str_replace('/', '_', base64_encode($_GET['artist']));
+	$artists = Array($_GET['artist']);
+}	
+if (file_exists('./'.$art64.'rss.xml')&&(floatval(filemtime('./'.$art64.'rss.xml'))+floatval(24*3600))>microtime(true)){
+	echo file_get_contents('./'.$art64.'rss.xml');
 	die();
 }
 
@@ -69,18 +82,15 @@ if ($freshness===false){
 	$freshness=0;
 }
 
-if(file_exists('./rss.xml')&&file_exists('./freshness.txt')){
+if(file_exists($art64.'./rss.xml')&&file_exists('./freshness.txt')){
 
 	if ($freshness!==false&&$freshness<=floatval(file_get_contents('./freshness.txt'))){
-		echo file_get_contents('./rss.xml');
+		echo file_get_contents($art64.'./rss.xml');
 		die();
 	}
 }
 $ret='';
-$artlist=file_get_contents('../d/artists.txt');
-if ($artlist!==false){
-	$artists=explode("\n", trim($artlist));
-}
+
 $proto='http://';
 if (isset($_SERVER['HTTPS'])){
 	$proto='https://';
@@ -89,15 +99,32 @@ $itemcount=0;
 if ($artlist!==false){
 	$ret.='<?xml version="1.0" encoding="UTF-8" ?>';
 	$ret.='<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" version="2.0">';
-	$ret.='<channel>
-	<title>'.htmlspecialchars($sitename).'</title>
-	<description>'.htmlspecialchars($description).'</description>
-	<link>'.$proto.htmlspecialchars($server).'</link>';
+	$ret.='<channel>';
+	if (count($artists)==1){
+		$ret.='<title>'.xmlcdata($artists[0]).'</title>';
+	}
+	else {
+		$ret.='<title>'.xmlcdata($sitename).'</title>';
+	}
+	
+	$ret.='<description>';
+	$descadd = '';
+	if (isset($_GET['artist'])){
+		$descadd = $sitename.': ';
+	}
+	$ret.=xmlcdata($descadd.$description).'</description>
+	<itunes:author>'.xmlcdata($sitename).'</itunes:author>
+	<link>'.$proto.htmlspecialchars($server);
+	if (isset($_GET['artist'])){
+		$ret.='/?artist='.urlencode($artists[0]);
+		
+	}
+	$ret.='</link>';
 	$tracklist=array();
 	$albumlist=array();
 	foreach ($artists as $artist){
 		$albums=false;
-		$artist64=base64_encode($artist);
+		$artist64=str_replace('/', '_',base64_encode($artist));
 		
 		if (file_exists('./metadatacache/albums/'.$artist64.'.txt')&&
 			filemtime('./metadatacache/albums/'.$artist64.'.txt')>$freshness){
@@ -111,7 +138,7 @@ if ($artlist!==false){
 			$albdat = explode("\n", trim($albums));
 			foreach ($albdat as $album){
 				$tracks=false;
-				$album64=base64_encode($album).$artist64;
+				$album64=str_replace('/', '_',base64_encode($album)).$artist64;
 				if (file_exists('./metadatacache/tracklists/'.$album64.'.txt')&&
 					filemtime('./metadatacache/tracklists/'.$album64.'.txt')>$freshness){
 						$tracks=file_get_contents('./metadatacache/tracklists/'.$album64.'.txt');
@@ -174,7 +201,8 @@ if ($artlist!==false){
 		
 			$itemcount++;
 			$ret.='<item>';
-			$ret.='<title>'.($artist.' - '.$title.' ('.$albumlist[$trackitem].')').'</title>';
+			$title_cdata = html_entity_decode($artist).' - '.html_entity_decode($title).' ('.html_entity_decode($albumlist[$trackitem]).')';
+			$ret.='<title>'.xmlcdata($title_cdata).'</title>';
 			
 			if (false!==($length=file_get_contents($clewnapiurl.'?length='
 				.urlencode($trackitem).'.mp3'))&&is_numeric($length)){
@@ -222,11 +250,11 @@ if ($artlist!==false){
 		echo $ret;	
 		
 		//Saving the cache
-		file_put_contents('./rss.xml', $ret);
+		file_put_contents('./'.$art64.'rss.xml', $ret);
 		file_put_contents('./freshness.txt', microtime(true));
 	} 
-	else if (file_exists('./rss.xml')){
-		echo file_get_contents('./rss.xml');
+	else if (file_exists($art64.'./rss.xml')){
+		echo file_get_contents($art64.'./rss.xml');
 		
 	}
 }
