@@ -33,7 +33,7 @@ ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crer
 		 ?>;
 			
 		<?php
-		$discog = file_get_contents("<?php echo $server_root; ?>crero-yp-api.php?a=list_albums_with_covers&list_albums_with_covers=<?php echo urlencode($artist);?>");
+		$discog = file_get_contents($server_root."/crero-yp-api.php?a=list_albums_with_covers&list_albums_with_covers=".urlencode($artist));
 		if ($discog!==false){
 			$disc = explode ("\n", $discog);
 			
@@ -93,16 +93,19 @@ ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crer
 		function display(){
 
 			for (i=0;i<8;i++){
-				document.getElementById('i'+i.toString()).alt=albums[current+i];
+					if (albums[current+i]!=undefined){
+					
+					document.getElementById('i'+i.toString()).alt=albums[current+i];
+					
+					target=covers[current+i];
+					if (target==''){
+						target='../favicon.png';
+					}
+					
+					document.getElementById('i'+i.toString()).src='<?php echo $server_root;?>covers/'+encodeURI(target);
 				
-				target=covers[current+i];
-				if (target==''){
-					target='../favicon.png';
+					document.getElementById('l'+i.toString()).href='?album='+encodeURIComponent(albums[current+i])+"&c="+(current+i).toString()+"#discog";
 				}
-				
-				document.getElementById('i'+i.toString()).src='<?php echo $server_root;?>covers/'+encodeURI(target);
-			
-				document.getElementById('l'+i.toString()).href='?album='+encodeURIComponent(albums[current+i])+"&c="+(current+i).toString()+"#discog";
 			}
 
 
@@ -113,7 +116,7 @@ ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crer
 
 		</script>
 		<div style="width:100%;" onload="init();">
-		<div style="width:100%;background-color:black;font-size:200%;text-align:center;" onclick="previous();">&lt;</div>
+		<div style="width:100%;color:yellow;background-color:black;font-size:200%;text-align:center;" onclick="previous();">&lt;</div>
 		<span style="width:12.5%;float:left;" id="a0"><a id="l0"><img style="width:100%;" id="i0" src="<?php echo $server_root;?>favicon.png" /></a></span>
 		<span style="width:12.5%;float:left;" id="a1"><a id="l1"><img style="width:100%;" id="i1" src="<?php echo $server_root;?>favicon.png"/></a></span>
 		<span style="width:12.5%;float:left;" id="a2"><a id="l2"><img style="width:100%;" id="i2" src="<?php echo $server_root;?>favicon.png"/></a></span>
@@ -122,7 +125,7 @@ ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crer
 		<span style="width:12.5%;float:left;" id="a5"><a id="l5"><img style="width:100%;" id="i5" src="<?php echo $server_root;?>favicon.png"/></a></span>
 		<span style="width:12.5%;float:left;" id="a6"><a id="l6"><img style="width:100%;" id="i6" src="<?php echo $server_root;?>favicon.png"/></a></span>
 		<span style="width:12.5%;float:left;" id="a7"><a id="l7"><img style="width:100%;" id="i7" src="<?php echo $server_root;?>favicon.png"/></a></span>
-		<div style="clear:both;width:100%;background-color:black;font-size:200%;text-align:center;" onclick="next();">&gt;</div>
+		<div style="clear:both;width:100%;color:yellow;background-color:black;font-size:200%;text-align:center;" onclick="next();">&gt;</div>
 		<hr style="clear:both;"/>
 		</div>
 		<script>
