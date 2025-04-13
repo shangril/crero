@@ -14,7 +14,7 @@ $artist='My Rock n\' Roll Artist Name';
 //Like instead of Rock n' Roll, just write Rock n\' Roll
 
 
-old_user_agent = ini_get('user_agent');
+$old_user_agent = ini_get('user_agent');
 ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crero)');
 
 ?>
