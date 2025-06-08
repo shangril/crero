@@ -112,7 +112,7 @@ ini_set('user_agent', 'Musician site for Crero (https://github.com/shangril/crer
 				
 					document.getElementById('l'+i.toString()).href='?artist=<?php 
 					
-						echo $artist;
+						echo urlencode($artist);
 					
 					
 					?>&album='+encodeURIComponent(albums[current+i])+"&c="+(current+i).toString()+"#discog";
