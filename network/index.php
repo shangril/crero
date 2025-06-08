@@ -60,7 +60,7 @@ $files=scandir('./e');
 		sort($files);
 		foreach ($files as $fil)
 		{	
-			if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<(microtime(true)-6))
+			if (strstr($fil, '.dat')&&floatval(str_replace('.dat','',$fil))<(microtime(true)-12))
 			{
 				unlink('./e/'.$fil);
 				}
