@@ -412,7 +412,7 @@ echo generate_header($site_name.' - '.$site_slogan,$site_description);
 if (isset($mysession['lat'])&&isset($mysession['long'])&&isset($mysession['nick']))
 {
 	if (!(in_array('fromajax', array_keys($_GET)))&&isset($_SESSION['reallogin'])&&!isset($_POST['reallogin'])){
-		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>';
+		echo '<a href="#" style="display:block;" onclick="this.style.display=\'none\'";>Audio of this embed may be muted. Click to unmute</a>';
 		
 		
 	}
