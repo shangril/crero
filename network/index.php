@@ -5,6 +5,7 @@ chdir ('..');
 require_once ('./config.php');
 chdir ('./network');
 if (!$activatechat){
+	echo "<!DOCTYPE html><html><h1>The chatroom is currently disabled on this website</h1></html>";
 	exit(0);
 }
 
@@ -298,7 +299,7 @@ window.setInterval(resync, 3000);
 		else
 			echo 'block;';
 		
-		echo '" onclick="this.style.display=\'none\'";>Audio of this tab may be muted. Click to unmute</a>';
+		echo '" onclick="this.style.display=\'none\'";>Audio of this embed may be muted. Click to unmute</a>';
 		echo '<audio id="mus_meep"><source src="./musmeep.mp3" type="audio/mpeg"></audio>';
 		echo '<audio id="ppl_meep"><source src="./usermeep.mp3" type="audio/mpeg"></audio>';
 
