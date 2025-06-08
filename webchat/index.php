@@ -18,9 +18,28 @@ chdir ('./webchat');
 	<meta name="description" content="Chatroom - <?php echo htmlspecialchars($title.' - '.$description); ?>" />
 </head>
 <body>
-	<h4><?php echo htmlspecialchars($sitename);?> Chatroom</h4>
-	<h4><em>Quick links</em> [<a href="..">Label&nbsp;catalog</a>] [<a href="../radio">Radio</a>] [<a href="../random">Random music</a>]</h4>
-		<a name="social"><object onload="if (!nosocialupdate){updateSocialData(this);nosocialupdate=true;}" data="../network/?void=void" style="width:100%;height:495px;" width="100%" height="495"></object></a>
+	<h1><?php echo htmlspecialchars($sitename);?></h1>
+	<h2><?php echo htmlspecialchars($description);?></h2>
+	<h4><em>Quick links: </em>[Chatroom] [<a href="../?nochat=1"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;catalog</a>] [<a href="../radio"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;radio</a>] [<a href="../random"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;random&nbsp;music&nbsp;player</a>]</h4>
+		<a name="social"><button onClick="this.style.display='none';this.nextElementSibling.style.display='block';">Display the chatroom</button><object style="display:none;" onload="if (!nosocialupdate){updateSocialData(this);nosocialupdate=true;}" data="../network/?void=void" style="width:100%;height:495px;" width="100%" height="495"></object></a>
+<hr/>
+<?php echo htmlspecialchars($sitename);?> Artists: 
+<?php
+$artlist = explode("\n", trim(file_get_contents('../d/artists.txt')));
+foreach ($artlist as $ar){
+	echo '
+	 [<a href="../?artist='.urlencode($ar).'">
+	
+	'.str_replace(' ', '&nbsp;', htmlspecialchars($ar)).'
+	
+	</a>] 
+	
+	';
+	
+}
+
+?>
+
 		
 </body>
 </html>

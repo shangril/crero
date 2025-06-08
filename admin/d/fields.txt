@@ -148,5 +148,7 @@ RandomPlayer.txt
 If set to 1, a "The Great Random Player", leading to ./random/ is displayed on home page. The Random Player relies on RadioBase and RadioFeatured options to feed its playlists. Default is 0 (no link). 
 Podcast.txt
 If set to 1, a "Podcast (click to copy to clipboard)" link is displayed on home page. It allows to copy the URL of your (free download) audio's podcast to the user clipboard to then paste it in a podcast application, to subscribe to your label's new music feed. 
+ForceWebchatAsHomepage.txt
+if set to 1, the homepage of the site will become the Webchat section. If set to 0 or unset, the homepage for the site will be the catalog with cover art mosaic. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

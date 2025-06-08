@@ -15,6 +15,38 @@ error_reporting(0);
 
 $myhtmlcache=null;
 
+if (isset($_GET['nochat'])){
+	$_SESSION['forceWebchat'] = true ;
+}
+
+if (
+	$ForceWebchatAsHomepage &&
+
+	!isset($_SESSION['forceWebchat']) &&
+	
+	!isset($_GET['artist']) &&
+	!isset($_GET['album']) &&
+	!isset($_GET['track']) &&
+	!isset($_GET['offset']) &&
+	!isset($_GET['autoplay']) &&
+	!isset($_GET['vid']) &&
+	!isset($_GET['twist']) &&
+	!isset($_GET['embed']) &&
+	!isset($_GET['body']) &&
+	!isset($_GET['target[]']) &&
+	!isset($_POST['overload_form']) &&
+	!isset($_POST['page_purge'])
+	
+	
+	
+	)
+{
+	
+	
+	header('Location: '.$proto.'://'.$server.'/webchat', true, 301);
+	
+	exit(0);
+}
 
 
 //Whoever you are, you deserve a cleaning

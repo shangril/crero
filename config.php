@@ -683,5 +683,9 @@ $Podcast=false;
 if (file_exists('./d/Podcast.txt')){
 	$Podcast=boolval(trim(file_get_contents('./d/Podcast.txt')));
 }
+$ForceWebchatAsHomepage=false;
+if (file_exists('./d/ForceWebchatAsHomepage.txt')){
+	$ForceWebchatAsHomepage=boolval(trim(file_get_contents('./d/ForceWebchatAsHomepage.txt')));
+}
 
 ?>
