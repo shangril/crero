@@ -474,7 +474,7 @@ function loadInfo(track) {
      infoselected.innerHTML = this.responseText;
     }	
   }
-  xhttp.open("GET", "./?getinfo="+encodeURI(track), true);
+  xhttp.open("GET", "./index.php?nochat=1&getinfo="+encodeURI(track), true);
   xhttp.send();
 } 
 
