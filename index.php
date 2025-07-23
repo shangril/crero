@@ -1244,7 +1244,7 @@ function delegate()  {
 		  if (ypping){
 			  appendypreq='&ping=ping';
 		  }
-		  xhttpyp.open("GET", './?ypservices='+encodeURI(ypindex)+appendypreq, true);
+		  xhttpyp.open("GET", './?nochat=1&ypservices='+encodeURI(ypindex)+appendypreq, true);
 		  stall=true;
 		  xhttpyp.send();
 		 
