@@ -14,8 +14,8 @@ chdir ('./webchat');
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="charset" value="utf-8" />
 	<meta charset="UTF-8"/>
-	<title>Chatroom - <?php echo htmlspecialchars($sitename).' - '.htmlspecialchars($footerReadableName); ?></title>
-	<meta name="description" content="Chatroom - <?php echo htmlspecialchars($title.' - '.$description); ?>" />
+	<title><?php echo htmlspecialchars($sitename).' - '.htmlspecialchars($description); ?></title>
+	<meta name="description" content="<?php echo htmlspecialchars($title.' - '.$description); ?>" />
 </head>
 <body>
 	<h1><?php echo htmlspecialchars($sitename);?></h1>
