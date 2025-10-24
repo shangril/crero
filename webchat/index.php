@@ -3,7 +3,18 @@ chdir ('..');
 require_once ('./config.php');
 chdir ('./webchat');
 
+$artlist = explode("\n", trim(file_get_contents('../d/artists.txt')));
 
+if (isset($_GET['a'])&&in_array($_GET['a'], $artlist)){
+	$albs = file_get_contents($clewnapiurl."?listalbums=".urlencode($_GET['a']));
+	if ($albs !== false){
+		$albz = explode("\n", trim($albs));
+		foreach ($albz as $al){
+			echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">".$al."</a><br/>";
+		}
+	  }
+	die();
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,7 +36,7 @@ chdir ('./webchat');
 <hr/>
 <?php echo htmlspecialchars($sitename);?> Artists: 
 <?php
-$artlist = explode("\n", trim(file_get_contents('../d/artists.txt')));
+
 foreach ($artlist as $ar){
 	echo '
 	 [<a href="../?artist='.urlencode($ar).'">
@@ -37,7 +48,32 @@ foreach ($artlist as $ar){
 	';
 	
 }
+echo "<h2>All albums</h2>";
 
+foreach ($artlist as $ar){
+	echo "<span style=\"float:right;border:solid red 2px;border-radius:4px;\">";
+	echo "<h3>".htmlspecialchars($ar)."</h3>";
+		 ?> <span>Loading…
+			 <script>
+			       (async function(span){
+        try {
+          const response = await fetch("?a=<?php echo urlencode ($ar);?>");
+          const text = await response.text();
+          span.innerHTML = text;
+        } catch (e) {
+          span.innerHTML = "Loading error";
+        }
+      })(document.currentScript.parentElement);
+			 
+			 
+			 
+			 </script>
+			 </span>
+			 
+			 <?php
+	
+	echo "</span>";
+}
 ?>
 
 		
