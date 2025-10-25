@@ -10,7 +10,17 @@ if (isset($_GET['a'])&&in_array($_GET['a'], $artlist)){
 	if ($albs !== false){
 		$albz = explode("\n", trim($albs));
 		foreach ($albz as $al){
-			echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">".$al."</a><br/>";
+			echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">[".$al."]</a> - ";
+		}
+	  }
+	die();
+}
+if (isset($_GET['b'])&&in_array($_GET['b'], $artlist)){
+	$albs = file_get_contents($serverapi."?listalbums=".urlencode($_GET['b']));
+	if ($albs !== false){
+		$albz = explode("\n", trim($albs));
+		foreach ($albz as $al){
+			echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">[".$al."]</a> - ";
 		}
 	  }
 	die();
@@ -51,13 +61,39 @@ foreach ($artlist as $ar){
 echo "<h2>All albums</h2>";
 
 foreach ($artlist as $ar){
-	echo "<span style=\"float:right;border:solid red 2px;border-radius:4px;\">";
-	echo "<h3>".htmlspecialchars($ar)."</h3>";
+	echo "<span>";
+	echo "<strong> * ".htmlspecialchars($ar).": </strong>";
 		 ?> <span>Loading…
 			 <script>
 			       (async function(span){
         try {
           const response = await fetch("?a=<?php echo urlencode ($ar);?>");
+          const text = await response.text();
+          span.innerHTML = text;
+        } catch (e) {
+          span.innerHTML = "Loading error";
+        }
+      })(document.currentScript.parentElement);
+			 
+			 
+			 
+			 </script>
+			 </span>
+			 
+			 <?php
+	
+	echo "</span>";
+}
+echo "<h2>Exclusive, listen-only unfinished, growing, work in progress albums</h2>";
+
+foreach ($artlist as $ar){
+	echo "<span>";
+	echo "<strong> * ".htmlspecialchars($ar).": </strong>";
+		 ?> <span>Loading…
+			 <script>
+			       (async function(span){
+        try {
+          const response = await fetch("?b=<?php echo urlencode ($ar);?>");
           const text = await response.text();
           span.innerHTML = text;
         } catch (e) {
