@@ -1,6 +1,9 @@
 <?php
 require_once('./config.php');
-
+$whitelist = false;
+if (isset($_GET['a'])){
+	$whitelist = $_GET['a'];
+}
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -29,6 +32,11 @@ require_once('./config.php');
 
 	<?php
 	$arts = explode ("\n", file_get_contents('./d/artists.txt'));
+	if ($whitelist!==false){
+		
+		$arts = array_intersect($whitelist, $arts);
+		
+	}
 	sort($arts);
 	
 	$list= (file_get_contents($videoapiurl."?listallvids=1"));
@@ -190,9 +198,10 @@ require_once('./config.php');
 </script>
 
 
-
+<?php if ($whitelist===false){ ?>
 	<a href="./"><?php echo htmlspecialchars($sitename);?> Home</a> &gt; Random vids<hr/>
 	<br/>
+<?php } ?>
 <div id="splash">000</div>
 <video controls src="<?php echo $vidtarget;//$videourl.rawurlencode($res[0]);?>" onEnded="next(this);">Browser has no video support</video><div><?php echo $in_title;?></div><h2><?php echo $in_art;?></h2><h3><a href="<?php echo $in_allink; ?>"><?php echo $in_al; ?></a></h3><h4><?php echo $in_desc; ?></h4><a id="share" target="_blank" href="?v=<?php echo urlencode($vidshare);?>">Share?</a>
 </body>
