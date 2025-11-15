@@ -168,10 +168,17 @@ foreach ($recentsr as $recent){
 	<?php if ($RandomPlayer){ ?>
 	
 	
-	[<a href="../random"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;random&nbsp;music&nbsp;player</a>]</h4>
+	[<a href="../random"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;random&nbsp;music&nbsp;player</a>]
 
 	<?php } ?>
+
+	<?php if (!$videoapiurl===false){ ?>
 	
+	
+	[<a href="../random_vids.php"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;music&nbsp;videos</a>]
+
+	<?php } ?>
+	</h4>
 	<?php if ($activatechat){ ?>
 
 		<a name="social"><button onClick="this.style.display='none';this.nextElementSibling.style.display='block';">Display the chatroom</button><object style="display:none;" onload="if (!nosocialupdate){updateSocialData(this);nosocialupdate=true;}" data="../network/?void=void" style="width:100%;height:495px;" width="100%" height="495"></object></a>
