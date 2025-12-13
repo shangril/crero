@@ -106,6 +106,29 @@ if ($artlist!==false){
 	else {
 		$ret.='<title>'.xmlcdata($sitename).'</title>';
 	}
+
+	if (file_exists('../d/allowDonations.txt')&&boolval(file_get_contents('../d/allowDonations.txt'))==true){
+		//Donations are accepted 
+		if ($proto=='https://'){
+			//the podcasting 2.0 user-defined url like used for the podcast:funding tag won't allow http://
+			
+			$ret.='<podcast:funding url="https://'.$server.'/donate">Help funding us!</podcast:funding>';
+			
+		}
+		
+		
+	}
+	if ($proto=='https://'){
+		if (file_exists('../logo.png')){
+		
+			$ret.='<podcast:image href="https://'.$server.'/logo.png"/>';
+		
+		}
+		else
+		{
+			$ret.='<podcast:image href="https://'.$server.'/favicon.png"/>';
+		}
+	}
 	
 	$ret.='<description>';
 	$descadd = '';

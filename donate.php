@@ -53,6 +53,15 @@ function toggleMonthly(){
 <span id="wrapper"></span> &nbsp; 
 <input type="checkbox" onClick="toggleMonthly();" /><?php echo $trans[$lang]['monthly'] ;?>
 <input type="submit" name="submit" value="<?php echo $trans[$lang]['donate']?>" />
+<br/><span>Donations via Paypal. Note that it requires (sadly) to have it communicating to us your postal address<br/>We won't keep it any database of ours, and you may receive a "thank you" postcard<br/><?php
+if (is_array($AdditionnalDonationLinks)&&count($AdditionnalDonationLinks)>0){
+	echo ". Options:";
+	$dk = array_keys($AdditionnalDonationLinks);
+	foreach ($dk as $dkey){
+		echo '[<a target="_BLANK" href="'.$AdditionnalDonationLinks[$dkey].'">'.htmlspecialchars($dkey).'</a>]';
+	}
+}
+?></span>
 </form>
 <?php
 if (file_exists('./supporters') && is_dir('./supporters')){

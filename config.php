@@ -687,5 +687,15 @@ $ForceWebchatAsHomepage=false;
 if (file_exists('./d/ForceWebchatAsHomepage.txt')){
 	$ForceWebchatAsHomepage=boolval(trim(file_get_contents('./d/ForceWebchatAsHomepage.txt')));
 }
+$AdditionnalDonationLinks = Array();
+if (file_exists('./d/AdditionnalDonationLinks.txt')){
+	$saindata=trim(file_get_contents('./d/AdditionnalDonationLinks.txt'));
+	$sain=explode("\n", $saindata);
+	for ($p=0;$p<count($sain);$p++){
+	
+		$AdditionnalDonationLinks[htmlentities($sain[$p])]=$sain[$p+1];
+		$p++;
+	}
 
+}
 ?>
