@@ -152,5 +152,7 @@ ForceWebchatAsHomepage.txt
 If set to 1, the homepage of the site will become the Webchat section, which is lightweight and summing up only the most important content of the website. If set to 0 or unset, the homepage for the site will be the catalog with cover art mosaic. 
 AdditionnalDonationLinks.txt
 Here you can define, on each uneven line, an human-readable link text, which will lead to the URL indicated on the following even line, to add additional links to your donation module, if enabled. See AllowDonations option.  
+LightningBTCDonationAddress.txt
+If you wish to receive as a label, Lightning BTC donations, on a single line, indicate your long series of characters that constitutes your Lightning address, followed by a space, followed by a numerical value being the suggested donation amount, like 0.00000015000, followed by a space, followed by a free form string summing up who will get the money. All these three parameters must be present. Leave this option empty if you don't wish to recevie Lighning Bitcoin donations. 
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

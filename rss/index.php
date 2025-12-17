@@ -92,7 +92,7 @@ if(file_exists('./'.$art64.'rss.xml')&&file_exists('./'.$art64.'freshness.txt'))
 $ret='';
 
 $proto='http://';
-if (isset($_SERVER['HTTPS'])){
+if ((isset($_SERVER['HTTPS'])&&strtolower($_SERVER['HTTPS']) !== 'off' && !empty($_SERVER['HTTPS']))||isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https'){
 	$proto='https://';
 }
 $itemcount=0;
@@ -100,6 +100,7 @@ if ($artlist!==false){
 	$ret.='<?xml version="1.0" encoding="UTF-8" ?>';
 	$ret.='<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" version="2.0">';
 	$ret.='<channel>';
+	$ret.='<itunes:category text="Music"/>';
 	if (count($artists)==1){
 		$ret.='<title>'.xmlcdata($artists[0]).'</title>';
 	}
@@ -118,6 +119,22 @@ if ($artlist!==false){
 		
 		
 	}
+	
+	$LightningBTCDonationAddress = false;
+	if (file_exists('../d/LightningBTCDonationAddress.txt')){
+		$btcdata=trim(file_get_contents('../d/LightningBTCDonationAddress.txt'));
+		$abtc=explode(" ", $btcdata);
+		if (count($abtc)>2 && is_numeric($abtc[1])){
+			$LightningBTCDonationAddress = $abtc;
+		}
+	}
+	if ($LightningBTCDonationAddress!==false){
+		//bc1pwvw82wgge6wf2pujms05wl640xlfgvhms08ujel88shqp4xdemfsax4ewj
+		
+		$ret.='<podcast:value type="lightning" method="keysend" suggested="'.htmlspecialchars($LightningBTCDonationAddress[1]).'"><podcast:valueRecipient name="'.htmlspecialchars(implode(" ",array_splice($LightningBTCDonationAddress, 2))).'" type="node" address="'.htmlspecialchars($LightningBTCDonationAddress[0]).'" split="100"/></podcast:value>';
+		
+	}
+	
 	if ($proto=='https://'){
 		if (file_exists('../logo.png')){
 		

@@ -698,4 +698,13 @@ if (file_exists('./d/AdditionnalDonationLinks.txt')){
 	}
 
 }
+$LightningBTCDonationAddress = false;
+if (file_exists('./d/LightningBTCDonationAddress.txt')){
+	$btcdata=trim(file_get_contents('./d/LightningBTCDonationAddress.txt'));
+	$abtc=explode(" ", $btcdata);
+	if (count($abtc)>2 && is_numeric($abtc[1])){
+		$LightningBTCDonationAddress = $abtc;
+	}
+}
+
 ?>

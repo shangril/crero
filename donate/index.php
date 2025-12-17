@@ -21,9 +21,14 @@ chdir('./donate');
 	<h1>Donate to <?php echo htmlspecialchars($sitename);?></h1>
 	<span style="font-size:119%">
 	<?php 
-	chdir('../');
-	include ('donate.php');
-	chdir('./donate');
+	if ($acceptdonations){
+		chdir('../');
+		include ('donate.php');
+		chdir('./donate');
+	}
+	if ($LightningBTCDonationAddress!==false){
+		echo '<hr/>Lightning Bitcoin accepted here: '.$LightningBTCDonationAddress[0];
+	}
 	?>
 	</span>
 	</body>

@@ -178,6 +178,13 @@ foreach ($recentsr as $recent){
 	[<a href="../random_vids.php"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;music&nbsp;videos</a>]
 
 	<?php } ?>
+	<?php if (!$acceptdonations===false){ ?>
+	
+	
+	[<a href="../donate">Help&nbsp;funding <?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?></a>]
+
+	<?php } ?>
+
 	</h4>
 	<?php if ($activatechat){ ?>
 
