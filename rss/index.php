@@ -139,11 +139,13 @@ if ($artlist!==false){
 		if (file_exists('../logo.png')){
 		
 			$ret.='<podcast:image href="https://'.$server.'/logo.png"/>';
+			$ret.='<itunes:image href="https://'.$server.'/logo.png"/>';
 		
 		}
 		else
 		{
 			$ret.='<podcast:image href="https://'.$server.'/favicon.png"/>';
+			$ret.='<itunes:image href="https://'.$server.'/favicon.png"/>';
 		}
 	}
 	
