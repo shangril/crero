@@ -129,24 +129,39 @@ if ($artlist!==false){
 		}
 	}
 	if ($LightningBTCDonationAddress!==false){
-		//bc1pwvw82wgge6wf2pujms05wl640xlfgvhms08ujel88shqp4xdemfsax4ewj
-		
+
 		$ret.='<podcast:value type="lightning" method="keysend" suggested="'.htmlspecialchars($LightningBTCDonationAddress[1]).'"><podcast:valueRecipient name="'.htmlspecialchars(implode(" ",array_splice($LightningBTCDonationAddress, 2))).'" type="node" address="'.htmlspecialchars($LightningBTCDonationAddress[0]).'" split="100"/></podcast:value>';
 		
 	}
 	
 	if ($proto=='https://'){
-		if (file_exists('../logo.png')){
-		
-			$ret.='<podcast:image href="https://'.$server.'/logo.png"/>';
-			$ret.='<itunes:image href="https://'.$server.'/logo.png"/>';
-		
+		if (isset($_GET['artist'])){
+			if (file_exists('../d/ProjectPicture.txt')){
+				$apdata = explode("\n", trim(file_get_contents('../d/ProjectPicture.txt')));
+				$apa = Array();
+				for ($i=0;$i<count($apdata);$i++){
+					$apa[$apdata[$i]] = $apdata[$i+1];
+					$i++;
+				}
+				
+			}
+			if (in_array($_GET['artist'], array_keys($apa))){
+				$ret.='<podcast:image href="https://'.$server.'/projectpicture/'.rawurlencode($apa[$_GET['artist']]).'"/>';
+				$ret.='<itunes:image href="https://'.$server.'/projectpicture/'.rawurlencode($apa[$_GET['artist']]).'"/>';
+			}
 		}
 		else
-		{
-			$ret.='<podcast:image href="https://'.$server.'/favicon.png"/>';
-			$ret.='<itunes:image href="https://'.$server.'/favicon.png"/>';
-		}
+			if (file_exists('../logo.png')){
+			
+				$ret.='<podcast:image href="https://'.$server.'/logo.png"/>';
+				$ret.='<itunes:image href="https://'.$server.'/logo.png"/>';
+			
+			}
+			else
+			{
+				$ret.='<podcast:image href="https://'.$server.'/favicon.png"/>';
+				$ret.='<itunes:image href="https://'.$server.'/favicon.png"/>';
+			}
 	}
 	
 	$ret.='<description>';
@@ -275,7 +290,7 @@ if ($artlist!==false){
 				}
 			}
 			if (isset($coversdat[htmlspecialchars_decode($albumlist[$trackitem])])){
-				$ret.='<itunes:image href="'.$proto.$server.'/covers/'.htmlspecialchars($coversdat[htmlspecialchars_decode($albumlist[$trackitem])]).'"/>';
+				$ret.='<itunes:image href="'.$proto.$server.'/covers/'.htmlspecialchars(rawurlencode($coversdat[htmlspecialchars_decode($albumlist[$trackitem])])).'"/>';
 			}
 			
 			$ret.='</item>';
