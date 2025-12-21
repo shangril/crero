@@ -130,7 +130,7 @@ if ($artlist!==false){
 	}
 	if ($LightningBTCDonationAddress!==false){
 
-		$ret.='<podcast:value type="lightning" method="keysend" suggested="'.htmlspecialchars($LightningBTCDonationAddress[1]).'"><podcast:valueRecipient name="'.htmlspecialchars(implode(" ",array_splice($LightningBTCDonationAddress, 2))).'" type="node" address="'.htmlspecialchars($LightningBTCDonationAddress[0]).'" split="100"/></podcast:value>';
+		$ret.='<podcast:value type="lightning" method="keysend" suggested="'.htmlspecialchars($LightningBTCDonationAddress[1]).'"><podcast:valueRecipient name="'.htmlspecialchars(implode(" ",array_splice($LightningBTCDonationAddress, 2))).'" type="lnaddress" address="'.htmlspecialchars($LightningBTCDonationAddress[0]).'" split="100"/></podcast:value>';
 		
 	}
 	
