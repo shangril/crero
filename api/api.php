@@ -33,7 +33,57 @@ else if (!is_dir('./audio')){
 }
 
 
-
+function compute_freshness(){
+	$files=scandir('./audio');
+	$albums=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			$albums[filectime('./audio/'.$file)]=filectime('./audio/'.$file);
+	
+		}
+	}
+	
+	if (count($albums)>0){
+		
+		krsort($albums);
+		$oldfreshness=file_get_contents('freshness.dat');
+		if ($oldfreshness===false){
+			$oldfreshness=time();
+		}
+			
+		if ($oldfreshness>array_keys($albums)[0]){
+					$freshness=$oldfreshness;
+					}
+			else {
+				$freshness = array_keys($albums)[0];
+		    }
+		file_put_contents('freshness.dat', $freshness);
+		
+		if (!unlink('./audio-freshness.dat')){
+			rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+		}
+	
+	}
+	else {
+		if (file_get_contents('./audio-freshness.dat')){
+			
+			$freshness = file_get_contents('./audio-freshness.dat');
+			
+		}
+		else {
+			
+			$freshness=time();
+			if (!file_put_contents('./audio-freshness.dat', $freshness)){
+				if (!unlink('./audio-freshness.dat')){
+					rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
+				}
+			}
+		}
+	return $freshness;
+	
+	}
+return 0;
+}
 
 
 
@@ -135,57 +185,11 @@ else if (isset($_GET['getinfo'])){
 else if (isset($_GET['freshness'])){
 	header('Content-Type: text/plain; charset=utf-8');
 	//DONE : case of emptied ./audio : once a freshness is obtained, store in ./audio-freshness.dat ; after foreach, if $albums is empty, echo content of this .dat file instead of usual return. If no freshness was obtained, echo, and store in .dat, current time() 
-	$files=scandir('./audio');
-	$albums=Array();
-	foreach ($files as $file){
-		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
-			$albums[filectime('./audio/'.$file)]=filectime('./audio/'.$file);
-	
-		}
-	}
-	
-	if (count($albums)>0){
-		
-		krsort($albums);
-		$oldfreshness=file_get_contents('freshness.dat');
-		if ($oldfreshness===false){
-			$oldfreshness=time();
-		}
-			
-		if ($oldfreshness>array_keys($albums)[0]){
-					$freshness=$oldfreshness;
-					}
-			else {
-				$freshness = array_keys($albums)[0];
-		    }
-		file_put_contents('freshness.dat', $freshness);
-		
-		if (!unlink('./audio-freshness.dat')){
-			rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
-		}
-	
-	}
-	else {
-		if (file_get_contents('./audio-freshness.dat')){
-			
-			$freshness = file_get_contents('./audio-freshness.dat');
-			
-		}
-		else {
-			
-			$freshness=time();
-			if (!file_put_contents('./audio-freshness.dat', $freshness)){
-				if (!unlink('./audio-freshness.dat')){
-					rename('./audio-freshness.dat', './audio-freshness-TRASH.dat');
-				}
-			}
-		}
-	}
 	
 	
 	
 	
-	echo $freshness;
+	echo compute_freshness();
 }
 else if (isset($_GET['listformats'])){
 	//returns the list of available audio formats for the current catalog
@@ -264,6 +268,63 @@ header('Content-Type: text/plain; charset=utf-8');
 	}
 
 
+
+
+
+}
+else if (isset($_GET['gettracks_unentitified'])) {
+header('Content-Type: text/plain; charset=utf-8');
+	if (!file_exists('./audio-freshness.dat')){
+		compute_freshness();
+	}
+
+	//get the file basenames of the tracks for a specified album 
+	$album=$_GET['gettracks_unentitified'];
+
+	$album64=str_replace('/', '_',base64_encode($album));
+	if (!file_exists('./metadatacache/tracklist')){
+		mkdir('./metadatacache/tracklist');
+	}
+	$freshness=0;
+	if (file_get_contents('./audio-freshness.dat')){
+			
+			$freshness = file_get_contents('./audio-freshness.dat');
+			
+	}
+	if (file_exists('./metadatacache/tracklist/'.$album64.'.txt')&&
+		$freshness<filemtime('./metadatacache/tracklist/'.$album64.'.txt')&&
+		filesize('./metadatacache/tracklist/'.$album64.'.txt')>0
+	
+		){
+			echo file_get_contents('./metadatacache/tracklist/'.$album64.'.txt');
+			die();
+			
+		}		
+
+	$files=scandir('./audio');
+	$tracks=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			
+				$getID3 = new getID3;
+				$info = $getID3->analyze('audio/'.$file);
+				getid3_lib::CopyTagsToComments($info); 
+				if(html_entity_decode($info['comments_html']['album'][0])===$album){
+						$tracks[str_replace($format, '', $file)]=str_replace($format, '', $file);
+					
+				}
+			
+		}
+		
+		
+	}
+	foreach ($tracks as $track){
+		echo $track."\n";
+		
+	}
+	//store cache
+
+	file_put_contents('./metadatacache/tracklist/'.$album64.'.txt', implode("\n", $tracks));
 
 
 
