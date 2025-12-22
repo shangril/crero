@@ -286,7 +286,7 @@ header('Content-Type: text/plain; charset=utf-8');
 		mkdir('./metadatacache/tracklist');
 	}
 	$freshness=0;
-	if (file_get_contents('./audio-freshness.dat')){
+	if (file_get_contents('./audio-freshness.dat')!==false){
 			
 			$freshness = file_get_contents('./audio-freshness.dat');
 			

@@ -14,7 +14,9 @@ if(!file_exists('./metadatacache/albums')){
 if(!file_exists('./metadatacache/tracklists')){
 	mkdir('./metadatacache/tracklists');
 }
-
+if(!file_exists('./metadatacache/json')){
+	mkdir('./metadatacache/json');
+}
 
 if (!file_exists('../d/wizard_completed.txt')){
 	die();
@@ -75,11 +77,19 @@ else {
 
 if ($formats!==false&&!strstr($formats, 'mp3')){
 	die();
+}
+else{
+	
+	$format='mp3';
+	
 }	
 $freshness = file_get_contents($clewnapiurl.'?freshness=1');
 
 if ($freshness===false){
 	$freshness=0;
+}
+else{
+	$freshness = floatval(trim($freshness));
 }
 
 if(file_exists('./'.$art64.'rss.xml')&&file_exists('./'.$art64.'freshness.txt')){
@@ -184,12 +194,21 @@ if ($artlist!==false){
 		$artist64=str_replace('/', '_',base64_encode($artist));
 		
 		if (file_exists('./metadatacache/albums/'.$artist64.'.txt')&&
-			filemtime('./metadatacache/albums/'.$artist64.'.txt')>$freshness){
+			(filemtime('./metadatacache/albums/'.$artist64.'.txt')>$freshness
+			)
+			&& filesize('./metadatacache/albums/'.$artist64.'.txt')>0){
 				$albums=file_get_contents('./metadatacache/albums/'.$artist64.'.txt');
+				
 			}
 		else {
-			$albums=file_get_contents($clewnapiurl.'?listalbums='.urlencode($artist));
-			file_put_contents('./metadatacache/albums/'.$artist64.'.txt', $albums);
+			$running=true;
+			while($running){
+				$albums=file_get_contents($clewnapiurl.'?listalbums='.urlencode($artist));
+				if ($albums!==false){
+					file_put_contents('./metadatacache/albums/'.$artist64.'.txt', $albums);
+					$running=false;
+				}
+			}
 		}
 		if ($albums!==false){
 			$albdat = explode("\n", trim($albums));
@@ -197,17 +216,25 @@ if ($artlist!==false){
 				$tracks=false;
 				$album64=str_replace('/', '_',base64_encode($album)).$artist64;
 				if (file_exists('./metadatacache/tracklists/'.$album64.'.txt')&&
-					filemtime('./metadatacache/tracklists/'.$album64.'.txt')>$freshness){
+					(filemtime('./metadatacache/tracklists/'.$album64.'.txt')>$freshness
+					)
+					&&filesize('./metadatacache/tracklists/'.$album64.'.txt')>0
+					){
 						$tracks=file_get_contents('./metadatacache/tracklists/'.$album64.'.txt');
+						
 					}
 				else {
-					$tracks=file_get_contents($clewnapiurl.'?gettracks='.urlencode(htmlspecialchars_decode($album)));
-					
-					if ($tracks!==false){
-						$tracks=trim($tracks);
+					$running=true;
+					while($running){
+						$tracks=file_get_contents($clewnapiurl.'?gettracks_unentitified='.urlencode(html_entity_decode($album)));
+						
+						if ($tracks!==false){
+							$tracks=trim($tracks);
+							file_put_contents('./metadatacache/tracklists/'.$album64.'.txt', $tracks);
+							$running=false;
+						}
 					}
-					file_put_contents('./metadatacache/tracklists/'.$album64.'.txt', $tracks);
-
+					
 				}
 								
 				if($tracks!==false){
@@ -219,55 +246,146 @@ if ($artlist!==false){
 			}
 		}
 	}
+	//last caching thing: the json
+	$query = '?';
+	
+	foreach($artists as $art){
+		$query.='l2[]='.urlencode(($art)).'&';
+	}//TODO move this to POST method
+	
+	$jsonlastlist=false;
+	
+	if (file_exists('./metadatacache/json/'.$art64.'l2.json')){
+		if($freshness>filemtime('./metadatacache/json/'.$art64.'l2.json')){
+			$jsonlastlist=file_get_contents($clewnapiurl.$query);
+		}
+		else{
+			$jsonlastlist=file_get_contents('./metadatacache/json/'.$art64.'l2.json');
+		}
+	}
+	else {
+		$jsonlastlist=file_get_contents($clewnapiurl.$query);
+	}
+	
+	if (false!==$jsonlastlist&&false!==($lastlist=json_decode($jsonlastlist, true))){
+		
+		//savethecache
+		
+		file_put_contents('./metadatacache/json/'.$art64.'l2.json', $jsonlastlist);
+
+	}
+	
+
+	
+	if ($lastlist===false){
+		$lastlist=Array();
+	}
+	
+	
+	ksort($lastlist);
+	
+	$i = 1;
+	
+	$seasons = Array();
+	
+	foreach ($lastlist as $l){
+		$seasons[html_entity_decode($l['album'])] = $i;
+		$i++;
+		
+	}
+
+
 	foreach ($tracklist as $trackitem){
 		$title=false;
 		if (file_exists('./metadatacache/'.$trackitem.'.title.txt')&&
-			filemtime('./metadatacache/'.$trackitem.'.title.txt')>$freshness){
+			filemtime('./metadatacache/'.$trackitem.'.title.txt')>$freshness
+			&&filesize('./metadatacache/'.$trackitem.'.title.txt')>0){
 				$title=file_get_contents('./metadatacache/'.$trackitem.'.title.txt');
 			}
 		else{
-			$title=file_get_contents($clewnapiurl.'?gettitle='.urlencode($trackitem));
-			
-			if ($title!==false){
-				$title=trim($title);
+			$running=true;
+			while($running){
+				$title=file_get_contents($clewnapiurl.'?gettitle='.urlencode($trackitem));
+				
+				if ($title!==false){
+					$title=trim($title);
+					file_put_contents('./metadatacache/'.$trackitem.'.title.txt', $title);
+					$running=false;
+				}
 			}
 			
-			file_put_contents('./metadatacache/'.$trackitem.'.title.txt', $title);
+			
 		}
+		$duration = false;
+		if (file_exists('./metadatacache/'.$trackitem.'.duration.txt')&&
+			filemtime('./metadatacache/'.$trackitem.'.duration.txt')>$freshness
+			&&filesize('./metadatacache/'.$trackitem.'.duration.txt')>0){
+				$duration=file_get_contents('./metadatacache/'.$trackitem.'.duration.txt');
+			}
+		
+		else{
+			$running=true;
+			while ($running){
+				$duration=file_get_contents($clewnapiurl.'?duration='.urlencode($trackitem.'.'.$format));
+				
+				if ($duration!==false&&strlen(trim($duration))>0){
+					$duration=trim($duration);
+					file_put_contents('./metadatacache/'.$trackitem.'.duration.txt', $duration);
+					$running=false;
+				}
+				
+			}
+		}
+		
 		
 		$artist=false;
 		if (file_exists('./metadatacache/'.$trackitem.'.artist.txt')&&
-			filemtime('./metadatacache/'.$trackitem.'.artist.txt')>$freshness){
+			filemtime('./metadatacache/'.$trackitem.'.artist.txt')>$freshness
+			&&filesize('./metadatacache/'.$trackitem.'.artist.txt')>0){
 				$artist=file_get_contents('./metadatacache/'.$trackitem.'.artist.txt');
 			}
 		
 		else{
-			$artist=file_get_contents($clewnapiurl.'?getartist='.urlencode($trackitem));
-			
-			if ($artist!==false){
-				$artist=trim($artist);
+			$running=true;
+			while ($running){
+				$artist=file_get_contents($clewnapiurl.'?getartist='.urlencode($trackitem));
+				
+				if ($artist!==false){
+					$artist=trim($artist);
+					file_put_contents('./metadatacache/'.$trackitem.'.artist.txt', $artist);
+					$running=false;
+				}
+				
 			}
-			
-			file_put_contents('./metadatacache/'.$trackitem.'.artist.txt', $artist);
 		}
 		
 		
-		if ($title!==false&&$artist!==false){
+		if ($title!==false&&$artist!==false&&$duration!==false){
 			$title=trim($title);
 			$artist=trim($artist);
-		
-			$itemcount++;
+			$duration=trim($duration);
+			
 			$ret.='<item>';
 			$title_cdata = '';
 			if (count($artists)>1){
 				$title_cdata .= html_entity_decode($artist).' - ';
 			}
-			$title_cdata .= html_entity_decode($title).' ('.html_entity_decode($albumlist[$trackitem]).')';
+			$title_cdata .= html_entity_decode($title);//.' ('.html_entity_decode($albumlist[$trackitem]).')';
 			$ret.='<title>'.xmlcdata($title_cdata).'</title>';
+			
+			$name=html_entity_decode($albumlist[$trackitem]);
+			
+			if (strlen($name)>128){
+				$name=substr($name, 0, 127)."…";
+			}
+			
+			$ret.='<podcast:season name="'.htmlspecialchars($name).'">'.$seasons[html_entity_decode($albumlist[$trackitem])].'</podcast:season>';
+			
 			
 			if (false!==($length=file_get_contents($clewnapiurl.'?length='
 				.urlencode($trackitem).'.mp3'))&&is_numeric($length)){
 				$ret.='<enclosure url="'.htmlspecialchars($clewnaudiourl).htmlspecialchars($trackitem).'.mp3" length="'.$length.'" type="audio/mpeg"/>';
+				$itemcount++;
 			}
 			$ret.='<guid>'.urlencode((htmlspecialchars_decode($artist))).'_'.urlencode(htmlspecialchars_decode($albumlist[$trackitem])).'_'.urlencode(htmlspecialchars_decode($title)).'</guid>';
 			$ret.='<link><![CDATA['.$proto.$server.'?artist='.urlencode(htmlspecialchars_decode($artist)).'&album='.urlencode(htmlspecialchars_decode($albumlist[$trackitem])).'&track='.urlencode(htmlspecialchars_decode($title)).']]></link>';
@@ -275,7 +393,7 @@ if ($artlist!==false){
 			if (false!==($pubdate=file_get_contents($clewnapiurl.'?pubdate='.urlencode($trackitem).'.mp3'))&&is_numeric($pubdate)){
 				$ret.='<pubDate>'.htmlspecialchars(date(DATE_RSS, intval($pubdate))).'</pubDate>';
 			}
-			if (false!==($duration=file_get_contents($clewnapiurl.'?duration='.urlencode($trackitem).'.mp3'))&&is_numeric($duration)){
+			if (is_numeric($duration)){
 				$ret.='<itunes:duration>'.htmlspecialchars(intval($duration)).'</itunes:duration>';
 			}
 			$coversdat=Array();
@@ -312,7 +430,9 @@ if ($artlist!==false){
 		
 		//Saving the cache
 		file_put_contents('./'.$art64.'rss.xml', $ret);
+		
 		file_put_contents('./'.$art64.'freshness.txt', microtime(true));
+		
 	} 
 	else if (file_exists('./'.$art64.'rss.xml')){
 		echo file_get_contents('./'.$art64.'rss.xml');
