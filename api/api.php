@@ -33,7 +33,8 @@ else if (!is_dir('./audio')){
 }
 
 
-function compute_freshness(){
+function compute_freshness($format){
+	$freshness=0;
 	$files=scandir('./audio');
 	$albums=Array();
 	foreach ($files as $file){
@@ -82,7 +83,7 @@ function compute_freshness(){
 	return $freshness;
 	
 	}
-return 0;
+return $freshness;
 }
 
 
@@ -189,7 +190,7 @@ else if (isset($_GET['freshness'])){
 	
 	
 	
-	echo compute_freshness();
+	echo compute_freshness($format);
 }
 else if (isset($_GET['listformats'])){
 	//returns the list of available audio formats for the current catalog
@@ -274,8 +275,8 @@ header('Content-Type: text/plain; charset=utf-8');
 }
 else if (isset($_GET['gettracks_unentitified'])) {
 header('Content-Type: text/plain; charset=utf-8');
-	if (!file_exists('./audio-freshness.dat')){
-		compute_freshness();
+	if (!file_exists('./freshness.dat')){
+		compute_freshness($format);
 	}
 
 	//get the file basenames of the tracks for a specified album 
@@ -286,9 +287,9 @@ header('Content-Type: text/plain; charset=utf-8');
 		mkdir('./metadatacache/tracklist');
 	}
 	$freshness=0;
-	if (file_get_contents('./audio-freshness.dat')!==false){
+	if (file_get_contents('./freshness.dat')!==false){
 			
-			$freshness = file_get_contents('./audio-freshness.dat');
+			$freshness = file_get_contents('./freshness.dat');
 			
 	}
 	if (file_exists('./metadatacache/tracklist/'.$album64.'.txt')&&
@@ -1381,8 +1382,13 @@ else if (isset($_GET['length'])){
 else if (isset($_GET['pubdate'])){
 	$target=basename($_GET['pubdate']);
 	
-	if (file_exists('./audio/'.$target)){
-		echo filemtime('./audio/'.$target);
+	if (!file_exists('./'.$target.'.pubdate')&&file_exists('./audio/'.$target)){
+		$re = filemtime('./audio/'.$target);
+		file_put_contents('./'.$target.'.pubdate', $re);
+		echo $re;
+	}
+	else {
+		echo file_get_contents('./'.$target.'.pubdate');
 	}
 }
 else if (isset($_GET['duration'])){
