@@ -337,7 +337,7 @@ if ($artlist!==false){
 					$running=false;
 					}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					$counter++;//sleep(intval(mt_rand(1,45)));
 					}
 				
 				
@@ -365,7 +365,10 @@ if ($artlist!==false){
 		else{
 			$running=true;
 			$sleeper=1;
-			while ($running){
+			$counter=0;
+while ($running){
+if ($counter==10){$running=false;}
+
 				$duration=file_get_contents($clewnapiurl.'?duration='.urlencode($trackitem.'.'.$format));
 				
 				if ($duration!==false&&strlen(trim($duration))>0){
@@ -374,7 +377,7 @@ if ($artlist!==false){
 					$running=false;
 				}
 				else{
-					sleep(intval(mt_rand(1,16)));
+					$counter++;//sleep(intval(mt_rand(1,16)));
 				}	
 			}
 				//$sleeper=1.25*$sleeper;
@@ -397,7 +400,10 @@ if ($artlist!==false){
 		else{
 			$running=true;
 			$sleeper=1;
-			while ($running){
+			$counter=0;
+while ($running){
+if ($counter==10){$running=false;}
+
 				$artist=file_get_contents($clewnapiurl.'?getartist='.urlencode($trackitem));
 				
 				if ($artist!==false){
@@ -406,7 +412,7 @@ if ($artlist!==false){
 					$running=false;
 				}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					$counter++;//sleep(intval(mt_rand(1,45)));
 				}
 			}
 		}
@@ -426,7 +432,10 @@ if ($artlist!==false){
 		else{
 			$running=true;
 			$sleeper=1;
-			while ($running){
+			$counter=0;
+while ($running){
+if ($counter==10){$running=false;}
+
 				$pubdate=file_get_contents($clewnapiurl.'?pubdate='.urlencode($trackitem).'.mp3');
 				
 				if ($pubdate!==false){
@@ -435,7 +444,7 @@ if ($artlist!==false){
 					$running=false;
 				}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					$counter++;//sleep(intval(mt_rand(1,45)));
 				
 				}
 				//$sleeper=1.25*$sleeper;
@@ -457,7 +466,10 @@ if ($artlist!==false){
 		else{
 			$running=true;
 			$sleeper=1;
-			while ($running){
+			$counter=0;
+while ($running){
+if ($counter==10){$running=false;}
+
 				$length=file_get_contents($clewnapiurl.'?length='.urlencode($trackitem).'.mp3');
 				
 				if ($length!==false){
@@ -466,7 +478,7 @@ if ($artlist!==false){
 					$running=false;
 				}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					$counter++;//sleep(intval(mt_rand(1,45)));
 				
 				}
 				//$sleeper=1.25*$sleeper;

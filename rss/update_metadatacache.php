@@ -215,7 +215,8 @@ echo "\nentering track loop";
 					echo "\ncached OK";
 					}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					//sleep(intval(mt_rand(1,16)));
+echo "failure on $trackitem";$running=false;
 					}
 				
 				
@@ -254,8 +255,10 @@ echo "\nentering track loop";
 					echo "\ncached OK";
 				}
 				else{
-					sleep(intval(mt_rand(1,16)));
-				}	
+					//sleep(intval(mt_rand(1,16)));
+					echo "failure on $trackitem";$running=false;
+				}
+				
 			}
 				//$sleeper=1.25*$sleeper;
 				
@@ -289,7 +292,8 @@ echo "\nentering track loop";
 					echo "\ncached OK";
 				}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					//sleep(intval(mt_rand(1,16)));
+echo "failure on $trackitem";$running=false;
 				}
 			}
 		}
@@ -320,7 +324,8 @@ echo "\nentering track loop";
 					echo "\ncached OK";
 				}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					//sleep(intval(mt_rand(1,16)));
+echo "failure on $trackitem";$running=false;
 				
 				}
 				//$sleeper=1.25*$sleeper;
@@ -355,7 +360,8 @@ echo "\nentering track loop";
 					echo "\ncached OK";
 				}
 				else{
-					sleep(intval(mt_rand(1,45)));
+					//sleep(intval(mt_rand(1,16)));
+echo "failure on $trackitem";$running=false;
 				
 				}
 				//$sleeper=1.25*$sleeper;
