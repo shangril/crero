@@ -89,7 +89,7 @@ if ($freshness===false){
 	$freshness=0;
 }
 else{
-	$freshness = floatval(trim($freshness));
+	$freshness = intval(trim($freshness));
 }
 
 if(file_exists('./'.$art64.'rss.xml')&&file_exists('./'.$art64.'freshness.txt')){
@@ -194,8 +194,8 @@ if ($artlist!==false){
 		$artist64=str_replace('/', '_',base64_encode($artist));
 		
 		if (file_exists('./metadatacache/albums/'.$artist64.'.txt')&&
-			(filemtime('./metadatacache/albums/'.$artist64.'.txt')>$freshness
-			)
+			filemtime('./metadatacache/albums/'.$artist64.'.txt')>$freshness
+			
 			&& filesize('./metadatacache/albums/'.$artist64.'.txt')>0){
 				$albums=file_get_contents('./metadatacache/albums/'.$artist64.'.txt');
 				
@@ -216,8 +216,7 @@ if ($artlist!==false){
 				$tracks=false;
 				$album64=str_replace('/', '_',base64_encode($album)).$artist64;
 				if (file_exists('./metadatacache/tracklists/'.$album64.'.txt')&&
-					(filemtime('./metadatacache/tracklists/'.$album64.'.txt')>$freshness
-					)
+					filemtime('./metadatacache/tracklists/'.$album64.'.txt')>$freshness
 					&&filesize('./metadatacache/tracklists/'.$album64.'.txt')>0
 					){
 						$tracks=file_get_contents('./metadatacache/tracklists/'.$album64.'.txt');
@@ -300,6 +299,9 @@ if ($artlist!==false){
 
 
 	foreach ($tracklist as $trackitem){
+		if (trim($trackitem)==''){
+			break;
+		}
 		$title=false;
 		if (file_exists('./metadatacache/'.$trackitem.'.title.txt')&&
 			filemtime('./metadatacache/'.$trackitem.'.title.txt')>$freshness
@@ -317,8 +319,10 @@ if ($artlist!==false){
 					file_put_contents('./metadatacache/'.$trackitem.'.title.txt', $title);
 					$running=false;
 				}
-				sleep(intval($sleeper));
-				$sleeper=1.25*$sleeper;
+				else{http_response_code(500);
+die();
+sleep(intval($sleeper));}
+				//$sleeper=1.25*$sleeper;
 			}
 			
 			
@@ -341,8 +345,10 @@ if ($artlist!==false){
 					file_put_contents('./metadatacache/'.$trackitem.'.duration.txt', $duration);
 					$running=false;
 				}
-				sleep(intval($sleeper));
-				$sleeper=1.25*$sleeper;
+				else{http_response_code(500);
+die();
+sleep(intval($sleeper));}
+				//$sleeper=1.25*$sleeper;
 				
 			}
 		}
@@ -366,8 +372,10 @@ if ($artlist!==false){
 					file_put_contents('./metadatacache/'.$trackitem.'.artist.txt', $artist);
 					$running=false;
 				}
-				sleep(intval($sleeper));
-				$sleeper=1.25*$sleeper;
+				else{http_response_code(500);
+die();
+sleep(intval($sleeper));}
+				//$sleeper=1.25*$sleeper;
 				
 			}
 		}
@@ -390,8 +398,10 @@ if ($artlist!==false){
 					file_put_contents('./metadatacache/'.$trackitem.'.pubdate.txt', $pubdate);
 					$running=false;
 				}
-				sleep(intval($sleeper));
-				$sleeper=1.25*$sleeper;
+				else{http_response_code(500);
+die();
+sleep(intval($sleeper));}
+				//$sleeper=1.25*$sleeper;
 				
 			}
 		}
@@ -414,8 +424,10 @@ if ($artlist!==false){
 					file_put_contents('./metadatacache/'.$trackitem.'.length.txt', $length);
 					$running=false;
 				}
-				sleep(intval($sleeper));
-				$sleeper=1.25*$sleeper;
+				else{http_response_code(500);
+die();
+sleep(intval($sleeper));}
+				//$sleeper=1.25*$sleeper;
 				
 			}
 		}

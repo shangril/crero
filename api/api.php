@@ -1373,6 +1373,8 @@ header('Content-Type: text/plain; charset=utf-8');
 		}
 }
 else if (isset($_GET['length'])){
+	header('Content-Type: text/plain; charset=utf-8');
+
 	$target=basename($_GET['length']);
 	
 	if (file_exists('./audio/'.$target)){
@@ -1380,6 +1382,8 @@ else if (isset($_GET['length'])){
 	}
 }
 else if (isset($_GET['pubdate'])){
+	header('Content-Type: text/plain; charset=utf-8');
+
 	$target=basename($_GET['pubdate']);
 	
 	if (!file_exists('./'.$target.'.pubdate')&&file_exists('./audio/'.$target)){
@@ -1392,6 +1396,8 @@ else if (isset($_GET['pubdate'])){
 	}
 }
 else if (isset($_GET['duration'])){
+	header('Content-Type: text/plain; charset=utf-8');
+
 	$file=basename($_GET['duration']);
 	
 	
