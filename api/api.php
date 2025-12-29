@@ -1,4 +1,5 @@
 <?php
+set_time_limit(600);
 error_reporting(0);
 //require_once('./config.php');
 /*if (file_exists('../php-getid3/getid3.php')){

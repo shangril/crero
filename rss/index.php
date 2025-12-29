@@ -1,4 +1,5 @@
 <?php
+set_time_limit(600);
 header('Content-Type: application/rss+xml; charset=utf-8');
 function xmlcdata($arg){
 	return '<![CDATA['.$arg.']]>';
