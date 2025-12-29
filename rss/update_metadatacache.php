@@ -199,7 +199,7 @@ echo "\nentering track loop";
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.title.txt')))&&strlen($m)>0){
 				$title=$m;
-				echo "\ntitle already cached";
+				//echo "\ntitle already cached";
 			}
 		else{
 			//echo 'entering running !!!!!';
@@ -238,7 +238,7 @@ echo "\nentering track loop";
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.duration.txt')))&&strlen($m)>0){
 				$duration=$m;
-				echo "\nduration already cached";
+				//echo "\nduration already cached";
 			}
 		
 		else{
@@ -272,7 +272,7 @@ echo "\nentering track loop";
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.artist.txt')))&&strlen($m)>0){
 				$artist=$m;
-				echo "\nartist already cached";
+				//echo "\nartist already cached";
 			}
 		
 		else{
@@ -304,7 +304,7 @@ echo "\nentering track loop";
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.pubdate.txt')))&&strlen($m)>0){
 				$pubdate=$m;
-				echo "\npubdate already cached";
+				//echo "\npubdate already cached";
 			}
 		
 		else{
@@ -338,7 +338,7 @@ echo "\nentering track loop";
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.length.txt')))&&strlen($m)>0){
 				$length=$m;
-				echo "\nlength already cached";
+				//echo "\nlength already cached";
 			}
 		
 		else{
@@ -364,4 +364,5 @@ echo "\nentering track loop";
 		}
 	}
 }
+echo "\nResponse code 0xDEADBEEF: Cache Build"
 ?>
