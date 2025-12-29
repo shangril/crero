@@ -1,8 +1,7 @@
 <?php
-header('Content-Type: application/rss+xml; charset=utf-8');
-function xmlcdata($arg){
-	return '<![CDATA['.$arg.']]>';
-}
+header('Content-Type: text/plain; charset=utf-8');
+error_reporting(E_ALL);
+
 if(!file_exists('./metadatacache')){
 	mkdir('./metadatacache');
 }
@@ -19,47 +18,23 @@ if(!file_exists('./metadatacache/json')){
 }
 
 if (!file_exists('../d/wizard_completed.txt')){
-	die();
+	die("Initial wizard setup not completed");
 	//the initial CMS setup hasn't been completed
 }
 $art64='';
+$artists=Array();
+
 
 $artlist=file_get_contents('../d/artists.txt');
 if ($artlist!==false){
 	$artists=explode("\n", trim($artlist));
 }
-if (isset($_GET['artist'])){
-	if (!in_array($_GET['artist'], $artists)){
-		die();
-	}
-	$art64=str_replace('/', '_', base64_encode($_GET['artist']));
-	$artists = Array($_GET['artist']);
-}	
-if (file_exists('./'.$art64.'rss.xml')&&(floatval(filemtime('./'.$art64.'rss.xml'))+floatval(24*3600))>microtime(true)){
-	echo file_get_contents('./'.$art64.'rss.xml');
-	die();
-}
-
-//chdir ('..');
-//$_GET['no-infinite-loop-please']=1;
-//require_once('./config.php');
-//chdir ('./rss');
-
-if ((
- ($clewnapiurl=file_get_contents('../d/clewnapiurl.txt')) === false ||
-	($sitename=file_get_contents('../d/sitename.txt')) === false ||
-	($description=file_get_contents('../d/description.txt')) === false ||
-	($server=file_get_contents('../d/server.txt')) === false ||
-	($clewnaudiourl=file_get_contents('../d/clewnaudiourl.txt')) === false
-  )){
-	  die();
+if 
+ (($clewnapiurl=file_get_contents('../d/clewnapiurl.txt')) === false){
+	  die("API URL not set");
   }
 
 $clewnapiurl=trim($clewnapiurl);
-$clewnaudiourl=trim($clewnaudiourl);
-$sitename=trim($sitename);
-$description=trim($description);
-$server=trim($server);
 
 $formats='';
 if (!file_exists('./formats.txt')){
@@ -87,110 +62,17 @@ $freshness = file_get_contents($clewnapiurl.'?freshness=1');
 
 if ($freshness===false){
 	http_response_code(500);
-	die();
+	die("API didn't reply for freshness");
 }
 else{
 	$freshness = intval($freshness);
 }
-
-if(file_exists('./'.$art64.'rss.xml')&&file_exists('./'.$art64.'freshness.txt')){
-
-	if ($freshness!==false&&$freshness<=floatval(file_get_contents('./'.$art64.'freshness.txt'))){
-		echo file_get_contents('./'.$art64.'rss.xml');
-		die();
-	}
-}
-$ret='';
-
-$proto='http://';
-if ((isset($_SERVER['HTTPS'])&&strtolower($_SERVER['HTTPS']) !== 'off' && !empty($_SERVER['HTTPS']))||isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https'){
-	$proto='https://';
-}
-$itemcount=0;
 if ($artlist!==false){
-	$ret.='<?xml version="1.0" encoding="UTF-8" ?>';
-	$ret.='<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" version="2.0">';
-	$ret.='<channel>';
-	$ret.='<itunes:category text="Music"/>';
-	if (count($artists)==1){
-		$ret.='<title>'.xmlcdata($artists[0]).'</title>';
-	}
-	else {
-		$ret.='<title>'.xmlcdata($sitename).'</title>';
-	}
-
-	if (file_exists('../d/allowDonations.txt')&&boolval(file_get_contents('../d/allowDonations.txt'))==true){
-		//Donations are accepted 
-		if ($proto=='https://'){
-			//the podcasting 2.0 user-defined url like used for the podcast:funding tag won't allow http://
-			
-			$ret.='<podcast:funding url="https://'.$server.'/donate">Help funding us!</podcast:funding>';
-			
-		}
-		
-		
-	}
-	
-	$LightningBTCDonationAddress = false;
-	if (file_exists('../d/LightningBTCDonationAddress.txt')){
-		$btcdata=trim(file_get_contents('../d/LightningBTCDonationAddress.txt'));
-		$abtc=explode(" ", $btcdata);
-		if (count($abtc)>2 && is_numeric($abtc[1])){
-			$LightningBTCDonationAddress = $abtc;
-		}
-	}
-	if ($LightningBTCDonationAddress!==false){
-
-		$ret.='<podcast:value type="lightning" method="keysend" suggested="'.htmlspecialchars($LightningBTCDonationAddress[1]).'"><podcast:valueRecipient name="'.htmlspecialchars(implode(" ",array_splice($LightningBTCDonationAddress, 2))).'" type="lnaddress" address="'.htmlspecialchars($LightningBTCDonationAddress[0]).'" split="100"/></podcast:value>';
-		
-	}
-	
-	if ($proto=='https://'){
-		if (isset($_GET['artist'])){
-			if (file_exists('../d/ProjectPicture.txt')){
-				$apdata = explode("\n", trim(file_get_contents('../d/ProjectPicture.txt')));
-				$apa = Array();
-				for ($i=0;$i<count($apdata);$i++){
-					$apa[$apdata[$i]] = $apdata[$i+1];
-					$i++;
-				}
-				
-			}
-			if (in_array($_GET['artist'], array_keys($apa))){
-				$ret.='<podcast:image href="https://'.$server.'/projectpicture/'.rawurlencode($apa[$_GET['artist']]).'"/>';
-				$ret.='<itunes:image href="https://'.$server.'/projectpicture/'.rawurlencode($apa[$_GET['artist']]).'"/>';
-			}
-		}
-		else
-			if (file_exists('../logo.png')){
-			
-				$ret.='<podcast:image href="https://'.$server.'/logo.png"/>';
-				$ret.='<itunes:image href="https://'.$server.'/logo.png"/>';
-			
-			}
-			else
-			{
-				$ret.='<podcast:image href="https://'.$server.'/favicon.png"/>';
-				$ret.='<itunes:image href="https://'.$server.'/favicon.png"/>';
-			}
-	}
-	
-	$ret.='<description>';
-	$descadd = '';
-	if (isset($_GET['artist'])){
-		$descadd = $sitename.': ';
-	}
-	$ret.=xmlcdata($descadd.$description).'</description>
-	<itunes:author>'.xmlcdata($sitename).'</itunes:author>
-	<link>'.$proto.htmlspecialchars($server);
-	if (isset($_GET['artist'])){
-		$ret.='/?artist='.urlencode($artists[0]);
-		
-	}
-	$ret.='</link>';
 	$tracklist=array();
 	$albumlist=array();
+	echo "\nentering artist loop";
 	foreach ($artists as $artist){
+		echo "\nartist: $artist";
 		$albums=false;
 		$artist64=str_replace('/', '_',base64_encode($artist));
 		
@@ -199,21 +81,25 @@ if ($artlist!==false){
 			
 			&& filesize('./metadatacache/albums/'.$artist64.'.txt')>0){
 				$albums=file_get_contents('./metadatacache/albums/'.$artist64.'.txt');
-				
+				echo "\nalbums already cached";
 			}
 		else {
 			$running=true;
 			while($running){
+				echo "\ntrying to cache";
 				$albums=file_get_contents($clewnapiurl.'?listalbums='.urlencode($artist));
 				if ($albums!==false){
 					file_put_contents('./metadatacache/albums/'.$artist64.'.txt', $albums);
 					$running=false;
+					echo "\ncached OK";
 				}
 			}
 		}
 		if ($albums!==false){
 			$albdat = explode("\n", trim($albums));
+			echo "\nentering album loop";
 			foreach ($albdat as $album){
+				echo "\nalbum: $album";
 				$tracks=false;
 				$album64=str_replace('/', '_',base64_encode($album)).$artist64;
 				if (file_exists('./metadatacache/tracklists/'.$album64.'.txt')&&
@@ -221,17 +107,20 @@ if ($artlist!==false){
 					&&filesize('./metadatacache/tracklists/'.$album64.'.txt')>0
 					){
 						$tracks=file_get_contents('./metadatacache/tracklists/'.$album64.'.txt');
-						
+						echo "\ntracks already cached";
 					}
 				else {
 					$running=true;
 					while($running){
+						echo "\ntrying to cache";
+	
 						$tracks=file_get_contents($clewnapiurl.'?gettracks_unentitified='.urlencode(html_entity_decode($album)));
 						
 						if ($tracks!==false){
 							$tracks=trim($tracks);
 							file_put_contents('./metadatacache/tracklists/'.$album64.'.txt', $tracks);
 							$running=false;
+							echo "\ncached OK";
 						}
 					}
 					
@@ -246,6 +135,7 @@ if ($artlist!==false){
 			}
 		}
 	}
+	echo "\ncaching JSON";
 	//last caching thing: the json
 	$query = '?';
 	
@@ -265,10 +155,12 @@ if ($artlist!==false){
 		}
 		else{
 			$jsonlastlist=file_get_contents('./metadatacache/json/'.$art64.'l2.json');
+			echo "\nalready cached";
 		}
 	}
 	else {
 		$jsonlastlist=file_get_contents($clewnapiurl.$query);
+	
 	}
 	
 	if (false!==$jsonlastlist&&false!==($lastlist=json_decode($jsonlastlist, true))&&is_array($lastlist)){
@@ -276,33 +168,18 @@ if ($artlist!==false){
 		//savethecache
 		
 		file_put_contents('./metadatacache/json/'.$art64.'l2.json', $jsonlastlist);
-
-	}
+		echo "\ncached OK";
 	
-
-	
-	if ($lastlist===false||!is_array($lastlist)){
-		$lastlist=Array();
-	}
-	
-	
-	ksort($lastlist);
-	
-	$i = 1;
-	
-	$seasons = Array();
-	
-	foreach ($lastlist as $l){
-		$seasons[html_entity_decode($l['album'])] = $i;
-		$i++;
-		
 	}
 
-	echo 'entering foreach';
+
+
+echo "\nentering track loop";
 	foreach ($tracklist as $trackitem){
 		if (trim($trackitem)==''){
 			break;
 		}
+		echo "\ntrack $trackitem";
 		$m='';
 		$title=false;
 		/*
@@ -312,9 +189,9 @@ if ($artlist!==false){
 		echo 'filemtime returns '.filemtime('./metadatacache/'.$trackitem.'.title.txt');
 		echo 'filesize returns '.filesize('./metadatacache/'.$trackitem.'.title.txt');
 		*/
-		$t=$freshness+1;
+		$t=$freshness-1;
 		if (false===($t=filemtime('./metadatacache/'.$trackitem.'.title.txt'))){
-			$t=$freshness+1;
+			$t=$freshness-1;
 		}
 		
 		
@@ -322,6 +199,7 @@ if ($artlist!==false){
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.title.txt')))&&strlen($m)>0){
 				$title=$m;
+				echo "\ntitle already cached";
 			}
 		else{
 			//echo 'entering running !!!!!';
@@ -329,11 +207,12 @@ if ($artlist!==false){
 			$sleeper=1;
 			while($running){
 				$title=file_get_contents($clewnapiurl.'?gettitle='.urlencode($trackitem));
-				
+				echo "\ntrying to cache title";
 				if ($title!==false){
 					$title=trim($title);
 					file_put_contents('./metadatacache/'.$trackitem.'.title.txt', $title);
 					$running=false;
+					echo "\ncached OK";
 					}
 				else{
 					sleep(intval(mt_rand(1,45)));
@@ -349,9 +228,9 @@ if ($artlist!==false){
 		
 		$duration = false;
 		
-		$t=$freshness+1;
+		$t=$freshness-1;
 		if (false===($t=filemtime('./metadatacache/'.$trackitem.'.duration.txt'))){
-			$t=$freshness+1;
+			$t=$freshness-1;
 		}
 		
 		
@@ -359,6 +238,7 @@ if ($artlist!==false){
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.duration.txt')))&&strlen($m)>0){
 				$duration=$m;
+				echo "\nduration already cached";
 			}
 		
 		else{
@@ -366,11 +246,12 @@ if ($artlist!==false){
 			$sleeper=1;
 			while ($running){
 				$duration=file_get_contents($clewnapiurl.'?duration='.urlencode($trackitem.'.'.$format));
-				
+				echo "\ntrying to cache duration";
 				if ($duration!==false&&strlen(trim($duration))>0){
 					$duration=trim($duration);
 					file_put_contents('./metadatacache/'.$trackitem.'.duration.txt', $duration);
 					$running=false;
+					echo "\ncached OK";
 				}
 				else{
 					sleep(intval(mt_rand(1,16)));
@@ -383,26 +264,29 @@ if ($artlist!==false){
 		
 		
 		$artist=false;
-		$t=$freshness+1;
+		$t=$freshness-1;
 		if (false===($t=filemtime('./metadatacache/'.$trackitem.'.artist.txt'))){
-			$t=$freshness+1;
+			$t=$freshness-1;
 		}
 		if (file_exists('./metadatacache/'.$trackitem.'.artist.txt')&&
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.artist.txt')))&&strlen($m)>0){
 				$artist=$m;
+				echo "\nartist already cached";
 			}
 		
 		else{
 			$running=true;
 			$sleeper=1;
 			while ($running){
+				echo "\ntrying to cache artist";
 				$artist=file_get_contents($clewnapiurl.'?getartist='.urlencode($trackitem));
 				
 				if ($artist!==false){
 					$artist=trim($artist);
 					file_put_contents('./metadatacache/'.$trackitem.'.artist.txt', $artist);
 					$running=false;
+					echo "\ncached OK";
 				}
 				else{
 					sleep(intval(mt_rand(1,45)));
@@ -411,15 +295,16 @@ if ($artlist!==false){
 		}
 		$pubdate=false;
 		
-		$t=$freshness+1;
+		$t=$freshness-1;
 		if (false===($t=filemtime('./metadatacache/'.$trackitem.'.pubdate.txt'))){
-			$t=$freshness+1;
+			$t=$freshness-1;
 		}
 		
 		if (file_exists('./metadatacache/'.$trackitem.'.pubdate.txt')&&
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.pubdate.txt')))&&strlen($m)>0){
 				$pubdate=$m;
+				echo "\npubdate already cached";
 			}
 		
 		else{
@@ -427,11 +312,12 @@ if ($artlist!==false){
 			$sleeper=1;
 			while ($running){
 				$pubdate=file_get_contents($clewnapiurl.'?pubdate='.urlencode($trackitem).'.mp3');
-				
+				echo "\ntrying to cache pubdate";
 				if ($pubdate!==false){
 					$pubdate=trim($pubdate);
 					file_put_contents('./metadatacache/'.$trackitem.'.pubdate.txt', $pubdate);
 					$running=false;
+					echo "\ncached OK";
 				}
 				else{
 					sleep(intval(mt_rand(1,45)));
@@ -443,26 +329,30 @@ if ($artlist!==false){
 		}
 		
 		$length=false;
-		$t=$freshness+1;
+		$t=$freshness-1;
 		if (false===($t=filemtime('./metadatacache/'.$trackitem.'.length.txt'))){
-			$t=$freshness+1;
+			$t=$freshness-1;
+			
 		}
 		if (file_exists('./metadatacache/'.$trackitem.'.length.txt')&&
 			$t>$freshness
 			&&(false!==($m=file_get_contents('./metadatacache/'.$trackitem.'.length.txt')))&&strlen($m)>0){
 				$length=$m;
+				echo "\nlength already cached";
 			}
 		
 		else{
 			$running=true;
 			$sleeper=1;
 			while ($running){
+				echo "\ntrying to cache length";
 				$length=file_get_contents($clewnapiurl.'?length='.urlencode($trackitem).'.mp3');
 				
 				if ($length!==false){
 					$length=trim($length);
 					file_put_contents('./metadatacache/'.$trackitem.'.length.txt', $length);
 					$running=false;
+					echo "\ncached OK";
 				}
 				else{
 					sleep(intval(mt_rand(1,45)));
@@ -472,84 +362,6 @@ if ($artlist!==false){
 				
 			}
 		}
-		
-		
-		if ($title!==false&&$artist!==false&&$duration!==false&$pubdate!==false&&$length!==false){
-			$title=trim($title);
-			$artist=trim($artist);
-			$duration=trim($duration);
-			
-			$ret.='<item>';
-			$title_cdata = '';
-			if (count($artists)>1){
-				$title_cdata .= html_entity_decode($artist).' - ';
-			}
-			$title_cdata .= html_entity_decode($title);//.' ('.html_entity_decode($albumlist[$trackitem]).')';
-			$ret.='<title>'.xmlcdata($title_cdata).'</title>';
-			
-			$name=html_entity_decode($albumlist[$trackitem]);
-			
-			if (strlen($name)>128){
-				$name=substr($name, 0, 127)."…";
-			}
-			
-			$ret.='<podcast:season name="'.htmlspecialchars($name).'">'.$seasons[html_entity_decode($albumlist[$trackitem])].'</podcast:season>';
-			
-			
-			if (is_numeric($length)){
-				$ret.='<enclosure url="'.htmlspecialchars($clewnaudiourl).htmlspecialchars($trackitem).'.mp3" length="'.$length.'" type="audio/mpeg"/>';
-				$itemcount++;
-			}
-			$ret.='<guid>'.urlencode((htmlspecialchars_decode($artist))).'_'.urlencode(htmlspecialchars_decode($albumlist[$trackitem])).'_'.urlencode(htmlspecialchars_decode($title)).'</guid>';
-			$ret.='<link><![CDATA['.$proto.$server.'?artist='.urlencode(htmlspecialchars_decode($artist)).'&album='.urlencode(htmlspecialchars_decode($albumlist[$trackitem])).'&track='.urlencode(htmlspecialchars_decode($title)).']]></link>';
-			
-			if (is_numeric($pubdate)){
-				$ret.='<pubDate>'.htmlspecialchars(date(DATE_RSS, intval($pubdate))).'</pubDate>';
-			}
-			if (is_numeric($duration)){
-				$ret.='<itunes:duration>'.htmlspecialchars(intval($duration)).'</itunes:duration>';
-			}
-			$coversdat=Array();
-	
-	
-			if (file_exists('../d/covers.txt')&&!is_dir('../d/covers.txt')){
-				$covers=trim(file_get_contents('../d/covers.txt'));
-				$coverlines=explode("\n", $covers);
-				for ($i=0;$i<count($coverlines);$i++){
-					$coversdat[$coverlines[$i]]=$coverlines[$i+1];
-					$i++;
-				}
-			}
-			if (isset($coversdat[htmlspecialchars_decode($albumlist[$trackitem])])){
-				$ret.='<itunes:image href="'.$proto.$server.'/covers/'.htmlspecialchars(rawurlencode($coversdat[htmlspecialchars_decode($albumlist[$trackitem])])).'"/>';
-			}
-			
-			$ret.='</item>';
-			
-		}
-	}
-	
-	
-	
-	
-	$ret.='</channel>';
-	$ret.='</rss>';
-	
-	
-	
-
-	if ($itemcount>0){
-		echo $ret;	
-		
-		//Saving the cache
-		file_put_contents('./'.$art64.'rss.xml', $ret);
-		
-		file_put_contents('./'.$art64.'freshness.txt', microtime(true));
-		
-	} 
-	else if (file_exists('./'.$art64.'rss.xml')){
-		echo file_get_contents('./'.$art64.'rss.xml');
-		
 	}
 }
 ?>

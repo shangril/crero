@@ -1385,27 +1385,36 @@ else if (isset($_GET['pubdate'])){
 	header('Content-Type: text/plain; charset=utf-8');
 
 	$target=basename($_GET['pubdate']);
-	
-	if (!file_exists('./'.$target.'.pubdate')&&file_exists('./audio/'.$target)){
-		$re = filemtime('./audio/'.$target);
-		file_put_contents('./'.$target.'.pubdate', $re);
-		echo $re;
-	}
-	else {
-		echo file_get_contents('./'.$target.'.pubdate');
+
+if (file_exists('./audio/'.$target)){
+	echo filemtime('./audio/'.$target);
 	}
 }
 else if (isset($_GET['duration'])){
 	header('Content-Type: text/plain; charset=utf-8');
 
 	$file=basename($_GET['duration']);
+
+
+	if (file_exists('./metadatacache/'.$file.'.duration.txt')){
+		if (filemtime('./metadatacache/'.$file.'.duration.txt')>filemtime('./audio/'.$file)){
+			if (($ret=file_get_contents('./metadatacache/'.$file.'.duration.txt'))!==false){
+				echo $ret;
+				die();
+			}
+		}
+		
+		
+	}
 	
 	
 	if (file_exists('./audio/'.$file)){
 
 		$getID3 = new getID3;
 		$info = $getID3->analyze('audio/'.$file);
-		echo $info['playtime_seconds'];
+		$ret = $info['playtime_seconds'];
+		file_put_contents('./metadatacache/'.$file.'.duration.txt', $ret);
+		echo $ret;
 	}
 }
 else if (array_key_exists('cleanup', $_GET)){
