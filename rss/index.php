@@ -299,7 +299,6 @@ if ($artlist!==false){
 		
 	}
 
-	echo 'entering foreach';
 	foreach ($tracklist as $trackitem){
 		if (trim($trackitem)==''){
 			break;
