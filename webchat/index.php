@@ -6,23 +6,45 @@ chdir ('./webchat');
 $artlist = explode("\n", trim(file_get_contents('../d/artists.txt')));
 
 if (isset($_GET['a'])&&in_array($_GET['a'], $artlist)){
-	$albs = file_get_contents($clewnapiurl."?listalbums=".urlencode($_GET['a']));
-	if ($albs !== false){
-		$albz = explode("\n", trim($albs));
+	$art64 = str_replace('/', '_', base64_encode($_GET['a']));
+	if (file_exists('./'.$art64.'.a.dat')&&filemtime('./'.$art64.'.a.dat')+(3600*24)>microtime(true)){
+
+		$albz = explode("\n", trim(file_get_contents('./'.$art64.'.a.dat')));
 		foreach ($albz as $al){
 			echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">[".$al."]</a> - ";
 		}
-	  }
+	}
+	else{
+		$albs = file_get_contents($clewnapiurl."?listalbums=".urlencode($_GET['a']));
+		if ($albs !== false){
+			file_put_contents('./'.$art64.'.a.dat', $albs);
+			$albz = explode("\n", trim($albs));
+			foreach ($albz as $al){
+				echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">[".$al."]</a> - ";
+			}
+		  }
+	}
 	die();
 }
 if (isset($_GET['b'])&&in_array($_GET['b'], $artlist)){
-	$albs = file_get_contents($serverapi."?listalbums=".urlencode($_GET['b']));
-	if ($albs !== false){
-		$albz = explode("\n", trim($albs));
+	$art64 = str_replace('/', '_', base64_encode($_GET['b']));
+	if (file_exists('./'.$art64.'.b.dat')&&filemtime('./'.$art64.'.b.dat')+(3600*24)>microtime(true)){
+
+		$albz = explode("\n", trim(file_get_contents('./'.$art64.'.b.dat')));
 		foreach ($albz as $al){
 			echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">[".$al."]</a> - ";
 		}
-	  }
+	}
+	else{
+		$albs = file_get_contents($serverapi."?listalbums=".urlencode($_GET['b']));
+		if ($albs !== false){
+			file_put_contents('./'.$art64.'.b.dat', $albs);
+			$albz = explode("\n", trim($albs));
+			foreach ($albz as $al){
+				echo "<a href=\"../?album=".urlencode(html_entity_decode($al))."\">[".$al."]</a> - ";
+			}
+		  }
+	}
 	die();
 }
 ?>
