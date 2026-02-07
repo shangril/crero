@@ -327,7 +327,7 @@ if (array_key_exists('noscript', $_GET)&&$_GET['noscript']=='footer'){
 <html>
 <head>
 <link rel="shortcut icon" href="./<?php echo $favicon;?>" />
-<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="//<?php echo $server; ?>/style.css?v=2" type="text/css" media="screen" />
 <link rel="alternate" type="application/rss+xml" href="//<?php echo $server; ?>/rss" />
 <?php
 	$artists_file=trim(file_get_contents('./d/artists.txt')); 
@@ -1084,7 +1084,7 @@ if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
 	
 	
 <link rel="shortcut icon" href="./<?php echo $favicon;?>" />
-<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="//<?php echo $server; ?>/style.css?v=2" type="text/css" media="screen" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="alternate" type="application/rss+xml" href="//<?php echo $server; ?>/rss" />
 <?php

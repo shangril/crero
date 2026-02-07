@@ -1,0 +1,5 @@
+* The following SIL OFL-licensed fonts © Fauve https://taniere.info
+
+7x4RationnalSquareScript-Regular-1.0.ttf
+DramaCoffeShopScript-Regular-1.0.ttf
+Hashtagueule-Script-Italic-1.0.ttf

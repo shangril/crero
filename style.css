@@ -6,13 +6,20 @@
 		margin-left:auto;
 		margin-right:auto;
 	}
-
+@font-face {
+    font-family: 'OFL-licensed-fonts';
+    src: url('OFL-licensed_fonts.ttf') format('truetype');
+         
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;  /* Affichage progressif */
+}
 body {
 	padding-left:8%;
 	padding-right:8%;
     color:#004014;
     background-color: #AFAFAF;
-    font-family: Arial,sans-serif;
+    font-family: 'OFL-licensed-fonts', Arial,sans-serif;
     /*background-image: linear-gradient(to right, black, #373737);*/
 }
 

@@ -12,7 +12,7 @@ if (isset($_GET['a'])){
 
 <meta name="description" value="<?php echo htmlspecialchars($description);?>"/>
 <meta charset="UTF-8"/>
-<link href="./style.css" rel="stylesheet" type="text/css"/>
+<link href="./style.css?v=2" rel="stylesheet" type="text/css"/>
 <meta name="viewport" content="width=device-width" />
 
 

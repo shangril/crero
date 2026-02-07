@@ -1,6 +1,8 @@
 <?php
 error_reporting(0);
 $sessionstarted=session_start();
+
+
 require_once('./crero-lib.php');
 
 if (isset($_GET['purge'])){
@@ -182,6 +184,13 @@ else if (!file_exists('./d/wizard_completed.txt')){
 	touch('./d/wizard_completed.txt');
 }//end of basic configuration testing for crero-yp-api specifically
 
+
+//you come here, you're seen. If you're seen once, you must have hit the font then, human ! If you hadn't, you won't see us. 
+if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SESSION)) && strpos($_SERVER['PHP_SELF'], '/webchat/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/webchat/index.php')){
+	echo ('<html><body><h1>We are quite sorry, but this website is only available for browsers that download remote fonts and honor a no-cache cache-control directive for them</h1></body></html>');
+	die();
+}
+$_SESSION['seen'] = true;
 
 
 

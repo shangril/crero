@@ -52,7 +52,7 @@ if (isset($_GET['b'])&&in_array($_GET['b'], $artlist)){
 <html>
 <head>
 <link rel="shortcut icon" href="../<?php echo $favicon;?>" />
-	<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="//<?php echo $server; ?>/style.css?v=2" type="text/css" media="screen" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="charset" value="utf-8" />

@@ -12,7 +12,7 @@ chdir('./donate');
 		<meta name="keywords" content="Donate to <?php echo htmlspecialchars($sitename);?>"/>
 		<meta name="description" content="Donate to <?php echo htmlspecialchars($sitename);?>. <?php echo htmlspecialchars($description)?>"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="//<?php echo $server; ?>/style.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="//<?php echo $server; ?>/style.css?v=2" type="text/css" media="screen" />
 	
 	
 	</head>
