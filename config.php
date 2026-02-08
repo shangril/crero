@@ -187,6 +187,7 @@ else if (!file_exists('./d/wizard_completed.txt')){
 
 //you come here, you're seen. If you're seen once, you must have hit the font then, human ! If you hadn't, you won't see us. 
 if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SESSION)) && strpos($_SERVER['PHP_SELF'], '/webchat/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/webchat/index.php')){
+	http_response_code(403);
 	echo ('<html><body><h1>We are quite sorry, but this website is only available for browsers that download remote fonts and honor a no-cache cache-control directive for them</h1></body></html>');
 	die();
 }
