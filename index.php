@@ -574,7 +574,7 @@ if ($activatehtmlcache&&!isset($_POST['validateemail'])&&!isset($_GET['pingstat'
 	}
 	else {
 		if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])){
-			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) <= date(DATE_RFC822, $myhtmlcache->getCachedPageDate($cachingkey))){
+			if (strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) <= floatval($myhtmlcache->getCachedPageDate($cachingkey))){
 				header(null);
 				session_abort();
 				header('HTTP/1.0 304 Not Modified');
