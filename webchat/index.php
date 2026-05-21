@@ -200,6 +200,14 @@ foreach ($recentsr as $recent){
 	[<a href="../random_vids.php"><?php echo str_replace(' ', '&nbsp;', htmlspecialchars($sitename));?>&nbsp;music&nbsp;videos</a>]
 
 	<?php } ?>
+	<?php if (file_exists("../press")&&is_dir("../press")){ ?>
+	
+	
+	[<a href="../press">Press</a>]
+
+	<?php } ?>
+
+
 	<?php if (!$acceptdonations===false){ ?>
 	
 	
