@@ -223,6 +223,25 @@ foreach ($recentsr as $recent){
 	<?php } ?>
 
 
+<?php
+echo '<span id="links-wrapper">';
+if (count($socialmediaicons)>0){
+	//let's display the social media icons
+	echo '<hr/><span style="float:left;">Various stuff: ';
+	
+	foreach ($socialmediaicons as $socialicon){
+		echo '<strong><a target="new" href="'.$socialicon['link'].'" style="color:'.$socialicon['color'].';background-color:'.$socialicon['background-color'].';border-radius:3px;">';
+		
+		echo str_replace(' ', '&nbsp;', htmlspecialchars($socialicon['letter']));
+		
+		echo '</a></strong> ';
+		
+		
+	}
+	echo '</span><hr/>';
+}
+echo '</span>';
+?>
 <hr/>
 <?php echo htmlspecialchars($sitename);?> Artists: 
 <?php
