@@ -188,7 +188,26 @@ else if (!file_exists('./d/wizard_completed.txt')){
 //you come here, you're seen. If you're seen once, you must have hit the font then, human ! If you hadn't, you won't see us. 
 if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SESSION)) && strpos($_SERVER['PHP_SELF'], '/webchat/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/webchat/index.php')){
 	http_response_code(403);
-	echo ('<html><body><h1>We are quite sorry, but this website is only available for browsers that download remote fonts and honor a no-cache cache-control directive for them</h1></body></html>');
+	echo ('<html>
+	<head><title>Error page</title>
+	<style>
+	body {
+	padding-left:8%;
+	padding-right:8%;
+    color:#004014;
+    background-color: #AFAFAF;
+    font-family: \'OFL-licensed-fonts\', Arial,sans-serif;
+    
+    }
+
+	</style>
+	
+	</head>
+	
+	<body><h1>We are quite sorry, but this website is only available for browsers that download remote fonts and honor a no-cache cache-control directive for them</h1>
+	<h2>If you think you are seeing this by mistake, just <a href="#" onclick="window.location.href=window.location.href;"><strong>Reload this page</strong></a>, and it should solve the issue.</h2>
+	
+	</body></html>');
 	die();
 }
 $_SESSION['seen'] = true;
