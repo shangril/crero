@@ -156,5 +156,7 @@ LightningBTCDonationAddress.txt
 If you wish to receive as a label, Lightning BTC donations, on a single line, indicate your long series of characters that constitutes your Lightning address, followed by a space, followed by a numerical value being the suggested donation amount, like 0.00000015000, followed by a space, followed by a free form string summing up who will get the money. All these three parameters must be present. Leave this option empty if you don't wish to recevie Lighning Bitcoin donations. 
 ProjectPicture.txt
 For RSS artist feeds channel image. Each uneven line defines a artist name ; each following line a filename of an image as a logo for this artist. All the images are to be put in a ./projectpicture directory at the root of your CreRo install. 
+iswebHTTPS.txt
+Can be 0 or 1. For RSS feed, if set to 1, means the server host of the CMS supports HTTPS  
 user_notes.txt
 Not used by the software. There, you can take notes about your site admin tasks, such as todo list or changelog

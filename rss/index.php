@@ -24,7 +24,11 @@ if (!file_exists('../d/wizard_completed.txt')){
 	//the initial CMS setup hasn't been completed
 }
 $art64='';
+$iswebHTTPS=false;
 
+if (file_exists('../d/iswebHTTPS.txt')){
+	$iswebHTTPS = boolval(file_get_contents('../d/iswebHTTPS.txt'));
+}
 $artlist=file_get_contents('../d/artists.txt');
 if ($artlist!==false){
 	$artists=explode("\n", trim($artlist));
@@ -105,6 +109,9 @@ $ret='';
 
 $proto='http://';
 if ((isset($_SERVER['HTTPS'])&&strtolower($_SERVER['HTTPS']) !== 'off' && !empty($_SERVER['HTTPS']))||isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https'){
+	$proto='https://';
+}
+if ($iswebHTTPS){
 	$proto='https://';
 }
 $itemcount=0;
