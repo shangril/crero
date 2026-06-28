@@ -196,7 +196,7 @@ if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SE
 	padding-right:8%;
     color:#004014;
     background-color: #AFAFAF;
-    font-family: \'OFL-licensed-fonts\', Arial,sans-serif;
+    font-family: \'OFL-licensed-fonts/?'.mt_rand(0, 1000000).'\', Arial,sans-serif;
     
     }
 
