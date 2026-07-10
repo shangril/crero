@@ -1392,7 +1392,7 @@ function init_page() {
 				}
 			
 			};
-		ttimer=1000;
+		var ttimer=1000;
 		while(prpretries<10){
 			prpretries++;
 			setTimeout(function(){
@@ -1410,7 +1410,7 @@ function init_page() {
 					prpxhttozzypingprecalb.send();
 				}
 			},ttimer);
-			ttimer=ttimer+1000;
+			ttimer=ttimer*2;
 		}
 	}
 	}
