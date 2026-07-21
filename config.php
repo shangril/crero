@@ -196,7 +196,7 @@ if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SE
 	padding-right:8%;
     color:#004014;
     background-color: #AFAFAF;
-    font-family: \'OFL-licensed-fonts/?'.mt_rand(0, 1000000).'\', Arial,sans-serif;
+    font-family: \'/OFL-licensed-fonts/?v='.mt_rand(0, 1000000).'\', Arial,sans-serif;
     
     }
 
@@ -205,7 +205,7 @@ if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SE
 	</head>
 	
 	<body><h1>We are quite sorry, but this website is only available for browsers that download remote fonts and honor a no-cache cache-control directive for them</h1>
-	<h2>If you think you are seeing this by mistake, just <a href="#" onclick="window.location.href=window.location.href;"><strong>Reload this page</strong></a>, and it should solve the issue.</h2>
+	<h2>If you think you are seeing this by mistake, just <a href="#" onclick="history.back();">go back one page</a> or, maybe, <a href="#" onclick="window.location.href=window.location.href;"><strong>Reload this page</strong></a>, and it should solve the issue. Another option is to start from a new browser session (like a newly created private browsing one) or, clear cookies for this website.</h2>
 	
 	</body></html>');
 	die();
