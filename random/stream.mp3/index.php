@@ -1,6 +1,7 @@
 <?php
 error_reporting(0);
-
+//set user agent
+ini_set('user_agent', 'Crero random player internal access');
 if ($_SERVER['HTTP_USER_AGENT']==''){
 		http_response_code(403);
 		exit(0);
