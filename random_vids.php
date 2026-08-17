@@ -1,4 +1,7 @@
 <?php
+require_once('./randvids2.php');
+die();
+
 require_once('./config.php');
 $whitelist = false;
 if (isset($_GET['a'])){
