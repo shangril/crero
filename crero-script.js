@@ -1292,129 +1292,74 @@ function init_page() {
 	
 	if (get_recentplay()){
 	
-	tryindex=10;
-				
-	while(xhttzzpingprecalb!=null&&tryindex>=0){if (xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();}tryindex--;}
 				
 	
-	
+	// Fonction générique pour pinguer une URL avec un système de relance
+async function pingWithRetry(url, maxRetries, delayMs) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            // On lance la requête
+            const response = await fetch(url, { 
+                method: 'GET',
+                cache: 'no-cache' 
+            });
+
+            // Si le serveur répond avec un code 200-299, c'est un succès
+            if (response.ok) {
+                return true;
+            }
+        } catch (error) {
+            // Erreur réseau ou timeout, on l'attrape silencieusement pour pouvoir réessayer
+        }
+
+        // Si on n'est pas à la dernière tentative, on attend avant de recommencer
+        if (i < maxRetries - 1) {
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+        }
+    }
+    return false; // Échec après toutes les tentatives
+}
+
+// Ta logique principale encapsulée dans une fonction asynchrone
+async function handleRecentlyPlayedPings() {
+    if (!get_isindex() && get_album() !== '') {
+        const current_recent_album = get_album();
+        // Je pars du principe que callback_id est défini ailleurs dans ton script
+        const callbackUrl = `./?recently_callback=true&album=${encodeURIComponent(current_recent_album)}&recently_callback_id=${encodeURIComponent(callback_id)}`;
+
+        // 1. On tente le premier appel (max 10 essais, espacés de 3800ms)
+        const firstPingSuccess = await pingWithRetry(callbackUrl, 10, 3800);
+
+        // 2. Si le premier a réussi et qu'on doit pinguer le second script
+        if (firstPingSuccess && typeof alb_willhavetoping !== 'undefined' && alb_willhavetoping) {
+            
+            // On tente le second appel (max 10 essais, espacés de 1000ms)
+            const secondPingSuccess = await pingWithRetry("ping_recently_played.php", 10, 1000);
+            
+            if (secondPingSuccess) {
+                alb_willhavetoping = false; // On désactive le flag une fois réussi
+            }
+        }
+    }
+}
+
+
 	
 	
 	var callback_id=Math.random();
 	var alb_willhavetoping=true;
 	if (!get_isindex()&&get_album()!=''){
-		var recentretries=0;
-		var oprpretries=0;
-				 
-		var current_recent_album=get_album();
-		var xhttzzpingprecalb=[];
-		var xhttzzpingprecalb_index=0;
-		timer=1000;
-		while (recentretries < 10) {
-			recentretries++;
-			setTimeout(function(){
-				tryindex=xhttzzpingprecalb_index-1;
-				
-				while(xhttzzpingprecalb[tryindex]!=null){xhttzzpingprecalb[tryindex].abort();tryindex--;}
-				
-				
-				if (alb_willhavetoping)
-					{
-					xhttzzpingprecalb[xhttzzpingprecalb_index] = new XMLHttpRequest();
-					xhttzzpingprecalb[xhttzzpingprecalb_index].onreadystatechange= function(){
-
-
-					if (this.readyState == 4 && this.status == 200) {
-							for (i=0;i<xhttzzpingprecalb.length;i++){
-								xhttzzpingprecalb[i].abort();
-							}
-							recentretries=10;
-							var oxhttozzypingprecalb; 
-							oxhttozzypingprecalb = new XMLHttpRequest();
-							oxhttozzypingprecalb.onreadystatechange = function(){
-								if (this.readyState == 4 && this.status == 200) {
-										
-										oprpretries=10;
-									}
-								
-								};
-							stimer=1000;
-								
-							while(oprpretries<10){
-								oprpretries++;
-								setTimeout(function(){
-								//oxhttozzypingprecalb.abort();
-								
-								oxhttozzypingprecalb = new XMLHttpRequest();
-								oxhttozzypingprecalb.onreadystatechange = function(){
-								if (this.readyState == 4 && this.status == 200) {
-										alb_willhavetoping=false;
-								
-										oprpretries=10;
-									}
-								
-								};
-								
-								if (alb_willhavetoping){
-									oxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
-									oxhttozzypingprecalb.send();
-									}
-								},stimer);
-								stimer=stimer+1000;
-							}
-							
-						}
-					
-					}
-				
-					xhttzzpingprecalb[xhttzzpingprecalb_index].open("GET", "./?recently_callback=true&album="+encodeURIComponent(current_recent_album)+"&recently_callback_id="+encodeURIComponent(callback_id), true);
-					xhttzzpingprecalb[xhttzzpingprecalb_index].send();
-					xhttzzpingprecalb_index++;
-				}
-			},timer);
-			timer=timer+3800;
-		}
-	
-	
+		// Lancement du script
+		handleRecentlyPlayedPings();
 	}
-
-
 	
 	
 	//ping recently played
 	if (!get_isindex()&&alb_willhavetoping){
-		var prpretries=0;
-		
-		var prpxhttozzypingprecalb = new XMLHttpRequest();
-		prpxhttozzypingprecalb.onreadystatechange = function(){
-			if (this.readyState == 4 && this.status == 200) {
-					prpretries=10;
-				}
-			
-			};
-		var ttimer=1000;
-		while(prpretries<10){
-			prpretries++;
-			setTimeout(function(){
-				prpxhttozzypingprecalb.abort();
-				prpxhttozzypingprecalb = new XMLHttpRequest();
-				prpxhttozzypingprecalb.onreadystatechange = function(){
-					if (this.readyState == 4 && this.status == 200) {
-							alb_willhavetoping=false;
-							prpretries=10;
-						}
-					
-					};
-				if(alb_willhavetoping){
-					prpxhttozzypingprecalb.open("GET", "ping_recently_played.php", true);
-					prpxhttozzypingprecalb.send();
-				}
-			},ttimer);
-			ttimer=ttimer*2;
-		}
+		// Lancement du script
+		handleRecentlyPlayedPings();
 	}
-	}
-	
+}	
 	//yp stuff
 	ypping=true;
 	nosocialupdate=false;	  
