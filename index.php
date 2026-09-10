@@ -12,13 +12,134 @@ require_once('./config.php');
 require_once('./crero-lib.php');
 //error_reporting(E_WARNING|E_NOTICE|E_ERROR|E_PARSE);
 error_reporting(0);
-
+//error_reporting(E_ALL);
 $myhtmlcache=null;
 
 if (isset($_GET['nochat'])){
 	$_SESSION['forceWebchat'] = true ;
 }
+$HTMLheadSharing = '';
+function getHTMLSharer($clewnapiurl, $clewnaudiourl, $album, $server){
+	if ($album == null || strlen($album)==0){
+		return '';
+	}
+	$output = '';
+	$covers = [];
+	if (file_exists('./d/covers.txt')&&!is_dir('./d/covers.txt')){
+		$acovers=trim(file_get_contents('./d/covers.txt'));
+		$coverlines=explode("\n", $acovers);
+		for ($i=0;$i<count($coverlines);$i++){
+			$covers[$coverlines[$i]]=$coverlines[$i+1];
+			$i++;
+		}
+	}
+	if (!file_exists('./sharerCaceh')){
+		mkdir('./sharerCaceh');
+	}
+	if (file_exists('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat')
+	
+			//cache revalidation if outdated cover
+			&&filemtime('./covers/'.rawurlencode($covers[$album])<filemtime('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat'))
+	
+			){
+		return file_get_contents('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat');
+		
+		}
+	//api interrogation
+	$filez = false;
+	
+	$filez = [];
+	$titlez = [];
+	$artistz = [];
+	$dataz = trim(file_get_contents($clewnapiurl.'?albumtracklist='.urlencode($album)));
+	
+	if ($dataz===false){
+		return '';
+	}
+	$adataz = explode ("\n", $dataz);
+	for ($i=0;$i<count($adataz);$i++){
+		array_push($filez, $adataz[$i]);
+		$i++;
+		$titlez[$dataz[$i-1]]= $adataz[$i];
+		$i++;
+		$artistz[$dataz[$i-2]]= $adataz[$i];
 
+		
+	}
+	$albumartists=[];
+	
+	//get unique artists
+	foreach ($artistz as $ar){
+		$albumartists[$ar]=$ar;
+	}
+	$html_og_oe = '';
+	
+	// Nettoyage de l'URL du serveur (au cas où il manquerait ou y aurait un slash en trop)
+	$server_clean = rtrim($server, '/');
+
+	// 1. Gestion de l'image de couverture
+	$cover_filename = $covers[$album] ?? '';
+	$cover_http_url = 'https://' . $server_clean . '/covers/' . ltrim($cover_filename, '/');
+	$cover_local_path = './covers/' . basename($cover_filename);
+
+	// Utilisation de la librairie GD (via getimagesize) pour récupérer width et height
+	$img_width = 0;
+	$img_height = 0;
+	if (file_exists($cover_local_path)) {
+		$img_info = getimagesize($cover_local_path);
+		if ($img_info !== false) {
+			$img_width = $img_info[0];
+			$img_height = $img_info[1];
+		}
+	}
+
+	// 2. Préparation des textes
+	if (count($albumartists)>1){
+		$artistes_liste = implode(', ', $albumartists);
+	}
+	else{
+		$artistes_liste = array_keys($albumartists)[0];
+	}
+	$nb_titres = count($filez);
+	$description = $artistes_liste . ' — ' . $nb_titres . ' track' . ($nb_titres > 1 ? 's' : '');
+
+	// Échappement des variables pour le HTML
+	$album_safe = htmlspecialchars($album.' - A Crem Road album', ENT_QUOTES, 'UTF-8');
+	$description_safe = htmlspecialchars($description, ENT_QUOTES, 'UTF-8');
+	$cover_http_url_safe = htmlspecialchars($cover_http_url, ENT_QUOTES, 'UTF-8');
+
+	// 3. Construction des balises OpenGraph
+	$html_og_oe  = "<!-- OpenGraph Meta Tags -->\n";
+	$html_og_oe .= '<meta property="og:type" content="music.album" />' . "\n";
+	$html_og_oe .= '<meta property="og:title" content="' . $album_safe . '" />' . "\n";
+	$html_og_oe .= '<meta property="og:description" content="' . $description_safe . '" />' . "\n";
+	
+	if (isset($covers[$album])){
+		$html_og_oe .= '<meta property="og:image" content="' . $cover_http_url_safe . '" />' . "\n";
+
+		if ($img_width > 0 && $img_height > 0) {
+			$html_og_oe .= '<meta property="og:image:width" content="' . $img_width . '" />' . "\n";
+			$html_og_oe .= '<meta property="og:image:height" content="' . $img_height . '" />' . "\n";
+		}
+	}
+	// 4. Construction du lien OEmbed
+	// L'URL de la page actuelle (souvent passée dans le paramètre "url" du oembed)
+	$current_page_url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+	// On passe l'identifiant de l'album en paramètre GET au endpoint oembed.json/index.php
+	$oembed_endpoint = 'https://' . $server_clean . '/oembed.json/index.php?album=' . urlencode($album) . '&url=' . urlencode($current_page_url);
+
+	$html_og_oe .= "\n<!-- OEmbed Discovery -->\n";
+	$html_og_oe .= '<link rel="alternate" type="application/json+oembed" href="' . htmlspecialchars($oembed_endpoint, ENT_QUOTES, 'UTF-8') . '" title="' . $album_safe . ' OEmbed" />' . "\n";
+	
+	$output = $html_og_oe;
+	
+	if ($output!=''){
+		file_put_contents('./sharerCaceh/'.str_replace('/', '_',base64_encode($album)).'.dat', $output);
+	}
+	
+	return $output;
+}
 if (
 	$ForceWebchatAsHomepage &&
 
@@ -337,6 +458,7 @@ if (array_key_exists('noscript', $_GET)&&$_GET['noscript']=='footer'){
 		echo '<link rel="alternate" type="application/rss+xml" href="//'.$server.'./rss/?artist='.urlencode($a).'"/>'."\n";
 
 	}
+	echo getHTMLSharer($clewnapiurl, $clewnaudiourl, $_GET['album'], $server);
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -1095,6 +1217,7 @@ if (!(array_key_exists('body', $_GET)&&$_GET['body']=='ajax')) {
 		echo '<link rel="alternate" type="application/rss+xml" href="//'.$server.'/rss/?artist='.urlencode($a).'"/>'."\n";
 
 	}
+	echo getHTMLSharer($clewnapiurl, $clewnaudiourl, $_GET['album'], $server);
 ?>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="charset" value="utf-8" />

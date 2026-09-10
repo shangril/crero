@@ -60,6 +60,9 @@ if (isset($_GET['purge'])){
 if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SELF'], '/crero-yp-api.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/crero-yp-api.php')
 	&&
 	!strstr($_SERVER['PHP_SELF'], '/rss/index.php')&&strpos($_SERVER['PHP_SELF'], '/rss/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/rss/index.php')
+	&&
+	!strstr($_SERVER['PHP_SELF'], '/oembed.json/index.php')&&strpos($_SERVER['PHP_SELF'], '/oembed.json/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/oembed.json/index.php')
+	
 	)
 {
 	if (!array_key_exists('no-infinite-loop-please', $_GET)){//we don't want to test ANYTHING it is a hook call from this script to the homepage cuz it would cause infinite loop

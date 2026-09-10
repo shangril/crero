@@ -331,6 +331,38 @@ header('Content-Type: text/plain; charset=utf-8');
 
 
 }
+else if (isset($_GET['albumtracklist'])){
+	
+	$format = findAFormat();
+	$album=$_GET['albumtracklist'];
+	
+	$output = '';
+	
+	$files=scandir('./audio');
+	sort($files);
+	$tracks=Array();
+	foreach ($files as $file){
+		if (! is_dir('./audio/'.$file)&&strpos($file, $format)===(strlen($file)-strlen($format))){
+			
+				$getID3 = new getID3;
+				$info = $getID3->analyze('audio/'.$file);
+				getid3_lib::CopyTagsToComments($info); 
+				if(html_entity_decode($info['comments_html']['album'][0])==$album){
+						$output .= str_replace($format, '', $file).'.mp3'."\n";
+						$output .= html_entity_decode($info['comments_html']['title'][0])."\n";
+						$output .= html_entity_decode($info['comments_html']['artist'][0])."\n";
+						
+				}
+			
+		}
+		
+		
+	}
+	echo $output;
+}
+
+
+
 else if (isset($_GET['gettitle'])) {
 header('Content-Type: text/plain; charset=utf-8');
 	//really simple caching mechanism
