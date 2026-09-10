@@ -84,8 +84,6 @@ $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' :
 $host = $_SERVER['HTTP_HOST'];
 $selfpath = strtok($_SERVER['REQUEST_URI'], '?'); // chemin sans query string
 
-$pageurl = $videourl.rawurlencode($vidshare);
-$oembedurl = $scheme.'://'.$host.dirname($selfpath).'/oembed.php?format=json&url='.urlencode($pageurl);
 $og_desc = ($in_desc !== '') ? $in_desc : $description;
 ?><!DOCTYPE html>
 <html>
@@ -103,14 +101,14 @@ $og_desc = ($in_desc !== '') ? $in_desc : $description;
 <meta property="og:title" content="<?php echo htmlspecialchars($in_title);?>" />
 <meta property="og:description" content="<?php echo htmlspecialchars($og_desc);?>" />
 <meta property="og:site_name" content="<?php echo htmlspecialchars($sitename);?>" />
-<meta property="og:url" content="<?php echo htmlspecialchars($pageurl);?>" /><!--
+<meta property="og:url" content="<?php echo htmlspecialchars($pageurl);?>" /><!-- -->
 <meta property="og:video" content="<?php echo htmlspecialchars($vidtarget);?>" />
 <meta property="og:video:secure_url" content="<?php echo htmlspecialchars($vidtarget);?>" />
 <meta property="og:video:type" content="<?php echo htmlspecialchars($vidmime);?>" />-->
 
-<!-- oEmbed discovery  
-<link rel="alternate" type="application/json+oembed" href="<?php echo htmlspecialchars($oembedurl);?>" title="<?php echo htmlspecialchars($in_title);?>" />
--->
+<!-- oEmbed discovery  -->
+<link rel="alternate" type="application/json+oembed" href="./oembed.json/?v=<?php echo urlencode($_GET['v']);?>" title="<?php echo htmlspecialchars($in_title);?>" />
+
 </head>
 <body onload="init();">
 	<script>
