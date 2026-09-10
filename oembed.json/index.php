@@ -169,8 +169,8 @@ else if (isset($_GET[v])){
 			$vidtarget = $videourl.rawurlencode($rescopy[$zd]);
 			$vidshare = $rescopy[$zd];
 			$initial_index = $zd;
-	}
-	<?php
+	
+
 		// Variables supposées existantes (issues de votre base de données ou routing)
 		// $in_title, $in_art, $in_al, $in_allink, $in_desc, $in_iframe_url
 		$in_iframe_url='https://'.$server.'/oembed.json/vplayer.php?v='.urlencode($_GET['v']);
@@ -202,6 +202,8 @@ else if (isset($_GET[v])){
 		// JSON_UNESCAPED_SLASHES évite d'échapper les "/" dans l'URL et le HTML
 		// JSON_UNESCAPED_UNICODE préserve les accents (ex: "é" au lieu de "\u00e9")
 		echo json_encode($oembed_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		exit;
+	}
 }
 	
 }
