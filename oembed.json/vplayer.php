@@ -4,9 +4,7 @@ require_once('config.php');
 chdir('./oembed.json');
 // Récupération de la variable GET (avec une vérification de base)
 $arts = explode ("\n", file_get_contents('../d/artists.txt'));
-if ($whitelist!==false){
-	$arts = array_intersect($whitelist, $arts);
-}
+
 sort($arts);
 
 $list= (file_get_contents($videoapiurl."?listallvids=1"));
