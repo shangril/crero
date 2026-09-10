@@ -2,7 +2,6 @@
 chdir('..');
 require_once('config.php');
 chdir('./oembed.json');
-//error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -111,7 +110,7 @@ if (isset($_GET['album'])){
 		
 	exit;
 }
-else if (isset($_GET[v])){
+else if (isset($_GET['v'])){
 	$arts = explode ("\n", file_get_contents('../d/artists.txt'));
 
 	sort($arts);
@@ -135,7 +134,7 @@ else if (isset($_GET[v])){
 		array_push($title, $tokens[$i]);
 		$i++;
 		array_push($al, $tokens[$i]);
-		array_push($allink, './?album='.urlencode($tokens[$i]));
+		array_push($allink, 'https://'.$server.'/?album='.urlencode($tokens[$i]));
 		$i++;
 		array_push($desc, $tokens[$i]);
 	}
@@ -144,7 +143,7 @@ else if (isset($_GET[v])){
 	$rescopy = $res ;
 	shuffle($res);
 
-	$z = array_search ($res[0], $rescopy);
+	$z = array_search ($_GET['v'], $rescopy);
 
 	$in_title = $title[$z];
 	$in_art = $art[$z];
