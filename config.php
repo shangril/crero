@@ -62,6 +62,9 @@ if (!strstr($_SERVER['PHP_SELF'], '/crero-yp-api.php')&&strpos($_SERVER['PHP_SEL
 	!strstr($_SERVER['PHP_SELF'], '/rss/index.php')&&strpos($_SERVER['PHP_SELF'], '/rss/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/rss/index.php')
 	&&
 	!strstr($_SERVER['PHP_SELF'], '/oembed.json/index.php')&&strpos($_SERVER['PHP_SELF'], '/oembed.json/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/oembed.json/index.php')
+	&&
+	!strstr($_SERVER['PHP_SELF'], '/oembed.json/player.php')&&strpos($_SERVER['PHP_SELF'], '/oembed.json/player.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/oembed.json/player.php')
+	
 	
 	)
 {

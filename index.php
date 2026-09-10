@@ -36,13 +36,13 @@ function getHTMLSharer($clewnapiurl, $clewnaudiourl, $album, $server){
 	if (!file_exists('./sharerCaceh')){
 		mkdir('./sharerCaceh');
 	}
-	if (file_exists('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat')
-	
-			//cache revalidation if outdated cover
-			&&filemtime('./covers/'.rawurlencode($covers[$album])<filemtime('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat'))
-	
-			){
-		return file_get_contents('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat');
+if (isset($covers[$album]) && (file_exists('./sharerCaceh/').str_replace('/', '_', base64_encode($album).'.dat')
+
+		//cache revalidation if outdated cover
+		&&filemtime('./covers/'.rawurlencode($covers[$album])<filemtime('./sharerCaceh/'.str_replace('/', '_',base64_encode($album)).'.dat'))
+		)
+		){
+	return file_get_contents('./sharerCaceh/'.str_replace('/', '_', base64_encode($album)).'.dat');
 		
 		}
 	//api interrogation
@@ -132,7 +132,12 @@ function getHTMLSharer($clewnapiurl, $clewnaudiourl, $album, $server){
 	$html_og_oe .= "\n<!-- OEmbed Discovery -->\n";
 	$html_og_oe .= '<link rel="alternate" type="application/json+oembed" href="' . htmlspecialchars($oembed_endpoint, ENT_QUOTES, 'UTF-8') . '" title="' . $album_safe . ' OEmbed" />' . "\n";
 	
-	$output = $html_og_oe;
+	$html_twit = '<meta property="twitter:card" content="player" />
+<meta property="twitter:player" content="https://'.$server_clean.'/oembed.json/player?album='.urlencode($album).'" />
+<!--<meta property="twitter:player:width" content="400" />
+<meta property="twitter:player:height" content="150" />-->';
+	
+	$output = $html_og_oe.$html_twit;
 	
 	if ($output!=''){
 		file_put_contents('./sharerCaceh/'.str_replace('/', '_',base64_encode($album)).'.dat', $output);
