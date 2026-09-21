@@ -133,7 +133,7 @@ if (isset($covers[$album]) && (file_exists('./sharerCaceh/').str_replace('/', '_
 	$html_og_oe .= '<link rel="alternate" type="application/json+oembed" href="' . htmlspecialchars($oembed_endpoint, ENT_QUOTES, 'UTF-8') . '" title="' . $album_safe . ' OEmbed" />' . "\n";
 	
 	$html_twit = '<meta property="twitter:card" content="player" />
-<meta property="twitter:player" content="https://'.$server_clean.'/oembed.json/player?album='.urlencode($album).'" />
+<meta property="twitter:player" content="https://'.$server_clean.'/oembed.json/player.php?album='.urlencode($album).'" />
 <!--<meta property="twitter:player:width" content="400" />
 <meta property="twitter:player:height" content="150" />-->';
 	
