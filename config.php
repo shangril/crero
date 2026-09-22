@@ -194,7 +194,7 @@ else if (!file_exists('./d/wizard_completed.txt')){
 
 
 //you come here, you're seen. If you're seen once, you must have hit the font then, human ! If you hadn't, you won't see us. 
-if (in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SESSION)) && strpos($_SERVER['PHP_SELF'], '/webchat/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/webchat/index.php')){
+if (!isset($_allow_bots) && in_array('seen', array_keys($_SESSION)) && !in_array('font', array_keys($_SESSION)) && strpos($_SERVER['PHP_SELF'], '/webchat/index.php')!==strlen($_SERVER['PHP_SELF'])-strlen('/webchat/index.php')){
 	http_response_code(403);
 	echo ('<html>
 	<head><title>Error page</title>

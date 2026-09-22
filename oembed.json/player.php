@@ -1,5 +1,6 @@
 <?php
 chdir('..');
+$_allow_bots = true;
 require_once('config.php');
 chdir('./oembed.json');
 $album = $_GET['album'] ?? '';
