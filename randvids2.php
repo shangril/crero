@@ -67,8 +67,8 @@ if (isset($_GET['v'])){
 			$in_allink = $allink[$zd];
 			$in_desc = $desc[$zd];
 
-			$vidtarget = $videourl.rawurlencode($zd);
-			$vidshare = $rescopy[$zd];
+			$vidtarget = $videourl.rawurlencode($_GET['v']);
+			$vidshare = $_GET['v'];
 			$initial_index = $zd;
 	}
 }
