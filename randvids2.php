@@ -67,7 +67,7 @@ if (isset($_GET['v'])){
 			$in_allink = $allink[$zd];
 			$in_desc = $desc[$zd];
 
-			$vidtarget = $videourl.rawurlencode($rescopy[$zd]);
+			$vidtarget = $videourl.rawurlencode($zd);
 			$vidshare = $rescopy[$zd];
 			$initial_index = $zd;
 	}
@@ -105,6 +105,9 @@ $og_desc = ($in_desc !== '') ? $in_desc : $description;
 <meta property="og:video" content="<?php echo htmlspecialchars($vidtarget);?>" />
 <meta property="og:video:secure_url" content="<?php echo htmlspecialchars($vidtarget);?>" />
 <meta property="og:video:type" content="<?php echo htmlspecialchars($vidmime);?>" />-->
+
+<meta property="twitter:card" content="player" />
+<meta property="twitter:player" content="./oembed.json/vplayer.php?v=<?php echo urlencode($album); ?>" />
 
 <!-- oEmbed discovery  -->
 <link rel="alternate" type="application/json+oembed" href="./oembed.json/?v=<?php echo urlencode($_GET['v']);?>" title="<?php echo htmlspecialchars($in_title);?>" />

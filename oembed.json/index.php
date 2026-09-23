@@ -169,6 +169,7 @@ else if (isset($_GET['v'])){
 			$vidshare = $rescopy[$zd];
 			$initial_index = $zd;
 	
+		$html = '<iframe src="https://'.$server.'/oembed.json/vplayer.php?v='.urlencode($_GET['v']).'"></iframe>';
 
 		// Variables supposées existantes (issues de votre base de données ou routing)
 		// $in_title, $in_art, $in_al, $in_allink, $in_desc, $in_iframe_url
