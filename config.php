@@ -219,6 +219,95 @@ if (!isset($_allow_bots) && in_array('seen', array_keys($_SESSION)) && !in_array
 	</body></html>');
 	die();
 }
+
+//antiscrapper, level 2. Idea originated from Tercence Eden, thank him
+
+
+
+
+$soapboxDir = __DIR__ . '/soapbox';
+$currentIp = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+$banDuration = 14400; // 14 400 secondes
+
+if (is_dir($soapboxDir)) {
+    $datFiles = glob($soapboxDir . '/*.dat');
+	
+    if ($datFiles) {
+        $now = microtime(true);
+
+        foreach ($datFiles as $file) {
+            $ipInFile = trim(file_get_contents($file));
+			
+			$filenameOnly = basename($file, '.dat');
+            $parts = explode('-', $filenameOnly);
+            $banTimestamp = (float)($parts[0] ?? $now);
+			
+			if ($banTimestamp+14400<microtime(true)){
+				
+				unlink ('./soapbox/'.$filenameOnly.'.dat');
+				
+			}	
+
+
+            if ($ipInFile === $currentIp) {
+                $filenameOnly = basename($file, '.dat');
+                $parts = explode('-', $filenameOnly);
+                $banTimestamp = (float)($parts[0] ?? $now);
+				
+				
+				
+				
+                $elapsedSeconds = max(0, (int)floor($now - $banTimestamp));
+                $remainingSeconds = max(0, $banDuration - $elapsedSeconds);
+
+                http_response_code(403);
+                
+                ?>
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>403 Error</title>
+                    <style>
+                        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Forbidden (403)</h1>
+                    <p>
+                        The requester's IP addres was banned <span id="elapsed"><?= $elapsedSeconds ?></span> seconds ago 
+                        and is so for <span id="remaining"><?= $remainingSeconds ?></span> more seconds.
+                    </p>
+
+                    <script>
+                        let remaining = <?= $remainingSeconds ?>;
+                        let elapsed = <?= $elapsedSeconds ?>;
+
+                        const remainingElem = document.getElementById('remaining');
+                        const elapsedElem = document.getElementById('elapsed');
+
+                        const timer = setInterval(() => {
+                            if (remaining > 0) {
+                                remaining--;
+                                elapsed++;
+                                if (remainingElem) remainingElem.textContent = remaining;
+                                if (elapsedElem) elapsedElem.textContent = elapsed;
+                            } else {
+                                clearInterval(timer);
+                            }
+                        }, 1000);
+                    </script>
+                </body>
+                </html>
+                <?php
+                die();
+            }
+        }
+    }
+}
+
+
+
 $_SESSION['seen'] = true;
 
 
