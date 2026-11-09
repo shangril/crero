@@ -213,7 +213,8 @@ if (!isset($_allow_bots) && in_array('seen', array_keys($_SESSION)) && !in_array
 	</head>
 	
 	<body><h1>We are quite sorry, but this website is only available for browsers that download remote fonts and honor a no-cache cache-control directive for them</h1>
-	<h2>If you think you are seeing this by mistake, just <a href="#" onclick="history.back();">go back one page</a> or, maybe, <a href="#" onclick="window.location.href=window.location.href;"><strong>Reload this page</strong></a>, and it should solve the issue. Another option is to start from a new browser session (like a newly created private browsing one) or, clear cookies for this website.</h2>
+	<h2>…This is our DIY way to prevent aggresive, rude -read, pretending they are humans- scanner/scrapper so-called "clients" to use our web server ressources heavily enough to make it unusuable for human visitors.</h2>
+	<h2>If you are an human seeing this, it is probably because you kept an open tab for days, while your funny browser did not honnor the cache-control requested as it should have done.</h2><h2>Just <a href="/webchat">start a new navigation journey here</a>, and it should solve the issue. Another option is to start from a new browser session (like a newly created private browsing one) or, yet a last one, to clear cookies for this website.</h2>
 	
 	</body></html>');
 	die();

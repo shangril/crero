@@ -120,6 +120,7 @@ if ($artlist!==false){
 	$ret.='<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" version="2.0">';
 	$ret.='<channel>';
 	$ret.='<itunes:category text="Music"/>';
+	$ret.='<podcast:medium>music</podcast:medium>';
 	if (count($artists)==1){
 		$ret.='<title>'.xmlcdata($artists[0]).'</title>';
 	}
